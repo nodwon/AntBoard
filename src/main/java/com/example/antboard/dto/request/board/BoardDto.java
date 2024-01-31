@@ -18,6 +18,7 @@ public class BoardDto {
         this.title = title;
         this.content = content;
     }
+
     @Builder
     public static Board ofEntity(BoardDto dto) {
         return Board.builder()
@@ -25,4 +26,5 @@ public class BoardDto {
                 .content(dto.content)
                 .build();
     }
+
 }

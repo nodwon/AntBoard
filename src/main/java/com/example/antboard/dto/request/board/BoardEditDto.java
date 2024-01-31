@@ -20,4 +20,5 @@ public class BoardEditDto {
         this.content = content;
     }
 
+
 }

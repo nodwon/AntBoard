@@ -34,7 +34,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 //해당 부분 부터 입력
-def webappDir = "$projectDir/src/main/reactjs"
+def webappDir = "$projectDir/src/main/fronted"
 
 sourceSets {
     main {
@@ -48,7 +48,7 @@ processResources {
     dependsOn "buildReact"
 }
 
-task buildReact(type: Exec) {
+tasks.register('buildReact', Exec) {
     dependsOn "installReact"
     workingDir "$webappDir"
     inputs.dir "$webappDir"
@@ -60,7 +60,7 @@ task buildReact(type: Exec) {
     }
 }
 
-task installReact(type: Exec) {
+tasks.register('installReact', Exec) {
     workingDir "$webappDir"
     inputs.dir "$webappDir"
     group = BasePlugin.BUILD_GROUP
