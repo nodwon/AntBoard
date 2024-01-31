@@ -1,5 +1,6 @@
 package com.example.antboard.entity;
 
+import com.example.antboard.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Board {
+public class Board extends BaseEntity {
 
     @Id
     @GeneratedValue
