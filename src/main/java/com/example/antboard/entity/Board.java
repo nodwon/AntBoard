@@ -28,9 +28,9 @@ public class Board extends BaseEntity {
 //    @JoinColumn(name = "MEMBER_ID")
 //    public Member member;
 //
-//    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @BatchSize(size = 10)
-//    public List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @BatchSize(size = 10)
+    public List<Comment> comments = new ArrayList<>();
 
     @Builder
     public Board(Long id, String title, String content) {

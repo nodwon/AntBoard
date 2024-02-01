@@ -34,17 +34,17 @@ public class Comment extends BaseEntity {
         this.board = board;
     }
 
-//    // Board와의 다대일(N:1) 관계를 설정하는 메소드
-//    public void setBoard(Board board) {
-//        this.board = board;
-//        board.getComments().add(this); // Board 엔티티에도 Comment를 추가합니다.
-//    }
-//
-//    // Member와의 다대일(N:1) 관계를 설정하는 메소드
-//    public void setMember(Member member) {
-//        this.member = member;
-//        member.getComments().add(this); // Member 엔티티에도 Comment를 추가합니다.
-//    }
+    // Board와의 다대일(N:1) 관계를 설정하는 메소드
+    public void setBoard(Board board) {
+        this.board = board;
+        board.getComments().add(this); // Board 엔티티에도 Comment를 추가합니다.
+    }
+
+    // Member와의 다대일(N:1) 관계를 설정하는 메소드
+    public void setMember(Member member) {
+        this.member = member;
+        member.getComments().add(this); // Member 엔티티에도 Comment를 추가합니다.
+    }
 
     // update
     public void update(String content) {
