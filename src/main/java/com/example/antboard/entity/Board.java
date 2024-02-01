@@ -24,10 +24,10 @@ public class Board extends BaseEntity {
     private String title;
     private String content;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "MEMBER_ID")
-//    public Member member;
-//
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MEMBER_ID")
+    public Member member;
+
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @BatchSize(size = 10)
     public List<Comment> comments = new ArrayList<>();
@@ -44,8 +44,8 @@ public class Board extends BaseEntity {
         this.content = content;
     }
     //== Member & Board 연관관계 편의 메소드 ==//
-//    public void setMappingMember(Member member) {
-//        this.member = member;
-//        member.getBoards().add(this);
-//    }
+    public void setMappingMember(Member member) {
+        this.member = member;
+        member.getBoards().add(this);
+    }
 }
