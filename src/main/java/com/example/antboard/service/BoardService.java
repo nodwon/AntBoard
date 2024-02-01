@@ -7,7 +7,7 @@ import com.example.antboard.dto.response.BoardResponseDto;
 import com.example.antboard.entity.Board;
 import com.example.antboard.repository.BoardRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,35 +16,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class BoardService {
     private final BoardRepository boardRepository;
-    //게시글 가져오기
-    public BoardResponseDto getBoard(Long boardId){
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다"+boardId));
-        return BoardResponseDto.from(board);
-    }
-    // 게시글 등록
-    public BoardResponseDto save(BoardDto dto){
-        Board board = BoardDto.ofEntity(dto);
-        Board newBoard = boardRepository.save(board);
-        return BoardResponseDto.from(newBoard);
-    }
-    // 게시글 수정
-    public Long update(Long boardId, BoardEditDto dto){
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("해당게시글은 없습니다. id" + boardId));
-        board.update(dto.getTitle(), board.getContent());
-        return board.getId();
-    }
-    // 게시글 삭제
-    public void delete(Long boardId) {
-        boardRepository.deleteById(boardId);
-    }
     //게시글 페이징 리스트
     public Page<BoardListResponse> getAllBoards(Pageable pageable) {
         Page<Board> boards = boardRepository.findAll(pageable);
@@ -53,4 +32,31 @@ public class BoardService {
                 .toList();
         return new PageImpl<>(list,pageable, boards.getTotalElements());
     }
+
+    //게시글 가져오기
+    public BoardResponseDto getBoard(Long boardId){
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다"+boardId));
+        return BoardResponseDto.from(board);
+    }
+    // 게시글 등록
+    @Transactional
+    public BoardResponseDto save(BoardDto dto){
+        Board board = BoardDto.ofEntity(dto);
+        Board newBoard = boardRepository.save(board);
+        return BoardResponseDto.from(newBoard);
+    }
+    // 게시글 수정
+    @Transactional
+    public Long update(Long boardId, BoardEditDto dto){
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("해당게시글은 없습니다. id" + boardId));
+        board.update(dto.getTitle(), board.getContent());
+        return board.getId();
+    }
+    // 게시글 삭제
+    @Transactional
+    public void delete(Long boardId) {
+        boardRepository.deleteById(boardId);
+    }
+
 }

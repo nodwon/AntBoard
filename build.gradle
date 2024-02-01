@@ -33,47 +33,46 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
-//해당 부분 부터 입력
-def webappDir = "$projectDir/src/main/fronted"
-
-sourceSets {
-    main {
-        resources {
-            srcDirs = ["$webappDir/build", "$projectDir/src/main/resources"]
-        }
-    }
-}
-
-processResources {
-    dependsOn "buildReact"
-}
-
-tasks.register('buildReact', Exec) {
-    dependsOn "installReact"
-    workingDir "$webappDir"
-    inputs.dir "$webappDir"
-    group = BasePlugin.BUILD_GROUP
-    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-        commandLine "npm.cmd", "run-script", "build"
-    } else {
-        commandLine "npm", "run-script", "build"
-    }
-}
-
-tasks.register('installReact', Exec) {
-    workingDir "$webappDir"
-    inputs.dir "$webappDir"
-    group = BasePlugin.BUILD_GROUP
-    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-        commandLine "npm.cmd", "audit", "fix"
-        commandLine 'npm.cmd', 'install'
-    } else {
-        commandLine "npm", "audit", "fix"
-        commandLine 'npm', 'install'
-    }
-}
-//까지 입력
+////해당 부분 부터 입력
+//def webappDir = "$projectDir/src/main/frontend"
+//
+//sourceSets {
+//    main {
+//        resources {
+//            srcDirs = ["$webappDir/build", "$projectDir/src/main/resources"]
+//        }
+//    }
+//}
+//
+//processResources {
+//    dependsOn "buildReact"
+//}
+//
+//task buildReact(type: Exec) {
+//    dependsOn "installReact"
+//    workingDir "$webappDir"
+//    inputs.dir "$webappDir"
+//    group = BasePlugin.BUILD_GROUP
+//    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+//        commandLine "npm.cmd", "run-script", "build"
+//    } else {
+//        commandLine "npm", "run-script", "build"
+//    }
+//}
+//
+//task installReact(type: Exec) {
+//    workingDir "$webappDir"
+//    inputs.dir "$webappDir"
+//    group = BasePlugin.BUILD_GROUP
+//    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+//        commandLine "npm.cmd", "audit", "fix"
+//        commandLine 'npm.cmd', 'install'
+//    } else {
+//        commandLine "npm", "audit", "fix"
+//        commandLine 'npm', 'install'
+//    }
+//}
+////까지 입력
 tasks.named('test') {
     useJUnitPlatform()
 }
-
