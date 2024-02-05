@@ -36,4 +36,4 @@ out/
 .vscode/
 src/main/resources/application.yml
 src/main/frontend/node_modules/
-src/main/node_modules
+!src/main/node_modules
