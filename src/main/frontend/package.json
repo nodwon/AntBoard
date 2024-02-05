@@ -15,6 +15,7 @@
     "axios": "^1.6.7",
     "http-proxy-middleware": "^2.0.6",
     "material-icons": "^1.13.12",
+    "prop-types": "^15.8.1",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
     "react-inputs-validation": "^4.9.10",

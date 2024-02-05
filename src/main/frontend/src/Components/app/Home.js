@@ -7,19 +7,22 @@ import * as PropTypes from "prop-types";
 import {SvgIcon} from "@mui/joy";
 const variant = "outlined"; // or any other variant you want to use
 const VisuallyHiddenInput = styled('input')`
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  white-space: nowrap;
-  width: 1px;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    white-space: nowrap;
+    width: 1px;
 `;
 
 VisuallyHiddenInput.propTypes = {type: PropTypes.string};
 export default function Main() {
+    const CreateBoard = async () =>{
+
+    }
     return (
         <div className="py-4">
             <div className="container mx-auto">
@@ -30,9 +33,11 @@ export default function Main() {
                         <Card>
                             <CardContent className="p-4">
                                 <div className="border p-4 mb-4">
-                                    <Input className="mb-4" placeholder="제목을 입력하세요"/>
-                                    <Textarea className="mb-4" minRows={5} placeholder="본문을 입력하세요" variant="soft"/>
-                                    <Button
+                                    <form>
+                                        <p><Input type="text" name="title" placeholder="제목을 입력하세요"/></p>
+                                        <p><Textarea  type="text" name="body" minRows={5} placeholder="본문을 입력하세요" variant="soft"/></p>
+                                    </form>
+                                        <Button
                                         component="label"
                                         role={undefined}
                                         tabIndex={-1}
@@ -57,11 +62,11 @@ export default function Main() {
                                         }
                                     >
                                         Upload a file
-                                        <VisuallyHiddenInput type="file" />
+                                        <VisuallyHiddenInput type="file"/>
                                     </Button>
                                 </div>
                                 <div className="flex justify-between">
-                                    <Button  size="md" variant={variant} color="success">저장</Button>
+                                    <Button type="Sumbit" size="md" variant={variant} color="success">저장</Button>
                                     <Button size="md" variant={variant} color="danger">취소</Button>
                                 </div>
                             </CardContent>
@@ -87,7 +92,7 @@ export default function Main() {
                                     </thead>
                                     <tbody>
                                     <tr>
-                                        <td className="font-medium">4</td>
+                                        <td className="font-medium">1</td>
                                         <td>두번째 테스트 제목</td>
                                         <td>네네</td>
                                         <td>2024-01-14T06:56:46.415244</td>

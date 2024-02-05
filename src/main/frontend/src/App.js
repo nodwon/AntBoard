@@ -10,22 +10,10 @@ import Main from "./Components/app/Home";
 
 
 function App() {
-    //const [users, setUsers] = useState([]);
-
-    // useEffect(() => {
-    //     axios.get('http://localhost:8080/')
-    //         .then(response => {
-    //             setUsers(response.data);
-    //         })
-    //         .catch(error => {
-    //             console.error('Error fetching users: ', error);
-    //         });
-    // }, []);
 
     return (
         <div>
             <Header/>
-
             <div className="container">
             <Main/>
             </div>
