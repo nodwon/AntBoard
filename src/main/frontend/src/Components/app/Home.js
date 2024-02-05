@@ -1,67 +1,108 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/5nXq7g06lbf
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
+import React from "react";
+import Button from '@mui/joy/Button';
+import Textarea from '@mui/joy/Textarea';
+import {Card, CardContent, Grid, Input, styled, Table, Typography} from '@mui/material'; // Import Card and Typography components
+import "../../css/home.css";
+import * as PropTypes from "prop-types";
+import {SvgIcon} from "@mui/joy";
+const variant = "outlined"; // or any other variant you want to use
+const VisuallyHiddenInput = styled('input')`
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  white-space: nowrap;
+  width: 1px;
+`;
 
-export default function Home() {
+VisuallyHiddenInput.propTypes = {type: PropTypes.string};
+export default function Main() {
     return (
+        <div className="py-4">
+            <div className="container mx-auto">
 
-        <div className="flex">
-            <div className="flex-1 p-4">
-                <h1 className="text-xl font-bold mb-4">수익 인증 게시판</h1>
-                <div className="border p-4 mb-4">
-                    <Input className="mb-4" placeholder="제목을 입력하세요" />
-                    <Textarea className="mb-4" placeholder="본문을 입력하세요" />
-                    <Button className="bg-blue-200">이미지 첨부</Button>
-                </div>
-                <div className="flex justify-between">
-                    <Button className="bg-green-200" variant="outline">
-                        그린
-                    </Button>
-                    <Button className="bg-blue-200">저장</Button>
-                    <Button className="bg-blue-200">취소</Button>
-                </div>
-            </div>
-            <div className="flex-3">
-                <div className="flex justify-between items-center p-4">
-                    <h1 className="text-xl font-bold">나의 인증</h1>
-                    <Button className="bg-green-500">회원가입</Button>
-                </div>
-                <div className="flex justify-end space-x-2 p-4">
-                    <Button className="bg-green-200">리스트</Button>
-                    <Button className="bg-green-200">카드</Button>
-                </div>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[50px]">게시글 번호</TableHead>
-                            <TableHead>제목</TableHead>
-                            <TableHead>닉네임</TableHead>
-                            <TableHead>작성일</TableHead>
-                            <TableHead>수정일</TableHead>
-                            <TableHead className="w-[100px]" />
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell className="font-medium">4</TableCell>
-                            <TableCell>두번째 테스트 제목</TableCell>
-                            <TableCell>네네</TableCell>
-                            <TableCell>2024-01-14T06:56:46.415244</TableCell>
-                            <TableCell>2024-01-14T06:56:46.415244</TableCell>
-                            <TableCell>
-                                <Button className="bg-blue-500">수정</Button>
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
+                <Grid container spacing={2}>
+                    {/* 첫 번째 카드 (1/4 너비) */}
+                    <Grid item xs={3}>
+                        <Card>
+                            <CardContent className="p-4">
+                                <div className="border p-4 mb-4">
+                                    <Input className="mb-4" placeholder="제목을 입력하세요"/>
+                                    <Textarea className="mb-4" minRows={5} placeholder="본문을 입력하세요" variant="soft"/>
+                                    <Button
+                                        component="label"
+                                        role={undefined}
+                                        tabIndex={-1}
+                                        variant="outlined"
+                                        color="neutral"
+                                        startDecorator={
+                                            <SvgIcon>
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    strokeWidth={1.5}
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
+                                                    />
+                                                </svg>
+                                            </SvgIcon>
+                                        }
+                                    >
+                                        Upload a file
+                                        <VisuallyHiddenInput type="file" />
+                                    </Button>
+                                </div>
+                                <div className="flex justify-between">
+                                    <Button  size="md" variant={variant} color="success">저장</Button>
+                                    <Button size="md" variant={variant} color="danger">취소</Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    {/* 두 번째 카드 (3/4 너비) */}
+                    <Grid item xs={9}>
+                        <Card>
+                            <CardContent className="p-4">
+                                <div className="flex justify-between items-center mb-4">
+                                    <Typography variant="h5" component="h2">나의 인증</Typography>
+                                </div>
+                                <Table aria-label="basic table">
+                                    <thead>
+                                    <tr>
+                                        <th style={{width: '40%'}}>Dessert (100g serving)</th>
+                                        <th>제목</th>
+                                        <th>닉네임</th>
+                                        <th>작성일</th>
+                                        <th>수정일</th>
+                                        <th className="w-[100px]"/>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td className="font-medium">4</td>
+                                        <td>두번째 테스트 제목</td>
+                                        <td>네네</td>
+                                        <td>2024-01-14T06:56:46.415244</td>
+                                        <td>2024-01-14T06:56:46.415244</td>
+                                        <td>
+                                            <Button className="bg-blue-500">수정</Button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
             </div>
         </div>
-    )
+    );
 }
-

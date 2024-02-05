@@ -1,0 +1,35 @@
+/* styles.css */
+.container {
+    margin-top: 10px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+}
+/* home.css */
+
+/* Margin between buttons */
+.flex > .btn:not(:last-child) {
+    margin-right: 20px;
+}
+
+/* Align buttons */
+.flex {
+    align-items: center;
+}
+
+/* Match width of input and textarea */
+input,
+textarea {
+    width: 100%;
+}
+
+/* Padding to create space between elements */
+.p-10 {
+    padding: 10px 20px 20px;
+}
+.justify-between > button:first-child {
+    margin-right: 10px; /* Adjust the value as needed */
+}
+.p-4 > * {
+    margin-bottom: 10px; /* Adjust the value as needed */
+}
