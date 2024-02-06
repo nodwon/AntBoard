@@ -1,10 +1,15 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Button from '@mui/joy/Button';
-import Textarea from '@mui/joy/Textarea';
-import {Card, CardContent, Grid, Input, styled, Table, Typography} from '@mui/material'; // Import Card and Typography components
+import {Card, CardContent, Grid, Input, styled, Table, TableRow, Typography,Pagination} from '@mui/material'; // Import Card and Typography components
 import "../../css/home.css";
 import * as PropTypes from "prop-types";
-import {SvgIcon} from "@mui/joy";
+import {Alert, SvgIcon} from "@mui/joy";
+import {useNavigate} from "react-router-dom";
+import axios from "axios";
+import Textarea from "@mui/joy/Textarea";
+// import Pagination from "react-js-pagination";
+
+
 const variant = "outlined"; // or any other variant you want to use
 const VisuallyHiddenInput = styled('input')`
     clip: rect(0 0 0 0);
@@ -19,10 +24,74 @@ const VisuallyHiddenInput = styled('input')`
 `;
 
 VisuallyHiddenInput.propTypes = {type: PropTypes.string};
-export default function Main() {
-    const CreateBoard = async () =>{
+function SuccessAlert({message}) {
+    return (<Alert variant="filled" severity="success">
+        {message}
+    </Alert>);
+}
+function ErrorAlert({message}){
+    return (<Alert variant="filled" severity="error">
+        {message}
+    </Alert>);
+}
 
+export default function Main() {
+    const [title, setTitle] = useState("");
+    const [content,setContent] = useState("");
+    const changeTitle =(event) =>{
+        setTitle(event.target.value);
+    };
+    const changeContent =(event) =>{
+        setContent(event.target.value);
+    };
+    const createBoard = async () => {
+        const req = {
+            title: title,
+            content: content
+        };
+        await axios
+            .post("http://localhost:8080/board/write", req)
+            .then((resp) => {
+                console.log(("success"));
+                console.log(resp.data);
+                alert("새로운게시글이 작성되었습니다.");
+                // SuccessAlert({ message: "새로운 게시글 성공했습니다." });
+            }).catch((err) => {
+                console.log(err);
+            });
     }
+    //Paging
+    const [page, setpage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalCnt, setTotalCnt] = useState(0);
+    const [boardList, setBoardList] = useState([]);
+    // 게시글 전체조회
+    const BoardList = async(page) =>{
+        try{
+            const response = await axios.get("http://localhost:8080/board/list",{
+                params: {"page":page-1},
+            });
+             console.log(response);
+             debugger;
+            setBoardList(response.data.content);
+            setPageSize(response.data.pageSize);
+            setTotalPages(response.data.totalPages);
+            setTotalCnt(response.data.totalElements);
+        }catch (error){
+            console.log(error);
+        }
+    };
+    // 첫 로딩 시, 한 페이지만 가져옴
+    useEffect(() => {
+        BoardList(1);
+    }, []);
+    // 페이징 보여주기
+    const changePage = (page) => {
+        setpage(page);
+        BoardList(page); // 페이지 파라미터를 전달
+    };
+
     return (
         <div className="py-4">
             <div className="container mx-auto">
@@ -34,10 +103,10 @@ export default function Main() {
                             <CardContent className="p-4">
                                 <div className="border p-4 mb-4">
                                     <form>
-                                        <p><Input type="text" name="title" placeholder="제목을 입력하세요"/></p>
-                                        <p><Textarea  type="text" name="body" minRows={5} placeholder="본문을 입력하세요" variant="soft"/></p>
+                                        <p><Input type="text" className="form-control" value={title} onChange={changeTitle} size="50px"  placeholder="제목을 입력하세요"/></p>
+                                        <p><Textarea  type="text" className="form-control" value={content} onChange={changeContent} rows="10" minRows={5} placeholder="본문을 입력하세요" variant="soft"/></p>
                                     </form>
-                                        <Button
+                                    <Button
                                         component="label"
                                         role={undefined}
                                         tabIndex={-1}
@@ -66,7 +135,7 @@ export default function Main() {
                                     </Button>
                                 </div>
                                 <div className="flex justify-between">
-                                    <Button type="Sumbit" size="md" variant={variant} color="success">저장</Button>
+                                    <Button type="Sumbit" size="md" variant={variant} color="success"  onClick={createBoard}>저장</Button>
                                     <Button size="md" variant={variant} color="danger">취소</Button>
                                 </div>
                             </CardContent>
@@ -82,27 +151,27 @@ export default function Main() {
                                 <Table aria-label="basic table">
                                     <thead>
                                     <tr>
-                                        <th style={{width: '40%'}}>Dessert (100g serving)</th>
-                                        <th>제목</th>
-                                        <th>닉네임</th>
-                                        <th>작성일</th>
-                                        <th>수정일</th>
-                                        <th className="w-[100px]"/>
+                                        <th className="col-1">번호</th>
+                                        <th className="col-4">제목</th>
+                                        <th className="col-3">작성자</th>
+                                        <th className="col-3">작성일</th>
+                                        <th className="col-3">수정일</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <td className="font-medium">1</td>
-                                        <td>두번째 테스트 제목</td>
-                                        <td>네네</td>
-                                        <td>2024-01-14T06:56:46.415244</td>
-                                        <td>2024-01-14T06:56:46.415244</td>
-                                        <td>
-                                            <Button className="bg-blue-500">수정</Button>
-                                        </td>
-                                    </tr>
+                                        {boardList.map(function (all,idx){
+                                            return <TableRow obj={all} key={idx} cnt={idx + 1} />;
+                                        })}
                                     </tbody>
                                 </Table>
+                                <Pagination className="pagination"
+                                            activePage={page}
+                                            itemsCountPerPage={pageSize}
+                                            totalItemsCount={totalCnt}
+                                            pageRangeDisplayed={totalPages}
+                                            prevPageText={"‹"}
+                                            nextPageText={"›"}
+                                            onChange={changePage} variant="outlined" shape="rounded" />
                             </CardContent>
                         </Card>
                     </Grid>
