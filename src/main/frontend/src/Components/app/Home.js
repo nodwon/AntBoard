@@ -3,7 +3,7 @@ import Button from '@mui/joy/Button';
 import {Card, CardContent, Grid, Input, styled, Table, TableRow, Typography,Pagination} from '@mui/material'; // Import Card and Typography components
 import "../../css/home.css";
 import * as PropTypes from "prop-types";
-import {Alert, SvgIcon} from "@mui/joy";
+import {Alert, Link, SvgIcon} from "@mui/joy";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import Textarea from "@mui/joy/Textarea";
@@ -38,6 +38,8 @@ function ErrorAlert({message}){
 export default function Main() {
     const [title, setTitle] = useState("");
     const [content,setContent] = useState("");
+    const navigate = useNavigate();
+
     const changeTitle =(event) =>{
         setTitle(event.target.value);
     };
@@ -55,6 +57,8 @@ export default function Main() {
                 console.log(("success"));
                 console.log(resp.data);
                 alert("새로운게시글이 작성되었습니다.");
+                navigate("/");
+
                 // SuccessAlert({ message: "새로운 게시글 성공했습니다." });
             }).catch((err) => {
                 console.log(err);
@@ -162,7 +166,7 @@ export default function Main() {
                                     <tbody>
                                     {AllBoard.map(boardItem => (
                                         <tr key={boardItem.id}>
-                                            <td>{boardItem.boardId}</td>
+                                            <td><Link component={RouterLink} to="/board/{boardId}">{boardItem.boardId}</Link></td>
                                             <td>{boardItem.title}</td>
                                             <td>{boardItem.content}</td>
                                             <td>{boardItem.createdDate}</td>
