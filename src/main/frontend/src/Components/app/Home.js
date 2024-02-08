@@ -65,19 +65,19 @@ export default function Main() {
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
     const [totalCnt, setTotalCnt] = useState(0);
-    const [boardList, setBoardList] = useState([]);
+    const [AllBoard, setBoardList] = useState([]);
     // 게시글 전체조회
     const BoardList = async(page) =>{
         try{
             const response = await axios.get("http://localhost:8080/board/list",{
                 params: {"page":page-1},
             });
-             console.log(response);
-             debugger;
+             console.log(response.data);
+
             setBoardList(response.data.content);
             setPageSize(response.data.pageSize);
-            setTotalPages(response.data.totalPages);
-            setTotalCnt(response.data.totalElements);
+            // setTotalPages(response.data.totalPages);
+            // setTotalCnt(response.data.totalElements);
         }catch (error){
             console.log(error);
         }
@@ -91,6 +91,7 @@ export default function Main() {
         setpage(page);
         BoardList(page); // 페이지 파라미터를 전달
     };
+
 
     return (
         <div className="py-4">
@@ -153,15 +154,24 @@ export default function Main() {
                                     <tr>
                                         <th className="col-1">번호</th>
                                         <th className="col-4">제목</th>
-                                        <th className="col-3">작성자</th>
+                                        <th className="col-3">내용</th>
                                         <th className="col-3">작성일</th>
                                         <th className="col-3">수정일</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        {boardList.map(function (all,idx){
-                                            return <TableRow obj={all} key={idx} cnt={idx + 1} />;
-                                        })}
+                                    {AllBoard.map(boardItem => (
+                                        <tr key={boardItem.id}>
+                                            <td>{boardItem.boardId}</td>
+                                            <td>{boardItem.title}</td>
+                                            <td>{boardItem.content}</td>
+                                            <td>{boardItem.createdDate}</td>
+                                            <td>{boardItem.modifiedDate}</td>
+                                            {/* 게시판 데이터의 필드를 맞게 추가하세요. */}
+                                        </tr>
+                                    ))}
+
+
                                     </tbody>
                                 </Table>
                                 <Pagination className="pagination"
