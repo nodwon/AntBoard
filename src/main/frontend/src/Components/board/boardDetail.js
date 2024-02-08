@@ -11,9 +11,8 @@ function boardDetail() {
     const { boardId } = useParams(); // 파라미터 가져오기
     const navigate = useNavigate();
 
-    const handleCancel = () => {
-        // 홈 경로로 이동
-        history.push('/');
+    const home = () => {
+        navigate('/');
     };
     const getBoardDetail = async () => {
         try {
@@ -33,10 +32,9 @@ function boardDetail() {
 
             if (response.status === 200) {
                 alert("게시글을 성공적으로 삭제했습니다 :D");
-                navigate("/");
-            }
+                home            }
         } catch (error) {
-            console.log("[BbsDetail.js] deleteBbs() error :<");
+            console.log(" deleteBbs() error :<");
             console.error(error);
         }
     };
