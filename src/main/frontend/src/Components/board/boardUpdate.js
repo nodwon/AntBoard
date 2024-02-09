@@ -20,7 +20,6 @@ function boardUpdate() {
     const changeContent = (event) => {
         setContent(event.target.value);
     }
-    const history = useHistory();
 
     const handleCancel = () => {
         // 홈 경로로 이동

@@ -76,3 +76,6 @@ tasks.register('copyReactBuildFiles', Copy) {
 tasks.named('test') {
     useJUnitPlatform()
 }
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters"
+}

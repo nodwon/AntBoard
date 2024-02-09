@@ -4,7 +4,6 @@ import {Card, CardContent, Grid, Input, styled, Table, Typography,Pagination} fr
 import "../../css/home.css";
 import * as PropTypes from "prop-types";
 import {Alert, Link, SvgIcon} from "@mui/joy";
-import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import Textarea from "@mui/joy/Textarea";
 // import Pagination from "react-js-pagination";
@@ -38,11 +37,9 @@ function ErrorAlert({message}){
 export default function Main() {
     const [title, setTitle] = useState("");
     const [content,setContent] = useState("");
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
-    const home = () => {
-        navigate('/');
-    };
+
     const changeTitle =(event) =>{
         setTitle(event.target.value);
     };
@@ -60,7 +57,6 @@ export default function Main() {
                 console.log(("success"));
                 console.log(resp.data);
                 alert("새로운게시글이 작성되었습니다.");
-                home;
                 // SuccessAlert({ message: "새로운 게시글 성공했습니다." });
             }).catch((err) => {
                 console.log(err);
@@ -169,7 +165,7 @@ export default function Main() {
                                     {AllBoard.map(boardItem => (
                                         <tr key={boardItem.id}>
                                             <td>{boardItem.boardId}</td>
-                                            <td> <Link to={`/board/${boardItem.id}`}>{boardItem.title}</Link></td>
+                                            <td> <Link to={`"http://localhost:8080/board/${boardItem.boardId}`}>{boardItem.title}</Link></td>
                                             <td>{boardItem.content}</td>
                                             <td>{boardItem.createdDate}</td>
                                             <td>{boardItem.modifiedDate}</td>
