@@ -19,9 +19,9 @@
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
     "react-inputs-validation": "^4.9.10",
-    "react-js-pagination": "^3.0.3",
+    "react-js-pagination": "^3.0.2",
     "react-router-dom": "^6.22.0",
-    "react-scripts": "^5.0.1",
+    "react-scripts": "^3.0.1",
     "styled-components": "^6.1.8",
     "web-vitals": "^2.1.4"
   },
