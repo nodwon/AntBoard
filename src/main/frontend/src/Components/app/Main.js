@@ -6,6 +6,8 @@ import * as PropTypes from "prop-types";
 import {Alert, Link, SvgIcon} from "@mui/joy";
 import axios from "axios";
 import Textarea from "@mui/joy/Textarea";
+import {useNavigate} from "react-router-dom";
+import Router from "../router/Router";
 // import Pagination from "react-js-pagination";
 
 
@@ -23,21 +25,11 @@ const VisuallyHiddenInput = styled('input')`
 `;
 
 VisuallyHiddenInput.propTypes = {type: PropTypes.string};
-function SuccessAlert({message}) {
-    return (<Alert variant="filled" severity="success">
-        {message}
-    </Alert>);
-}
-function ErrorAlert({message}){
-    return (<Alert variant="filled" severity="error">
-        {message}
-    </Alert>);
-}
 
 export default function Main() {
     const [title, setTitle] = useState("");
     const [content,setContent] = useState("");
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
 
     const changeTitle =(event) =>{
@@ -57,7 +49,7 @@ export default function Main() {
                 console.log(("success"));
                 console.log(resp.data);
                 alert("새로운게시글이 작성되었습니다.");
-                // SuccessAlert({ message: "새로운 게시글 성공했습니다." });
+                navigate("/");
             }).catch((err) => {
                 console.log(err);
             });
@@ -78,8 +70,8 @@ export default function Main() {
 
             setBoardList(response.data.content);
             setPageSize(response.data.pageSize);
-            // setTotalPages(response.data.totalPages);
-            // setTotalCnt(response.data.totalElements);
+            setTotalPages(response.data.totalPages);
+            setTotalCnt(response.data.totalElements);
         }catch (error){
             console.log(error);
         }
@@ -98,7 +90,6 @@ export default function Main() {
     return (
         <div className="py-4">
             <div className="container mx-auto">
-
                 <Grid container spacing={2}>
                     {/* 첫 번째 카드 (1/4 너비) */}
                     <Grid item xs={3}>

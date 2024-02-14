@@ -1,18 +1,38 @@
 import axios from "axios";
 import * as React from 'react';
-import {Card, CardContent, Input} from "@mui/material";
+import {Card, CardContent, Input, styled} from "@mui/material";
 import Textarea from "@mui/joy/Textarea";
 import Button from "@mui/joy/Button";
 import {SvgIcon} from "@mui/joy";
 import Header from "../app/Header";
 import Footer from "../app/Footer";
 import {useState} from "react";
+import * as PropTypes from "prop-types";
+import {useLocation, useNavigate} from "react-router-dom";
 
-function boardUpdate() {
+const variant = "outlined"; // or any other variant you want to use
+const VisuallyHiddenInput = styled('input')`
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    white-space: nowrap;
+    width: 1px;
+`;
+
+VisuallyHiddenInput.propTypes = {type: PropTypes.string};
+
+function BoardUpdate() {
+    const location = useLocation();
     const {board} = location.state;
     const boardId = board.boardId;
     const [title, setTitle] = useState(board.title);
-    const [content, setContent] = useState(board.coontent);
+    const [content, setContent] = useState(board.content);
+    const navigate = useNavigate();
+
 
     const changeTitle = (event) => {
         setTitle(event.target.value);
@@ -23,14 +43,14 @@ function boardUpdate() {
 
     const handleCancel = () => {
         // 홈 경로로 이동
-        history.push('/');
+        navigate('/');
     };
     const updateBoard = async () => {
         const req = {
             title: title,
             content: content
         }
-        await axios.patch('http://localhost:8080/board/{boardId}/edit', req, {headers: headers})
+        await axios.patch('http://localhost:8080/board/{boardId}/edit', req)
             .then((response) => {
                 console.log(response);
                 const boardId = response.data.boardId;
@@ -78,7 +98,7 @@ function boardUpdate() {
                                     }
                                 >
                                     Upload a file
-                                    <VisuallyHiddenInput type="file"/>
+                                    {/*<VisuallyHiddenInput type="file"/>*/}
                                 </Button>
                             </div>
                             <div className="flex justify-between">
@@ -95,3 +115,4 @@ function boardUpdate() {
 )
 
 }
+export default BoardUpdate;

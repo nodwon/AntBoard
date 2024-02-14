@@ -4,11 +4,14 @@ import { useEffect, useState } from 'react';
 import { Link } from "@mui/joy";
 import Header from "../app/Header";
 import Footer from "../app/Footer";
-import { useParams } from "react-router-dom"; // useParams 추가
+import {useNavigate, useParams} from "react-router-dom";
+import Router from "../router/Router"; // useParams 추가
+import "../../css/BoardDetail.css"
 
-function boardDetail() {
+function BoardDetail() {
     const [getboard, setgetboard] = useState({});
     const { boardId } = useParams(); // useParams 사용
+    const navigate = useNavigate();
 
     const getBoardDetail = async () => {
         try {
@@ -28,6 +31,7 @@ function boardDetail() {
 
             if (response.status === 200) {
                 alert("게시글을 성공적으로 삭제했습니다 :D");
+                navigate('/');
             }
         } catch (error) {
             console.error(error);
@@ -52,27 +56,11 @@ function boardDetail() {
     };
 
     return (
-        <div>
+        <div id="boardDetail" className="board-detail">
             <Header/>
 
             <div className="bbs-detail-container">
                 <div>
-
-                    <div className="my-3 d-flex justify-content-end">
-                        <Link className="btn btn-outline-secondary" to="/"><i className="fas fa-list">
-                        </i> 글목록</Link> &nbsp;
-
-                        <Link className="btn btn-outline-secondary" to={{pathname: `/${getboard.boardId}`}}
-                              state={{parentBoard: parentBoard}}>
-                            <i className="fas fa-pen"></i> 답글쓰기</Link> &nbsp;
-                        <Link className="btn btn-outline-secondary" to="/board/edit" state={{update: updateBoard}}><i
-                            className="fas fa-edit"></i> 수정</Link> &nbsp;
-                        <button className="btn btn-outline-danger" onClick={deleteBoard}><i
-                            className="fas fa-trash-alt"></i> 삭제
-                        </button>
-
-
-                    </div>
 
                     <table className="table table-striped">
                         <tbody>
@@ -101,12 +89,23 @@ function boardDetail() {
                     <div className="content-box">{getboard.content}</div>
                 </div>
             </div>
+            <div className="my-3 d-flex justify-content-end">
+                <Link className="btn btn-outline-secondary" to="/"><i className="fas fa-list">
+                </i> 글목록</Link> &nbsp;
 
-
+                <Link className="btn btn-outline-secondary" to={{pathname: `/${getboard.boardId}`}}
+                      state={{parentBoard: parentBoard}}>
+                    <i className="fas fa-pen"></i> 답글쓰기</Link> &nbsp;
+                <Link className="btn btn-outline-secondary" to="/board/edit" state={{update: updateBoard}}><i
+                    className="fas fa-edit"></i> 수정</Link> &nbsp;
+                <button className="btn btn-outline-danger" onClick={deleteBoard}><i
+                    className="fas fa-trash-alt"></i> 삭제
+                </button>
+            </div>
             <Footer/>
         </div>
     );
 
 }
 
-export default boardDetail;
+export default BoardDetail;
