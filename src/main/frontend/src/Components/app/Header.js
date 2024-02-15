@@ -1,12 +1,6 @@
 import React from "react";
-import {AppBar, Badge, Box, IconButton, InputBase, Menu, MenuItem, styled, Toolbar, Typography,} from "@mui/material";
-import {
-    AccountCircle,
-    Menu as MenuIcon,
-    MoreVert as MoreIcon,
-    Notifications as NotificationsIcon,
-    Search as SearchIcon,
-} from "@mui/icons-material";
+import {AppBar, Box, IconButton, InputBase, Menu, MenuItem, styled, Toolbar, Typography,} from "@mui/material";
+import {AccountCircle, Menu as MenuIcon, MoreVert as MoreIcon, Search as SearchIcon,} from "@mui/icons-material";
 import {alpha} from "@mui/material/styles";
 import {useNavigate} from "react-router-dom";
 

@@ -1,16 +1,14 @@
 import axios from "axios";
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { Link } from "@mui/joy";
+import {useEffect, useState} from 'react';
 import Header from "../app/Header";
 import Footer from "../app/Footer";
 import {useNavigate, useParams} from "react-router-dom";
-import Router from "../router/Router"; // useParams 추가
 import "../../css/BoardDetail.css"
 
 function BoardDetail() {
     const [getboard, setgetboard] = useState({});
-    const { boardId } = useParams(); // useParams 사용
+    const {boardId} = useParams(); // useParams 사용
     const navigate = useNavigate();
 
     const getBoardDetail = async () => {

@@ -1,14 +1,14 @@
 import axios from "axios";
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 import {Card, CardContent, Input, styled} from "@mui/material";
 import Textarea from "@mui/joy/Textarea";
 import Button from "@mui/joy/Button";
 import {SvgIcon} from "@mui/joy";
 import Header from "../app/Header";
 import Footer from "../app/Footer";
-import {useEffect, useState} from "react";
 import * as PropTypes from "prop-types";
-import {useLocation, useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 const variant = "outlined"; // or any other variant you want to use
 const VisuallyHiddenInput = styled('input')`
@@ -26,7 +26,7 @@ const VisuallyHiddenInput = styled('input')`
 VisuallyHiddenInput.propTypes = {type: PropTypes.string};
 
 function BoardUpdate() {
-    const { boardId } = useParams(); // useParams 사용
+    const {boardId} = useParams(); // useParams 사용
     const [board, setBoard] = useState({});
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -68,7 +68,7 @@ function BoardUpdate() {
     }
     return (
         <div>
-        <Header/>
+            <Header/>
             <div className="py-4">
                 <div className="container mx-auto">
                     <Card>
@@ -77,7 +77,8 @@ function BoardUpdate() {
                                 <form>
                                     <p><Input type="text" className="form-control" value={title} onChange={changeTitle}
                                               size="50px"/></p>
-                                    <p><Textarea type="text" className="form-control" value={content} onChange={changeContent}
+                                    <p><Textarea type="text" className="form-control" value={content}
+                                                 onChange={changeContent}
                                                  rows="10" minRows={5} variant="soft"/></p>
                                 </form>
                                 <Button
@@ -111,7 +112,7 @@ function BoardUpdate() {
                             <div className="flex justify-between">
                                 <Button type="Sumbit" size="md" variant={variant} color="success"
                                         onClick={updateBoard}>수정하기</Button>
-                                <Button size="md" variant={variant} color="danger"  onClick={handleCancel}>취소</Button>
+                                <Button size="md" variant={variant} color="danger" onClick={handleCancel}>취소</Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -119,7 +120,8 @@ function BoardUpdate() {
             </div>
             <Footer/>
         </div>
-)
+    )
 
 }
+
 export default BoardUpdate;
