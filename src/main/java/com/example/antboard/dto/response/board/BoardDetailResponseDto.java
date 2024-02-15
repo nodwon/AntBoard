@@ -1,4 +1,4 @@
-package com.example.antboard.dto.response;
+package com.example.antboard.dto.response.board;
 
 import com.example.antboard.entity.Board;
 import lombok.Builder;
@@ -9,24 +9,27 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class BoardResponseDto {
+public class BoardDetailResponseDto {
     private Long boardId;
     private String title;
     private String content;
     private String createdDate;
+    private String modifiedDate;
     @Builder
-    public BoardResponseDto(Long boardId, String title, String content,String createdDate) {
+    public BoardDetailResponseDto(Long boardId, String title, String content, String createdDate, String modifiedDate) {
         this.boardId = boardId;
         this.title = title;
         this.content = content;
         this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
     }
-    public static BoardResponseDto from(Board board) {
-        return BoardResponseDto.builder()
+    public static BoardDetailResponseDto from(Board board) {
+        return BoardDetailResponseDto.builder()
                 .boardId(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .createdDate(board.getCreatedDate())
+                .modifiedDate(board.getModifiedDate())
                 .build();
     }
 

@@ -49,7 +49,7 @@ export default function Main() {
                 console.log(("success"));
                 console.log(resp.data);
                 alert("새로운게시글이 작성되었습니다.");
-                navigate("/");
+                changePage();
             }).catch((err) => {
                 console.log(err);
             });
@@ -166,6 +166,7 @@ export default function Main() {
 
                                     </tbody>
                                 </Table>
+                                <div className="pagination-wrapper flex justify-center">
                                 <Pagination className="pagination"
                                             activePage={page}
                                             itemsCountPerPage={pageSize}
@@ -174,6 +175,7 @@ export default function Main() {
                                             prevPageText={"‹"}
                                             nextPageText={"›"}
                                             onChange={changePage} variant="outlined" shape="rounded" />
+                                </div>
                             </CardContent>
                         </Card>
                     </Grid>

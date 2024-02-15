@@ -93,7 +93,7 @@ function BoardDetail() {
                             <i className="fas fa-pen"></i> 답글쓰기
                         </button>
                         <button className="btn btn-outline-secondary"
-                                onClick={() => navigate(`/board/${getboard.boardId}/edit`, {state: {update: updateBoard}})}>
+                                onClick={() => navigate(`/board/${getboard?.boardId}/edit`, {state: {update: updateBoard}})}>
                             <i className="fas fa-edit"></i> 수정
                         </button>
                         <button className="btn btn-outline-danger" onClick={deleteBoard}>

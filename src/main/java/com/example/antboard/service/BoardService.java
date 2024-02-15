@@ -3,7 +3,8 @@ package com.example.antboard.service;
 import com.example.antboard.dto.request.board.BoardDto;
 import com.example.antboard.dto.request.board.BoardEditDto;
 import com.example.antboard.dto.response.BoardListResponse;
-import com.example.antboard.dto.response.BoardResponseDto;
+import com.example.antboard.dto.response.board.BoardDetailResponseDto;
+import com.example.antboard.dto.response.board.BoardResponseDto;
 import com.example.antboard.entity.Board;
 import com.example.antboard.repository.BoardRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -48,10 +48,10 @@ public class BoardService {
     }
     // 게시글 수정
     @Transactional
-    public Long update(Long boardId, BoardEditDto dto){
+    public BoardDetailResponseDto update(Long boardId, BoardEditDto dto){
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("해당게시글은 없습니다. id" + boardId));
         board.update(dto.getTitle(), board.getContent());
-        return board.getId();
+        return BoardDetailResponseDto.from(board);
     }
     // 게시글 삭제
     @Transactional

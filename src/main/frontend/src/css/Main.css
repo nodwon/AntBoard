@@ -8,7 +8,7 @@ main {
     box-sizing: border-box; /* border와 padding을 높이에 포함 */
     min-height: 85.3vh; /* 화면 높이에 100% 맞추기 */
 }
-.pagination {
+.pagination-wrapper {
     display: flex;
     justify-content: center;
 }

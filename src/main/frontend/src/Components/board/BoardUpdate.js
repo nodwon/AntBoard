@@ -6,9 +6,9 @@ import Button from "@mui/joy/Button";
 import {SvgIcon} from "@mui/joy";
 import Header from "../app/Header";
 import Footer from "../app/Footer";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import * as PropTypes from "prop-types";
-import {useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 
 const variant = "outlined"; // or any other variant you want to use
 const VisuallyHiddenInput = styled('input')`
@@ -26,13 +26,11 @@ const VisuallyHiddenInput = styled('input')`
 VisuallyHiddenInput.propTypes = {type: PropTypes.string};
 
 function BoardUpdate() {
-    const location = useLocation();
-    const {board} = location.state;
-    const boardId = board.boardId;
-    const [title, setTitle] = useState(board.title);
-    const [content, setContent] = useState(board.content);
+    const { boardId } = useParams(); // useParams 사용
+    const [board, setBoard] = useState({});
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
     const navigate = useNavigate();
-
 
     const changeTitle = (event) => {
         setTitle(event.target.value);
@@ -45,15 +43,24 @@ function BoardUpdate() {
         // 홈 경로로 이동
         navigate('/');
     };
+    useEffect(() => {
+        axios.get(`http://localhost:8080/board/${boardId}`)
+            .then(response => {
+                setBoard(response.data);
+                setTitle(response.data.title);
+                setContent(response.data.content);
+            })
+            .catch(error => console.error(error));
+    }, [boardId]);
     const updateBoard = async () => {
         const req = {
             title: title,
             content: content
         }
-        await axios.patch('http://localhost:8080/board/{boardId}/edit', req)
+        await axios.post(`http://localhost:8080/board/${boardId}/edit`, req)
             .then((response) => {
                 console.log(response);
-                const boardId = response.data.boardId;
+                handleCancel();
             })
             .catch((err) => {
                 console.log(err);

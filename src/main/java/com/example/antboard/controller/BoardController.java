@@ -3,7 +3,8 @@ package com.example.antboard.controller;
 import com.example.antboard.dto.request.board.BoardDto;
 import com.example.antboard.dto.request.board.BoardEditDto;
 import com.example.antboard.dto.response.BoardListResponse;
-import com.example.antboard.dto.response.BoardResponseDto;
+import com.example.antboard.dto.response.board.BoardDetailResponseDto;
+import com.example.antboard.dto.response.board.BoardResponseDto;
 import com.example.antboard.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +43,9 @@ public class BoardController {
     }
     //수정
     @PostMapping("/{boardId}/edit")
-    public ResponseEntity<Long> Edit(@PathVariable Long boardId,
-                                                 @RequestBody BoardEditDto dto){
-        Long board = boardService.update(boardId, dto);
+    public ResponseEntity<BoardDetailResponseDto> Edit(@PathVariable("boardId") Long boardId,
+                                                       @RequestBody BoardEditDto dto){
+        BoardDetailResponseDto board = boardService.update(boardId, dto);
         return ResponseEntity.status(HttpStatus.OK).body(board);
     }
     // 상세보기 -> 삭제
