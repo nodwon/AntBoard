@@ -15,7 +15,7 @@ function BoardDetail() {
 
     const getBoardDetail = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/board/${boardId}`); // 백틱 사용
+            const response = await axios.get(`http://localhost:8080/board/${boardId}`);
             console.log(response.data);
             setgetboard(response.data);
         } catch (error) {
@@ -25,7 +25,7 @@ function BoardDetail() {
 
     const deleteBoard = async () => {
         try {
-            const response = await axios.delete(`http://localhost:8080/board/${boardId}/delete`); // 백틱 사용
+            const response = await axios.delete(`http://localhost:8080/board/${boardId}/delete`);
 
             console.log(response.data);
 
@@ -59,48 +59,49 @@ function BoardDetail() {
         <div id="boardDetail" className="board-detail">
             <Header/>
 
-            <div className="bbs-detail-container">
-                <div>
-
+            <div className="mul-card">
+                <div className="mul-card-header">
+                    <h5 className="mul-card-title">{getboard.title}</h5>
+                </div>
+                <div className="mul-card-body">
                     <table className="table table-striped">
                         <tbody>
-
                         <tr>
-                            <th>제목</th>
-                            <td>
-                                <span>{getboard.title}</span>
-                            </td>
+                            <th>작성자</th>
+                            <td>{getboard.author}</td>
                         </tr>
-
                         <tr>
                             <th>작성일</th>
-                            <td>
-                                <span>{getboard.createDate}</span>
-                            </td>
+                            <td>{getboard.createDate}</td>
                         </tr>
-
                         <tr>
                             <th>내용</th>
-                            <td></td>
+                            <td>{getboard.content}</td>
                         </tr>
                         </tbody>
                     </table>
-
-                    <div className="content-box">{getboard.content}</div>
                 </div>
-            </div>
-            <div className="my-3 d-flex justify-content-end">
-                <Link className="btn btn-outline-secondary" to="/"><i className="fas fa-list">
-                </i> 글목록</Link> &nbsp;
+                <div className="mul-card-footer">
+                    <div className="btn-group">
+                        <button className="btn btn-outline-secondary" onClick={() => navigate('/')}>
+                            <i className="fas fa-list"></i> 글목록
+                        </button>
+                        <button className="btn btn-outline-secondary" onClick={() => navigate({
+                            pathname: `/${getboard.boardId}`,
+                            state: {parentBoard: parentBoard}
+                        })}>
+                            <i className="fas fa-pen"></i> 답글쓰기
+                        </button>
+                        <button className="btn btn-outline-secondary"
+                                onClick={() => navigate(`/board/${getboard.boardId}/edit`, {state: {update: updateBoard}})}>
+                            <i className="fas fa-edit"></i> 수정
+                        </button>
+                        <button className="btn btn-outline-danger" onClick={deleteBoard}>
+                            <i className="fas fa-trash-alt"></i> 삭제
+                        </button>
+                    </div>
+                </div>
 
-                <Link className="btn btn-outline-secondary" to={{pathname: `/${getboard.boardId}`}}
-                      state={{parentBoard: parentBoard}}>
-                    <i className="fas fa-pen"></i> 답글쓰기</Link> &nbsp;
-                <Link className="btn btn-outline-secondary" to="/board/edit" state={{update: updateBoard}}><i
-                    className="fas fa-edit"></i> 수정</Link> &nbsp;
-                <button className="btn btn-outline-danger" onClick={deleteBoard}><i
-                    className="fas fa-trash-alt"></i> 삭제
-                </button>
             </div>
             <Footer/>
         </div>

@@ -16,7 +16,7 @@ import BoardUpdate from "./Components/board/BoardUpdate";
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <div>            <Header/>
+        element: <div>  <Header/>
             <div className="container">
 
                 <Main/>

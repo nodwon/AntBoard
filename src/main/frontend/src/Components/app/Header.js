@@ -8,6 +8,7 @@ import {
     Search as SearchIcon,
 } from "@mui/icons-material";
 import {alpha} from "@mui/material/styles";
+import {useNavigate} from "react-router-dom";
 
 const Search = styled("div")(({theme}) => ({
     position: "relative",
@@ -52,6 +53,7 @@ const StyledInputBase = styled(InputBase)(({theme}) => ({
 function Header() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+    const navigate = useNavigate();
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -145,6 +147,7 @@ function Header() {
                         noWrap
                         component="div"
                         sx={{display: {xs: "none", sm: "block"}}}
+                        onClick={() => navigate('/')}
                     >
                         수익 인증 게시판
                     </Typography>

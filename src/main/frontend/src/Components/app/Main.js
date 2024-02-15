@@ -154,13 +154,12 @@ export default function Main() {
                                     </thead>
                                     <tbody>
                                     {AllBoard.map(boardItem => (
-                                        <tr key={boardItem.id}>
+                                        <tr key={boardItem.id} onClick={() => navigate(`/board/${boardItem.boardId}`)}>
                                             <td>{boardItem.boardId}</td>
-                                            <td> <Link to={`"http://localhost:8080/board/${boardItem.boardId}`}>{boardItem.title}</Link></td>
+                                            <td> {boardItem.title}</td>
                                             <td>{boardItem.content}</td>
                                             <td>{boardItem.createdDate}</td>
                                             <td>{boardItem.modifiedDate}</td>
-                                            {/* 게시판 데이터의 필드를 맞게 추가하세요. */}
                                         </tr>
                                     ))}
 

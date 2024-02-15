@@ -48,8 +48,8 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(board);
     }
     // 상세보기 -> 삭제
-    @PostMapping("/{boardId}/delete")
-    public ResponseEntity<Long> delete(@PathVariable Long boardId) {
+    @DeleteMapping("/{boardId}/delete")
+    public ResponseEntity<Long> delete(@PathVariable("boardId") Long boardId) {
         boardService.delete(boardId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
