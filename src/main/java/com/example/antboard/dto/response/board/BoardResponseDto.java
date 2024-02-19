@@ -14,12 +14,14 @@ public class BoardResponseDto {
     private String title;
     private String content;
     private String createdDate;
+    private String modifiedDate;
     @Builder
-    public BoardResponseDto(Long boardId, String title, String content,String createdDate) {
+    public BoardResponseDto(Long boardId, String title, String content,String createdDate,String modifiedDate) {
         this.boardId = boardId;
         this.title = title;
         this.content = content;
         this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
     }
     public static BoardResponseDto from(Board board) {
         return BoardResponseDto.builder()
@@ -27,6 +29,7 @@ public class BoardResponseDto {
                 .title(board.getTitle())
                 .content(board.getContent())
                 .createdDate(board.getCreatedDate())
+                .modifiedDate(board.getModifiedDate())
                 .build();
     }
 

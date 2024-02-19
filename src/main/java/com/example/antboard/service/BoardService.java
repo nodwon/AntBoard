@@ -34,10 +34,10 @@ public class BoardService {
     }
 
     //게시글 가져오기
-    public BoardResponseDto getBoard(Long boardId){
+    public BoardDetailResponseDto getBoard(Long boardId){
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다"+boardId));
-        return BoardResponseDto.from(board);
+        return BoardDetailResponseDto.from(board);
     }
     // 게시글 등록
     @Transactional

@@ -32,6 +32,10 @@ public class Board extends BaseEntity {
     @BatchSize(size = 10)
     public List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @BatchSize(size = 10)
+    public List<FileEntity> files = new ArrayList<>();
+
     @Builder
     public Board(Long id, String title, String content) {
         this.id = id;

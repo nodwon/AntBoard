@@ -8,6 +8,7 @@ import com.example.antboard.entity.FileEntity;
 import com.example.antboard.repository.BoardRepository;
 import com.example.antboard.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,12 +31,8 @@ public class FileService {
     private BoardRepository boardRepository;
     private FileRepository fileRepository;
 
+    @Value("${project.folderPath}")
     private String FOLDER_PATH;
-
-    public FileService(BoardRepository boardRepository, FileRepository fileRepository) {
-        this.boardRepository = boardRepository;
-        this.fileRepository = fileRepository;
-    }
 
     @Transactional
     public List<FileUploadResponseDto> upload(Long boardId, List<MultipartFile> files) throws IOException {
