@@ -5,6 +5,8 @@ import Header from "../app/Header";
 import Footer from "../app/Footer";
 import {useNavigate, useParams} from "react-router-dom";
 import "../../css/BoardDetail.css"
+import FileDisplay from "./FileDisplay";
+
 
 function BoardDetail() {
     const [getboard, setgetboard] = useState({});
@@ -46,7 +48,8 @@ function BoardDetail() {
         title: getboard.title,
         content: getboard.content,
         CreatedDate: getboard.createdDate,
-        ModifiedDate: getboard.modifiedDate
+        ModifiedDate: getboard.modifiedDate,
+        files : getboard.files
     };
     const parentBoard = {
         boardId: getboard.boardId,
@@ -77,11 +80,15 @@ function BoardDetail() {
                             <td>{getboard.content}</td>
                         </tr>
                         </tbody>
+
                     </table>
+                    <div>
+                        <FileDisplay files={getboard.files} boardId={boardId} />
+                    </div>
                 </div>
                 <div className="mul-card-footer">
                     <div className="btn-group">
-                        <button className="btn btn-outline-secondary" onClick={() => navigate('/')}>
+                    <button className="btn btn-outline-secondary" onClick={() => navigate('/')}>
                             <i className="fas fa-list"></i> 글목록
                         </button>
                         <button className="btn btn-outline-secondary" onClick={() => navigate({

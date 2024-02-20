@@ -57,7 +57,7 @@ export default function Main() {
                 console.log(("success"));
                 console.log(resp.data);
                 const boardId = resp.data.boardId;
-
+                changePage();
                 // 게시글이 생성된 후에 파일 업로드 수행
                 const fd = new FormData();
                 files.forEach((file) => fd.append("file", file));
@@ -66,11 +66,10 @@ export default function Main() {
                         console.log("[file.js] fileUpload() success :D");
                         console.log(resp.data);
                         alert("파일 업로드 성공 :D");
+                        changePage();
                     })
                     .catch((err) => {
-                        debugger;
                         console.log(err);
-                        debugger;
                         console.log("[FileData.js] fileUpload() error :<");
                         alert("파일 업로드 실패 :(");
                     });
@@ -207,7 +206,6 @@ export default function Main() {
                                             <td>{boardItem.modifiedDate}</td>
                                         </tr>
                                     ))}
-
 
                                     </tbody>
                                 </Table>
