@@ -4,6 +4,7 @@ import com.example.antboard.dto.response.file.FileUploadResponseDto;
 import com.example.antboard.dto.response.file.FileDownloadResponseDto;
 import com.example.antboard.service.FileService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/board/{boardId}/file")
 @RequiredArgsConstructor
@@ -25,10 +27,9 @@ public class FileController {
 
     @PostMapping("/upload")
     public ResponseEntity<List<FileUploadResponseDto>> upload(
-            @PathVariable Long boardId,
+            @PathVariable("boardId") Long boardId,
             @RequestParam("file")List<MultipartFile> files) throws IOException{
         List<FileUploadResponseDto> saveFile = fileService.upload(boardId, files);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(saveFile);
     }
     @GetMapping("/download")

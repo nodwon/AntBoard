@@ -7,8 +7,6 @@ import {SvgIcon} from "@mui/joy";
 import axios from "axios";
 import Textarea from "@mui/joy/Textarea";
 import {useNavigate} from "react-router-dom";
-// import Pagination from "react-js-pagination";
-
 
 const variant = "outlined"; // or any other variant you want to use
 const VisuallyHiddenInput = styled('input')`
@@ -47,7 +45,7 @@ export default function Main() {
     const handleRemoveFile = (index) => {
         setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
     };
-    // 파일 업로드 로직을 createBoard 함수 내부로 이동
+
     const createBoard = async () => {
         const req = {
             title: title,
@@ -70,8 +68,10 @@ export default function Main() {
                         alert("파일 업로드 성공 :D");
                     })
                     .catch((err) => {
-                        console.log("[FileData.js] fileUpload() error :<");
+                        debugger;
                         console.log(err);
+                        debugger;
+                        console.log("[FileData.js] fileUpload() error :<");
                         alert("파일 업로드 실패 :(");
                     });
 
@@ -130,47 +130,47 @@ export default function Main() {
                                         <p><Textarea type="text" className="form-control" value={content}
                                                      onChange={changeContent} rows="10" minRows={5}
                                                      placeholder="본문을 입력하세요" variant="soft"/></p>
-                                    </form>
-                                    <Button
-                                        component="label"
-                                        role={undefined}
-                                        tabIndex={-1}
-                                        variant="outlined"
-                                        color="neutral"
-                                        startDecorator={
-                                            <SvgIcon>
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth={1.5}
-                                                    stroke="currentColor"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
-                                                    />
-                                                </svg>
-                                            </SvgIcon>
-                                        }
-                                    >
-                                        Upload a file
-                                        <VisuallyHiddenInput type="file" onChange={handleChangeFile} multiple/>
-                                    </Button>
-                                    <td>
-                                        {files.map((file, index) => (
-                                            <div key={index} style={{display: "flex", alignItems: "center"}}>
-                                                <p>
-                                                    <strong>FileName:</strong> {file.name}
-                                                </p>
-                                                <button className="delete-button" type="button"
-                                                        onClick={() => handleRemoveFile(index)}>
-                                                    x
-                                                </button>
+                                        <Button
+                                            component="label"
+                                            role={undefined}
+                                            tabIndex={-1}
+                                            variant="outlined"
+                                            color="neutral"
+                                            startDecorator={
+                                                <SvgIcon>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth={1.5}
+                                                        stroke="currentColor"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
+                                                        />
+                                                    </svg>
+                                                </SvgIcon>
+                                            }
+                                        >
+                                            Upload a file
+                                            <VisuallyHiddenInput type="file" onChange={handleChangeFile} multiple/>
+                                        </Button>
+                                        </form>
+                                            <div>
+                                                {files.map((file, index) => (
+                                                    <div key={index} style={{display: "flex", alignItems: "center"}}>
+                                                        <p>
+                                                            <strong>FileName:</strong> {file.name}
+                                                        </p>
+                                                        <button className="delete-button" type="button"
+                                                                onClick={() => handleRemoveFile(index)}>
+                                                            x
+                                                        </button>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </td>
                                 </div>
                                 <div className="flex justify-between">
                                     <Button type="Sumbit" size="md" variant={variant} color="success"

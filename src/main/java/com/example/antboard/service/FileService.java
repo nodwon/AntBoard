@@ -8,6 +8,7 @@ import com.example.antboard.entity.FileEntity;
 import com.example.antboard.repository.BoardRepository;
 import com.example.antboard.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class FileService {
-    private BoardRepository boardRepository;
-    private FileRepository fileRepository;
+    private final BoardRepository boardRepository;
+    private final FileRepository fileRepository;
 
     @Value("${project.folderPath}")
     private String FOLDER_PATH;
@@ -44,9 +46,7 @@ public class FileService {
 
             String randomId = UUID.randomUUID().toString();
 
-            String filePath = "post" + board.getId() + "_" + randomId.concat(fileName.substring(fileName.indexOf(".")));
-
-
+            String filePath = "post" + board.getId() + "_" + randomId.concat(fileName);
             String fileResourcePath = FOLDER_PATH + File.separator + filePath;
 
             // create folder if not created
@@ -72,7 +72,7 @@ public class FileService {
         List<FileUploadResponseDto> dtos = fileEntities.stream()
                 .map(FileUploadResponseDto::from)
                 .collect(Collectors.toList());
-
+        log.info("asdf"+ dtos.toString());
         return dtos;
     }
 
