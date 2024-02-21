@@ -12,7 +12,7 @@ function BoardDetail() {
     const [getboard, setgetboard] = useState({});
     const {boardId} = useParams(); // useParams 사용
     const navigate = useNavigate();
-
+    const [filename] =useState({});
     const getBoardDetail = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/board/${boardId}`);
@@ -49,7 +49,7 @@ function BoardDetail() {
         content: getboard.content,
         CreatedDate: getboard.createdDate,
         ModifiedDate: getboard.modifiedDate,
-        files : getboard.files
+        fname : filename.file_name
     };
     const parentBoard = {
         boardId: getboard.boardId,
@@ -83,7 +83,7 @@ function BoardDetail() {
 
                     </table>
                     <div>
-                        <FileDisplay files={getboard.files} boardId={boardId} />
+                        <FileDisplay fname={filename.file_name} boardId={boardId} />
                     </div>
                 </div>
                 <div className="mul-card-footer">
