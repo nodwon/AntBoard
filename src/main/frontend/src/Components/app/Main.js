@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
 import Button from '@mui/joy/Button';
-import {Card, CardContent, Grid, Input, Pagination, styled, Table, Typography} from '@mui/material'; // Import Card and Typography components
+import {Card, CardContent, Grid, Input, Pagination, styled, Typography} from '@mui/material'; // Import Card and Typography components
 import "../../css/home.css";
 import * as PropTypes from "prop-types";
-import {SvgIcon} from "@mui/joy";
+import {AspectRatio, SvgIcon} from "@mui/joy";
 import axios from "axios";
 import Textarea from "@mui/joy/Textarea";
 import {useNavigate} from "react-router-dom";
@@ -186,30 +186,27 @@ export default function Main() {
                                 <div className="flex justify-between items-center mb-4">
                                     <Typography variant="h5" component="h2">나의 인증</Typography>
                                 </div>
-                                <Table aria-label="basic table">
-                                    <thead>
-                                    <tr>
-                                        <th className="col-1">번호</th>
-                                        <th className="col-4">제목</th>
-                                        <th className="col-3">내용</th>
-                                        <th className="col-3">작성일</th>
-                                        <th className="col-3">수정일</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
+                                <div className="board-list">
                                     {AllBoard.map(boardItem => (
-                                        <tr key={boardItem.id} onClick={() => navigate(`/board/${boardItem.boardId}`)}>
-                                            <td>{boardItem.boardId}</td>
-                                            <td> {boardItem.title}</td>
-                                            <td>{boardItem.content}</td>
-                                            <td>{boardItem.createdDate}</td>
-                                            <td>{boardItem.modifiedDate}</td>
-                                        </tr>
+                                        <Card key={boardItem.boardId} className="board-card">
+                                              {/*onClick={() => navigate(`/board/${boardItem.boardId}`)}>*/}
+                                            <div>
+                                                <Typography variant="h6">{boardItem.title}</Typography>
+                                                <Typography variant="body1">{boardItem.createdDate}</Typography>
+                                            </div>
+                                            <AspectRatio minHeight="120px" maxHeight="200px">
+                                                <img src={boardItem.files[0]} alt="" className="card-image"/>
+                                            </AspectRatio>
+                                            <CardContent>
+                                                <Typography variant="body1">{boardItem.content}</Typography>
+                                                <Button variant="outlined" color="primary"
+                                                        onClick={() => navigate(`/board/${boardItem.boardId}`)}>Explore</Button>
+                                            </CardContent>
+                                        </Card>
                                     ))}
+                                </div>
 
-                                    </tbody>
-                                </Table>
-                                <div className="pagination-wrapper flex justify-center">
+                                <div className="pagination-wrapper">
                                     <Pagination className="pagination"
                                                 activePage={page}
                                                 itemsCountPerPage={pageSize}

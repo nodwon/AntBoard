@@ -12,3 +12,29 @@ main {
     display: flex;
     justify-content: center;
 }
+.basic-card {
+    width: 320px;
+}
+
+.bookmark-icon {
+    position: absolute;
+    top: 0.875rem;
+    right: 0.5rem;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.explore-button {
+    margin-left: auto;
+    align-self: center;
+    font-weight: 600;
+}
