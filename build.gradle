@@ -27,7 +27,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.658'
 
     testImplementation 'org.springframework.security:spring-security-test'

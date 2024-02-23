@@ -13,21 +13,21 @@ public class FileUploadResponseDto {
 
     private Long fileId;
     private String FileName;
-    private String filePath;
+    private byte[] base64Data;
     private String fileType;
 
     @Builder
-    public FileUploadResponseDto(Long fileId, String fileName, String filePath, String fileType){
+    public FileUploadResponseDto(Long fileId, String fileName, byte[] base64Data, String fileType){
         this.fileId =fileId;
         this.FileName = fileName;
-        this.filePath = filePath;
+        this.base64Data = base64Data;
         this.fileType = fileType;
     }
     public static FileUploadResponseDto from(FileEntity file){
         return FileUploadResponseDto.builder()
                 .fileId(file.getId())
                 .fileName(file.getFileName())
-                .filePath(file.getFilePath())
+                .base64Data(file.getBase64Data())
                 .fileType(file.getFileType())
                 .build();
     }

@@ -24,7 +24,7 @@ public class AmazonS3ResourceStorage {
 
     private final AmazonS3 amazonS3; // AmazonS3 인터페이스를 주입 받음
 
-    @Value("${cloud.aws.s3.bucket.name}")
+    @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
     @Value("${project.folderPath}")

@@ -1,4 +1,4 @@
-package com.example.antboard.common;
+package com.example.antboard.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;

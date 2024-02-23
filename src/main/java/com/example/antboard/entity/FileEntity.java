@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Base64;
+
 @Entity
 @Table(name = "FILE")
 @Getter
@@ -21,21 +23,26 @@ public class FileEntity extends BaseEntity {
     @Column(name = "FILE_TYPE")
     private String fileType;
 
-    @Column(name = "FILE_PATH")
-    private String filePath;
+    @Lob @Basic(fetch = FetchType.LAZY)
+    @Column(length=100000)
+    private byte[] base64Data;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BOARD_ID")
     public Board board;
 
     @Builder
-    public FileEntity(Long id, String FileName, String filePath, String fileType){
+    public FileEntity(Long id, String FileName, String filePath, String fileType,byte[] base64Data){
         this.id= id;
         this.FileName = FileName;
-        this.filePath = filePath;
         this.fileType = fileType;
+        this.base64Data = base64Data;
     }
     public void setMappingBoard(Board board) {
         this.board = board;
+    }
+    // Base64 데이터를 byte 배열로 디코딩하여 반환
+    public byte[] getDecodedData() {
+        return Base64.getDecoder().decode(this.base64Data);
     }
 }

@@ -156,20 +156,22 @@ export default function Main() {
                                             Upload a file
                                             <VisuallyHiddenInput type="file" onChange={handleChangeFile} multiple/>
                                         </Button>
-                                        </form>
-                                            <div>
-                                                {files.map((file, index) => (
-                                                    <div key={index} style={{display: "flex", alignItems: "center"}}>
-                                                        <p>
-                                                            <strong>FileName:</strong> {file.name}
-                                                        </p>
-                                                        <button className="delete-button" type="button"
-                                                                onClick={() => handleRemoveFile(index)}>
-                                                            x
-                                                        </button>
-                                                    </div>
-                                                ))}
+                                    </form>
+                                    <div>
+                                        {files.map((file, index) => (
+                                            <div key={index} style={{display: "flex", alignItems: "center"}}>
+                                                <p>
+                                                    <strong>FileName:</strong> {file.name}
+                                                </p>
+                                                <img src={URL.createObjectURL(file)} alt="Uploaded File"
+                                                     style={{width: '50px', height: '50px'}}/>
+                                                <button className="delete-button" type="button"
+                                                        onClick={() => handleRemoveFile(index)}>
+                                                    x
+                                                </button>
                                             </div>
+                                        ))}
+                                    </div>
                                 </div>
                                 <div className="flex justify-between">
                                     <Button type="Sumbit" size="md" variant={variant} color="success"
@@ -181,29 +183,40 @@ export default function Main() {
                     </Grid>
                     {/* 두 번째 카드 (3/4 너비) */}
                     <Grid item xs={9}>
+
                         <Card>
                             <CardContent className="p-4">
                                 <div className="flex justify-between items-center mb-4">
                                     <Typography variant="h5" component="h2">나의 인증</Typography>
                                 </div>
                                 <div className="board-list">
-                                    {AllBoard.map(boardItem => (
-                                        <Card key={boardItem.boardId} className="board-card">
-                                              {/*onClick={() => navigate(`/board/${boardItem.boardId}`)}>*/}
-                                            <div>
-                                                <Typography variant="h6">{boardItem.title}</Typography>
-                                                <Typography variant="body1">{boardItem.createdDate}</Typography>
-                                            </div>
-                                            <AspectRatio minHeight="120px" maxHeight="200px">
-                                                <img src={boardItem.files[0]} alt="" className="card-image"/>
-                                            </AspectRatio>
-                                            <CardContent>
-                                                <Typography variant="body1">{boardItem.content}</Typography>
-                                                <Button variant="outlined" color="primary"
-                                                        onClick={() => navigate(`/board/${boardItem.boardId}`)}>Explore</Button>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
+                                    <Grid container spacing={2}>
+                                        {AllBoard.map(boardItem => (
+                                            <Grid item xs={4} key={boardItem.boardId}>
+                                                <Card className="board-card">
+                                                    <div>
+                                                        <Typography variant="h6">{boardItem.title}</Typography>
+                                                        <Typography variant="body1">{boardItem.createdDate}</Typography>
+                                                    </div>
+                                                    <AspectRatio minHeight="120px" maxHeight="200px">
+                                                        {files && files.length > 0 ? (
+                                                            files.map((file, index) => (
+                                                                <img key={index} src={URL.createObjectURL(file)} alt="" className="card-image"/>
+                                                            ))
+                                                        ) : (
+                                                            <div>No image available</div>
+                                                        )}
+                                                    </AspectRatio>
+
+                                                    <CardContent>
+                                                        <Typography variant="body1">{boardItem.content}</Typography>
+                                                        <Button variant="outlined" color="primary"
+                                                                onClick={() => navigate(`/board/${boardItem.boardId}`)}>Explore</Button>
+                                                    </CardContent>
+                                                </Card>
+                                            </Grid>
+                                        ))}
+                                    </Grid>
                                 </div>
 
                                 <div className="pagination-wrapper">
@@ -222,5 +235,6 @@ export default function Main() {
                 </Grid>
             </div>
         </div>
-    );
+    )
+        ;
 }
