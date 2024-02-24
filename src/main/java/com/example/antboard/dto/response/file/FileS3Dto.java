@@ -9,30 +9,26 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FileUploadResponseDto {
-
+public class FileS3Dto {
     private Long fileId;
     private String FileName;
-    private byte[] base64Data;
     private String fileType;
     private String S3url;
 
     @Builder
-    public FileUploadResponseDto(Long fileId, String fileName, byte[] base64Data, String fileType){
-        this.fileId =fileId;
+    public FileS3Dto(Long fileId, String fileName, String fileType, String S3url) {
+        this.fileId = fileId;
         this.FileName = fileName;
-        this.base64Data = base64Data;
         this.fileType = fileType;
+        this.S3url = S3url;
+
     }
 
-    public static FileUploadResponseDto from(FileEntity file){
-        return FileUploadResponseDto.builder()
+    public static FileS3Dto from(FileEntity file) {
+        return FileS3Dto.builder()
                 .fileId(file.getId())
                 .fileName(file.getFileName())
-                .base64Data(file.getBase64Data())
                 .fileType(file.getFileType())
                 .build();
     }
-
-
 }

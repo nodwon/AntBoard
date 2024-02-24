@@ -1,4 +1,4 @@
-package com.example.antboard.security;
+package com.example.antboard.Security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

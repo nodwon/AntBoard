@@ -61,7 +61,7 @@ export default function Main() {
                 // 게시글이 생성된 후에 파일 업로드 수행
                 const fd = new FormData();
                 files.forEach((file) => fd.append("file", file));
-                axios.post(`http://localhost:8080/board/${boardId}/file/upload`, fd)
+                axios.post(`http://localhost:8080/board/${boardId}/file/S3upload`, fd)
                     .then((resp) => {
                         console.log("[file.js] fileUpload() success :D");
                         console.log(resp.data);

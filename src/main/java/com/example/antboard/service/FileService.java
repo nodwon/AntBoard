@@ -2,6 +2,7 @@ package com.example.antboard.service;
 
 import com.example.antboard.common.ResourceNotFoundException;
 import com.example.antboard.dto.response.file.FileDownloadResponseDto;
+import com.example.antboard.dto.response.file.FileS3Dto;
 import com.example.antboard.dto.response.file.FileUploadResponseDto;
 import com.example.antboard.entity.Board;
 import com.example.antboard.entity.FileEntity;
@@ -9,7 +10,6 @@ import com.example.antboard.repository.BoardRepository;
 import com.example.antboard.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 public class FileService {
     private final BoardRepository boardRepository;
     private final FileRepository fileRepository;
-
 
 
     @Transactional
@@ -85,6 +83,32 @@ public class FileService {
             default -> MediaType.APPLICATION_OCTET_STREAM_VALUE;
         };
     }
+    @Transactional
+    public List<FileUploadResponseDto> saveS3(Long boardId, List<FileS3Dto> save3File) throws IOException {
+        Board board = boardRepository.findById(boardId).orElseThrow(() ->
+                new ResourceNotFoundException("Board", "boardID", String.valueOf(boardId)));
+        List<FileUploadResponseDto> responseDtoList = new ArrayList<>();
+        for (FileS3Dto fileS3Dto : save3File) {
+            FileUploadResponseDto responseDto = FileUploadResponseDto.builder()
+                    .fileId(fileS3Dto.getFileId()) // 파일의 ID
+                    .fileName(fileS3Dto.getFileName()) // 파일 이름
+                    .fileType(fileS3Dto.getFileType()) // 파일 유형
+                    .build();
+            responseDtoList.add(responseDto);
+
+        }
+        return responseDtoList; // 저장된 파일 정보를 반환
+
+    }
+    @Transactional
+    public void S3delete(Long fileId) {
+        FileEntity file = fileRepository.findById(fileId).orElseThrow(
+                () -> new ResourceNotFoundException("File", "File Id", String.valueOf(fileId))
+        );
+        fileRepository.delete(file);
+    }
+
+
 }
 
 
