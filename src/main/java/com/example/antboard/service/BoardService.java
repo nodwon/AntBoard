@@ -25,6 +25,7 @@ import java.util.List;
 public class BoardService {
     private final BoardRepository boardRepository;
     //게시글 페이징 리스트
+    @Transactional
     public Page<BoardListResponse> getAllBoards(Pageable pageable) {
         Page<Board> boards = boardRepository.findAll(pageable);
         List<BoardListResponse> list =boards.getContent().stream()
@@ -34,6 +35,7 @@ public class BoardService {
     }
 
     //게시글 가져오기
+    @Transactional
     public BoardDetailResponseDto getBoard(Long boardId){
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다"+boardId));

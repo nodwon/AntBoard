@@ -3,7 +3,7 @@ import Button from '@mui/joy/Button';
 import {Card, CardContent, Grid, Input, Pagination, styled, Typography} from '@mui/material'; // Import Card and Typography components
 import "../../css/home.css";
 import * as PropTypes from "prop-types";
-import {AspectRatio, SvgIcon} from "@mui/joy";
+import {AspectRatio, Stack, SvgIcon} from "@mui/joy";
 import axios from "axios";
 import Textarea from "@mui/joy/Textarea";
 import {useNavigate} from "react-router-dom";
@@ -28,7 +28,13 @@ export default function Main() {
     const [content, setContent] = useState("");
     const navigate = useNavigate();
     const [files, setFiles] = useState([]); // 추가: 파일 목록 상태 추가
-
+    //Paging
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
+    const [totalPages, setTotalPages] = useState(5);
+    const [totalCnt, setTotalCnt] = useState(0);
+    const [AllBoard, setBoardList] = useState([]);
+        // 게시글 전체조회
 
     const changeTitle = (event) => {
         setTitle(event.target.value);
@@ -61,12 +67,11 @@ export default function Main() {
                 // 게시글이 생성된 후에 파일 업로드 수행
                 const fd = new FormData();
                 files.forEach((file) => fd.append("file", file));
-                axios.post(`http://localhost:8080/board/${boardId}/file/S3upload`, fd)
+                axios.post(`http://localhost:8080/board/${boardId}/file/upload`, fd)
                     .then((resp) => {
                         console.log("[file.js] fileUpload() success :D");
                         console.log(resp.data);
                         alert("파일 업로드 성공 :D");
-                        changePage();
                     })
                     .catch((err) => {
                         console.log(err);
@@ -80,20 +85,13 @@ export default function Main() {
                 console.log(err);
             });
     }
-    //Paging
-    const [page, setpage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
-    const [totalPages, setTotalPages] = useState(0);
-    const [totalCnt, setTotalCnt] = useState(0);
-    const [AllBoard, setBoardList] = useState([]);
-    // 게시글 전체조회
+
     const BoardList = async (page) => {
         try {
             const response = await axios.get("http://localhost:8080/board/list", {
-                params: {"page": page - 1},
+                params: { page: parseInt(page)},
             });
             console.log(response.data);
-
             setBoardList(response.data.content);
             setPageSize(response.data.pageSize);
             setTotalPages(response.data.totalPages);
@@ -108,10 +106,12 @@ export default function Main() {
         BoardList(1);
     }, []);
     // 페이징 보여주기
+// 페이징 보여주기
     const changePage = (page) => {
-        setpage(page);
+        setPage(page);
         BoardList(page); // 페이지 파라미터를 전달
     };
+
 
 
     return (
@@ -142,8 +142,7 @@ export default function Main() {
                                                         fill="none"
                                                         viewBox="0 0 24 24"
                                                         strokeWidth={1.5}
-                                                        stroke="currentColor"
-                                                    >
+                                                        stroke="currentColor">
                                                         <path
                                                             strokeLinecap="round"
                                                             strokeLinejoin="round"
@@ -151,10 +150,7 @@ export default function Main() {
                                                         />
                                                     </svg>
                                                 </SvgIcon>
-                                            }
-                                        >
-                                            Upload a file
-                                            <VisuallyHiddenInput type="file" onChange={handleChangeFile} multiple/>
+                                            }>Upload a file <VisuallyHiddenInput type="file" onChange={handleChangeFile} multiple/>
                                         </Button>
                                     </form>
                                     <div>
@@ -198,10 +194,11 @@ export default function Main() {
                                                         <Typography variant="h6">{boardItem.title}</Typography>
                                                         <Typography variant="body1">{boardItem.createdDate}</Typography>
                                                     </div>
-                                                    <AspectRatio minHeight="120px" maxHeight="200px">
+                                                    <AspectRatio minHeight="100px" maxHeight="150px">
                                                         {files && files.length > 0 ? (
                                                             files.map((file, index) => (
-                                                                <img key={index} src={URL.createObjectURL(file)} alt="" className="card-image"/>
+                                                                <img key={index} src={URL.createObjectURL(file)} alt=""
+                                                                     className="card-image"/>
                                                             ))
                                                         ) : (
                                                             <div>No image available</div>
@@ -218,23 +215,18 @@ export default function Main() {
                                         ))}
                                     </Grid>
                                 </div>
-
-                                <div className="pagination-wrapper">
-                                    <Pagination className="pagination"
-                                                activePage={page}
-                                                itemsCountPerPage={pageSize}
-                                                totalItemsCount={totalCnt}
-                                                pageRangeDisplayed={totalPages}
-                                                prevPageText={"‹"}
-                                                nextPageText={"›"}
-                                                onChange={changePage} variant="outlined" shape="rounded"/>
-                                </div>
+                                <Stack spacing={2}>
+                                    <Pagination  totalPages={totalPages}
+                                                 count={totalPages}
+                                                 page = {page}
+                                                 totalItemsCount={totalCnt}
+                                                 onChange={changePage} variant="outlined" color="secondary" />
+                                </Stack>
                             </CardContent>
                         </Card>
                     </Grid>
                 </Grid>
             </div>
         </div>
-    )
-        ;
+    );
 }
