@@ -5,8 +5,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Base64;
+import lombok.Setter;
 
 @Entity
 @Table(name = "FILE")
@@ -23,9 +22,10 @@ public class FileEntity extends BaseEntity {
     @Column(name = "FILE_TYPE")
     private String fileType;
 
+    @Setter
     @Lob @Basic(fetch = FetchType.LAZY)
     @Column(length=100000)
-    private byte[] base64Data;
+    private String base64Data;
 
     @Column(name = "s3Url")
     private String s3Url;
@@ -35,26 +35,27 @@ public class FileEntity extends BaseEntity {
     public Board board;
 
     @Builder
-    public FileEntity(Long id, String FileName, String fileType,byte[] base64Data){
+    public FileEntity(Long id, String FileName, String fileType,String base64Data){
         this.id= id;
         this.FileName = FileName;
         this.fileType = fileType;
         this.base64Data = base64Data;
     }
-    @Builder
-    public  FileEntity(Long id, String FileName, String fileType, String s3Url){
-        this.id= id;
-        this.FileName = FileName;
-        this.fileType = fileType;
-        this.s3Url =s3Url;
-    }
+//    @Builder
+//    public  FileEntity(Long id, String FileName, String fileType, String s3Url){
+//        this.id= id;
+//        this.FileName = FileName;
+//        this.fileType = fileType;
+//        this.s3Url =s3Url;
+//    }
 
 
     public void setMappingBoard(Board board) {
         this.board = board;
     }
     // Base64 데이터를 byte 배열로 디코딩하여 반환
-    public byte[] getDecodedData() {
-        return Base64.getDecoder().decode(this.base64Data);
-    }
+//    public byte[] getDecodedData() {
+//        return Base64.getDecoder().decode(this.base64Data);
+//    }
+
 }

@@ -39,6 +39,7 @@ export default function Main() {
     const changeTitle = (event) => {
         setTitle(event.target.value);
     };
+
     const changeContent = (event) => {
         setContent(event.target.value);
     };
@@ -50,6 +51,15 @@ export default function Main() {
 
     const handleRemoveFile = (index) => {
         setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    };
+    // 첫 로딩 시, 한 페이지만 가져옴
+    useEffect(() => {
+        BoardList(1);
+    }, []);
+    // 페이징 보여주기
+    const changePage = async (event, value) => {
+        setPage(value)
+        BoardList(value); // 페이지 파라미터를 전달
     };
 
     const createBoard = async () => {
@@ -89,8 +99,9 @@ export default function Main() {
     const BoardList = async (page) => {
         try {
             const response = await axios.get("http://localhost:8080/board/list", {
-                params: { page: parseInt(page)},
+                params: { page: page-1},
             });
+            console.log(page);
             console.log(response.data);
             setBoardList(response.data.content);
             setPageSize(response.data.pageSize);
@@ -101,16 +112,6 @@ export default function Main() {
         }
     };
 
-    // 첫 로딩 시, 한 페이지만 가져옴
-    useEffect(() => {
-        BoardList(1);
-    }, []);
-    // 페이징 보여주기
-// 페이징 보여주기
-    const changePage = (page) => {
-        setPage(page);
-        BoardList(page); // 페이지 파라미터를 전달
-    };
 
 
 
@@ -195,10 +196,16 @@ export default function Main() {
                                                         <Typography variant="body1">{boardItem.createdDate}</Typography>
                                                     </div>
                                                     <AspectRatio minHeight="100px" maxHeight="150px">
+                                                        {
+                                                            AllBoard ? <div>yes file{JSON.stringify(AllBoard)}</div> : <div>no file</div>
+                                                        }
                                                         {files && files.length > 0 ? (
                                                             files.map((file, index) => (
-                                                                <img key={index} src={URL.createObjectURL(file)} alt=""
-                                                                     className="card-image"/>
+                                                                <img
+                                                                    key={index}
+                                                                    src={`data:image/jpeg;base64,${file}`}
+                                                                    alt=""
+                                                                />
                                                             ))
                                                         ) : (
                                                             <div>No image available</div>
@@ -216,12 +223,17 @@ export default function Main() {
                                     </Grid>
                                 </div>
                                 <Stack spacing={2}>
-                                    <Pagination  totalPages={totalPages}
-                                                 count={totalPages}
-                                                 page = {page}
-                                                 totalItemsCount={totalCnt}
-                                                 onChange={changePage} variant="outlined" color="secondary" />
+                                    <Pagination
+                                        totalPages={totalPages}
+                                        activePage={page} // 현재 페이지 번호를 activePage prop에 전달
+                                        count={totalPages}
+                                        totalItemsCount={totalCnt}
+                                        onChange={changePage}
+                                        variant="outlined"
+                                        color="secondary"
+                                    />
                                 </Stack>
+
                             </CardContent>
                         </Card>
                     </Grid>

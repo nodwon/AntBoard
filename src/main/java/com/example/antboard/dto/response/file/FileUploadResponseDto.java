@@ -13,12 +13,12 @@ public class FileUploadResponseDto {
 
     private Long fileId;
     private String FileName;
-    private byte[] base64Data;
+    private String base64Data;
     private String fileType;
     private String S3url;
 
     @Builder
-    public FileUploadResponseDto(Long fileId, String fileName, byte[] base64Data, String fileType){
+    public FileUploadResponseDto(Long fileId, String fileName, String base64Data, String fileType){
         this.fileId =fileId;
         this.FileName = fileName;
         this.base64Data = base64Data;

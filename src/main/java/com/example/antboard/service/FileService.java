@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,10 +40,11 @@ public class FileService {
             // create File Entity & 연관관게 매핑
             FileEntity saveFile = FileEntity.builder()
                     .FileName(multipartFile.getOriginalFilename())
-                    .base64Data(multipartFile.getBytes())
                     .fileType(multipartFile.getContentType())
                     .build();
             saveFile.setMappingBoard(board);
+            // 파일 데이터를 Base64로 인코딩하여 저장
+            saveFile.setBase64Data(Base64.getEncoder().encodeToString(multipartFile.getBytes()));
             // File Entity 저장 및 DTO로 변환 전송
 
             fileEntities.add(fileRepository.save(saveFile));
@@ -61,7 +63,7 @@ public class FileService {
                 FileNotFoundException::new
         );
         String contentType = determineContentType(file.getFileType());
-        byte[] content = file.getDecodedData();
+        String content = file.getBase64Data();
         return FileDownloadResponseDto.from(file, contentType, content);
     }
 
@@ -69,7 +71,7 @@ public class FileService {
         FileEntity file = fileRepository.findById(fileId).orElseThrow(
                 () -> new ResourceNotFoundException("File", "File Id", String.valueOf(fileId))
         );
-        byte[] content = file.getDecodedData();
+//        byte[] content = file.getDecodedData();
 
         fileRepository.delete(file);
     }
@@ -84,7 +86,7 @@ public class FileService {
         };
     }
     @Transactional
-    public List<FileUploadResponseDto> saveS3(Long boardId, List<FileS3Dto> save3File) throws IOException {
+    public List<FileUploadResponseDto> saveS3(Long boardId, List<FileS3Dto> save3File) {
         Board board = boardRepository.findById(boardId).orElseThrow(() ->
                 new ResourceNotFoundException("Board", "boardID", String.valueOf(boardId)));
         List<FileUploadResponseDto> responseDtoList = new ArrayList<>();

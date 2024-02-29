@@ -40,7 +40,7 @@ public class FileController {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.parseMediaType(downloadDto.getFileType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; fileName=\"" + downloadDto.getFilename() + "\"")
-                .body(new ByteArrayResource(downloadDto.getContent()));
+                .body(new ByteArrayResource(downloadDto.getContent().getBytes()));
     }
     @DeleteMapping("/delete")
     public ResponseEntity<Long> delete(@RequestParam("fileId") Long fileId){
