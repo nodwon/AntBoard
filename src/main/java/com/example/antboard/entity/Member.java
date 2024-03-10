@@ -27,6 +27,9 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String username;
 
+    @Column(nullable = false)
+    private String role;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Board> boards = new ArrayList<>();
 
@@ -35,10 +38,11 @@ public class Member extends BaseEntity {
 
     //== 생성자 Builder ==//
     @Builder
-    public Member(String email, String password, String username) {
+    public Member(String email, String password, String username, String role) {
         this.email = email;
         this.password = password;
         this.username = username;
+        this.role = role;
     }
 
     //== update ==//

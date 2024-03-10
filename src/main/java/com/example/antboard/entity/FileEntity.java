@@ -53,9 +53,7 @@ public class FileEntity extends BaseEntity {
     public void setMappingBoard(Board board) {
         this.board = board;
     }
-    // Base64 데이터를 byte 배열로 디코딩하여 반환
-//    public byte[] getDecodedData() {
-//        return Base64.getDecoder().decode(this.base64Data);
-//    }
+
+
 
 }
