@@ -1,6 +1,7 @@
 package com.example.antboard.entity;
 
 import com.example.antboard.common.BaseEntity;
+import com.example.antboard.common.Role;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,8 +28,8 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String username;
 
-    @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Board> boards = new ArrayList<>();
@@ -38,7 +39,7 @@ public class Member extends BaseEntity {
 
     //== 생성자 Builder ==//
     @Builder
-    public Member(String email, String password, String username, String role) {
+    public Member(String email, String password, String username, Role role) {
         this.email = email;
         this.password = password;
         this.username = username;
