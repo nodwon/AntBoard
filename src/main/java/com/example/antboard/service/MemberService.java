@@ -2,7 +2,7 @@ package com.example.antboard.service;
 
 import com.example.antboard.common.exception.MemberException;
 import com.example.antboard.dto.request.member.MemberRegisterDto;
-import com.example.antboard.dto.request.member.MemberResponseDto;
+import com.example.antboard.dto.response.member.MemberResponseDto;
 import com.example.antboard.entity.Member;
 import com.example.antboard.repository.MemberRepository;
 import org.springframework.http.HttpStatus;

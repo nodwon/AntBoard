@@ -1,4 +1,4 @@
-package com.example.antboard.dto.request.member;
+package com.example.antboard.dto.response.member;
 import com.example.antboard.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
