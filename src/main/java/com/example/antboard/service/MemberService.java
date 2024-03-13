@@ -8,6 +8,11 @@ import com.example.antboard.dto.response.member.MemberTokenDto;
 import com.example.antboard.entity.Member;
 import com.example.antboard.repository.MemberRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +27,9 @@ public class MemberService {
 
     private final PasswordEncoder encoder;
     private final MemberRepository memberRepository;
+
+    private final AuthenticationManager authenticationManager;
+
 
     public HttpStatus checkIdDuplicate(String email){
         isExistEmail(email);
@@ -49,9 +57,19 @@ public class MemberService {
         }
     }
     public MemberTokenDto login(JoinDto joinDto) {
+        authenicate(joinDto.getEmail(), joinDto.getPassword());
+        UserDetails userDetails =
     }
     public MemberResponseDto check(Member member, String password) {
     }
 
-
+    private  void authenicate(String email, String pwd){
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, pwd));
+        }catch (DisabledException e){
+            throw new MemberException("인증되지않는 아이디입니다.", HttpStatus.BAD_REQUEST);
+        }catch (BadCredentialsException e){
+            throw new MemberException("비밀번호가 일치하지 않습니다.",HttpStatus.BAD_REQUEST);
+        }
+    }
 }
