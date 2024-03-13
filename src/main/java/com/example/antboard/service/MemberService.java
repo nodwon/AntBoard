@@ -1,8 +1,10 @@
 package com.example.antboard.service;
 
 import com.example.antboard.common.exception.MemberException;
+import com.example.antboard.dto.request.member.JoinDto;
 import com.example.antboard.dto.request.member.MemberRegisterDto;
 import com.example.antboard.dto.response.member.MemberResponseDto;
+import com.example.antboard.dto.response.member.MemberTokenDto;
 import com.example.antboard.entity.Member;
 import com.example.antboard.repository.MemberRepository;
 import org.springframework.http.HttpStatus;
@@ -46,5 +48,10 @@ public class MemberService {
             throw new MemberException("이미사용중인 이메일입니다.",HttpStatus.BAD_REQUEST);
         }
     }
+    public MemberTokenDto login(JoinDto joinDto) {
+    }
+    public MemberResponseDto check(Member member, String password) {
+    }
+
 
 }
