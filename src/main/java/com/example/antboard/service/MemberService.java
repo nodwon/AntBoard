@@ -1,6 +1,7 @@
 package com.example.antboard.service;
 
 import com.example.antboard.Security.jwt.CustomUserDetailsService;
+import com.example.antboard.Security.jwt.JwtTokenUtil;
 import com.example.antboard.common.exception.MemberException;
 import com.example.antboard.dto.request.member.JoinDto;
 import com.example.antboard.dto.request.member.MemberRegisterDto;
@@ -31,6 +32,8 @@ public class MemberService {
 
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService customUserDetailsService;
+    private final JwtTokenUtil jwtTokenUtil;
+
 
     public HttpStatus checkIdDuplicate(String email){
         isExistEmail(email);
@@ -61,6 +64,7 @@ public class MemberService {
         authenicate(joinDto.getEmail(), joinDto.getPassword());
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(joinDto.getEmail());
         checkPassword(joinDto.getPassword(), userDetails.getPassword());
+        String token = jwtTokenUtil.ge
     }
     public MemberResponseDto check(Member member, String password) {
     }
