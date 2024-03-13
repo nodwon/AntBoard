@@ -1,5 +1,6 @@
 package com.example.antboard.service;
 
+import com.example.antboard.Security.jwt.CustomUserDetailsService;
 import com.example.antboard.common.exception.MemberException;
 import com.example.antboard.dto.request.member.JoinDto;
 import com.example.antboard.dto.request.member.MemberRegisterDto;
@@ -29,7 +30,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private final AuthenticationManager authenticationManager;
-
+    private final CustomUserDetailsService customUserDetailsService;
 
     public HttpStatus checkIdDuplicate(String email){
         isExistEmail(email);
@@ -58,7 +59,8 @@ public class MemberService {
     }
     public MemberTokenDto login(JoinDto joinDto) {
         authenicate(joinDto.getEmail(), joinDto.getPassword());
-        UserDetails userDetails =
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(joinDto.getEmail());
+        checkPassword(joinDto.getPassword(), userDetails.getPassword());
     }
     public MemberResponseDto check(Member member, String password) {
     }
