@@ -28,8 +28,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtUtil;
 
-    @Value("${jwt.header}") private String HEADER_STRING;
-    @Value("${jwt.prefix}") private String TOKEN_PREFIX;
+    @Value("${spring.jwt.header}") private String HEADER_STRING;
+    @Value("${spring.jwt.prefix}") private String TOKEN_PREFIX;
 
 
     @Override

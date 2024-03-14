@@ -2,6 +2,7 @@ package com.example.antboard.controller;
 
 import com.example.antboard.dto.request.member.JoinDto;
 import com.example.antboard.dto.request.member.MemberRegisterDto;
+import com.example.antboard.dto.response.member.MemberUpdateDto;
 import com.example.antboard.dto.response.member.MemberResponseDto;
 import com.example.antboard.dto.response.member.MemberTokenDto;
 import com.example.antboard.entity.Member;
@@ -46,5 +47,11 @@ public class MemberController {
         MemberResponseDto info = memberService.check(member, password);
         return ResponseEntity.status(HttpStatus.OK).body(info);
     }
-
+    @PutMapping("/update")
+    public ResponseEntity<MemberResponseDto> update(
+            @AuthenticationPrincipal Member member,
+            @RequestBody MemberUpdateDto memberUpdateDTO) {
+        MemberResponseDto memberUpdate = memberService.update(member, memberUpdateDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(memberUpdate);
+    }
 }

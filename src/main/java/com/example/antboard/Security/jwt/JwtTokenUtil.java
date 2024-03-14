@@ -42,13 +42,13 @@ public class JwtTokenUtil {
         return (username.equals(userDetails.getUsername()) && !isExpired(token));
     }
 
-    public String createJwt(String username, String role) {
+    public String createJwt(String username, String role, Long expiredMs) {
 
         return Jwts.builder()
                 .claim("username", username)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)
                 .compact();
     }
@@ -56,6 +56,7 @@ public class JwtTokenUtil {
 
     public String generatecreateJwt(UserDetails userDetails) {
         String role = String.valueOf(Role.ADMIN);
-        return createJwt(userDetails.getUsername(),role);
+        Long expiredMs = 60 * 60 * 10L;
+        return createJwt(userDetails.getUsername(),role,expiredMs);
     }
 }

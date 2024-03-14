@@ -2,11 +2,13 @@ package com.example.antboard.service;
 
 import com.example.antboard.Security.jwt.CustomUserDetailsService;
 import com.example.antboard.Security.jwt.JwtTokenUtil;
+import com.example.antboard.common.ResourceNotFoundException;
 import com.example.antboard.common.exception.MemberException;
 import com.example.antboard.dto.request.member.JoinDto;
 import com.example.antboard.dto.request.member.MemberRegisterDto;
 import com.example.antboard.dto.response.member.MemberResponseDto;
 import com.example.antboard.dto.response.member.MemberTokenDto;
+import com.example.antboard.dto.response.member.MemberUpdateDto;
 import com.example.antboard.entity.Member;
 import com.example.antboard.repository.MemberRepository;
 import org.springframework.http.HttpStatus;
@@ -35,9 +37,8 @@ public class MemberService {
     private final JwtTokenUtil jwtTokenUtil;
 
 
-    public HttpStatus checkIdDuplicate(String email){
+    public void checkIdDuplicate(String email){
         isExistEmail(email);
-        return HttpStatus.OK;
     }
     public MemberResponseDto register(MemberRegisterDto registerDto){
         isExistEmail(registerDto.getEmail());
@@ -85,12 +86,22 @@ public class MemberService {
     }
     /**
      * 사용자가 입력한 비번과 DB에 저장된 비번이 같은지 체크 : 인코딩 확인
-     * @param rawPassword
-     * @param encodedPassword
      */
     private void checkEncodePassword(String rawPassword, String encodedPassword) {
         if (!encoder.matches(rawPassword, encodedPassword)) {
             throw new MemberException("패스워드 불일치", HttpStatus.BAD_REQUEST);
         }
     }
+
+    public MemberResponseDto update(Member member, MemberUpdateDto updateDto) {
+        checkPassword(updateDto.getPassword(), updateDto.getPasswordCheck());
+        String encodePwd = encoder.encode(updateDto.getPassword());
+        Member updateMember =  memberRepository.findByEmail(member.getEmail()).orElseThrow(
+                () -> new ResourceNotFoundException("Member", "Member Email", member.getEmail())
+        );
+        updateMember.update(encodePwd, updateDto.getUsername());
+        return MemberResponseDto.from(updateMember);
+    }
+
+
 }
