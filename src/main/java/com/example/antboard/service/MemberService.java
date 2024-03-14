@@ -61,21 +61,36 @@ public class MemberService {
         }
     }
     public MemberTokenDto login(JoinDto joinDto) {
-        authenicate(joinDto.getEmail(), joinDto.getPassword());
+        authenticate(joinDto.getEmail(), joinDto.getPassword());
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(joinDto.getEmail());
         checkPassword(joinDto.getPassword(), userDetails.getPassword());
-        String token = jwtTokenUtil.ge
+        String token = jwtTokenUtil.generatecreateJwt(userDetails);
+        return MemberTokenDto.from(userDetails, token);
+
     }
     public MemberResponseDto check(Member member, String password) {
+        Member checkMember = (Member) customUserDetailsService.loadUserByUsername(member.getEmail());
+        checkEncodePassword(password, checkMember.getPassword());
+        return MemberResponseDto.from(checkMember);
     }
 
-    private  void authenicate(String email, String pwd){
+    private  void authenticate(String email, String pwd){
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, pwd));
         }catch (DisabledException e){
             throw new MemberException("인증되지않는 아이디입니다.", HttpStatus.BAD_REQUEST);
         }catch (BadCredentialsException e){
             throw new MemberException("비밀번호가 일치하지 않습니다.",HttpStatus.BAD_REQUEST);
+        }
+    }
+    /**
+     * 사용자가 입력한 비번과 DB에 저장된 비번이 같은지 체크 : 인코딩 확인
+     * @param rawPassword
+     * @param encodedPassword
+     */
+    private void checkEncodePassword(String rawPassword, String encodedPassword) {
+        if (!encoder.matches(rawPassword, encodedPassword)) {
+            throw new MemberException("패스워드 불일치", HttpStatus.BAD_REQUEST);
         }
     }
 }
