@@ -1,5 +1,6 @@
 package com.example.antboard.Security.jwt;
 
+import com.example.antboard.common.Role;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
@@ -42,7 +43,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String header = request.getHeader(HEADER_STRING);
         String username = null;
         String authToken = null;
-        String role = jwtUtil.getRole(authToken);
+//        String role = jwtUtil.getRole(String.valueOf(Role.ADMIN));
 
         if (header != null && header.startsWith(TOKEN_PREFIX)) {
             authToken = header.replace(TOKEN_PREFIX," ");

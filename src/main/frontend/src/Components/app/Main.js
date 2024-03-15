@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Button from '@mui/joy/Button';
 import {Card, CardContent, Grid, Input, Pagination, styled, Typography} from '@mui/material'; // Import Card and Typography components
 import "../../css/home.css";
@@ -7,6 +7,7 @@ import {AspectRatio, Stack, SvgIcon} from "@mui/joy";
 import axios from "axios";
 import Textarea from "@mui/joy/Textarea";
 import {useNavigate} from "react-router-dom";
+import {HttpHeadersContext} from "../../context/HttpHeadersProvider";
 
 const variant = "outlined"; // or any other variant you want to use
 const VisuallyHiddenInput = styled('input')`
@@ -34,7 +35,9 @@ export default function Main() {
     const [totalPages, setTotalPages] = useState(5);
     const [totalCnt, setTotalCnt] = useState(0);
     const [AllBoard, setBoardList] = useState([]);
-        // 게시글 전체조회
+    const { headers, setHeaders } = useContext(HttpHeadersContext);
+
+    // 게시글 전체조회
 
     const changeTitle = (event) => {
         setTitle(event.target.value);
@@ -61,7 +64,12 @@ export default function Main() {
         setPage(value)
         BoardList(value); // 페이지 파라미터를 전달
     };
-
+    useEffect(() => {
+        // 컴포넌트가 렌더링될 때마다 localStorage의 토큰 값으로 headers를 업데이트
+        setHeaders({
+            "Authorization": `Bearer ${localStorage.getItem("bbs_access_token")}`
+        });
+    }, []);
     const createBoard = async () => {
         const req = {
             title: title,

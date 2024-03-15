@@ -2,51 +2,53 @@ import * as React from 'react';
 import Footer from "./Components/app/Footer"
 import Header from "./Components/app/Header"
 import Main from "./Components/app/Main";
-import * as ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-
-import {
-    createBrowserRouter,
-    RouterProvider,
-} from "react-router-dom";
+import {BrowserRouter, createBrowserRouter, RouterProvider} from "react-router-dom";
 import "./index.css";
 import ErrorPage from "./Components/router/ErrorPage";
 import BoardDetail from "./Components/board/BoardDetail";
 import BoardUpdate from "./Components/board/BoardUpdate";
+import HttpHeadersProvider from "./context/HttpHeadersProvider";
+import AuthProvider from "./context/AuthProvider";
+
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <div>  <Header/>
+        element: <div><Header/>
             <div className="container">
 
                 <Main/>
             </div>
             <Footer/></div>,
-        errorElement : <ErrorPage/>
+        errorElement: <ErrorPage/>
     },
     {
         path: "/board/:boardId",
         element: <BoardDetail/>,
-        errorElement : <ErrorPage/>
+        errorElement: <ErrorPage/>
     },
     {
         path: "/board/:boardId/edit",
         element: <BoardUpdate/>,
-        errorElement : <ErrorPage/>
+        errorElement: <ErrorPage/>
     }
 ]);
+
 function App() {
-
-
 
 
     return (
         <div>
-            <React.StrictMode>
-                <RouterProvider router={router} />
-            </React.StrictMode>
-            <BrowserRouter>
-            </BrowserRouter>
+
+                <React.StrictMode>
+                    <RouterProvider router={router}/>
+                </React.StrictMode>
+                <BrowserRouter>
+                    <AuthProvider>
+                        <HttpHeadersProvider>
+                        </HttpHeadersProvider>
+                    </AuthProvider>
+                </BrowserRouter>
+
         </div>
 
     );

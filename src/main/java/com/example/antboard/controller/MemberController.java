@@ -29,7 +29,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PostMapping("/login")
+    @PostMapping("/register")
     public ResponseEntity<MemberResponseDto> register(@RequestBody MemberRegisterDto memberRegisterDto){
         MemberResponseDto success = memberService.register(memberRegisterDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(success);

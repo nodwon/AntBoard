@@ -28,7 +28,9 @@ public class JwtTokenUtil {
     }
 
     public String getRole(String token) {
-
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("Token cannot be null or empty");
+        }
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
 
