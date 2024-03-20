@@ -1,5 +1,6 @@
 package com.example.antboard.dto.response.member;
 
+import com.example.antboard.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,18 +13,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class MemberTokenDto {
 
     private String email;
-    private String token;
+    private String Role;
 
     @Builder
-    public MemberTokenDto(String email, String token){
+    public MemberTokenDto(String email, String Role){
         this.email = email;
-        this.token = token;
+        this.Role = Role;
     }
 
-    public static MemberTokenDto from(UserDetails member, String token){
+    public static MemberTokenDto from(String email, String Role){
         return MemberTokenDto.builder()
-                .email(member.getUsername())
-                .token(token)
+                .email(email)
+                .Role(Role)
                 .build();
     }
 }

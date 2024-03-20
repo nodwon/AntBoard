@@ -36,6 +36,7 @@ export default function Main() {
     const [totalCnt, setTotalCnt] = useState(0);
     const [AllBoard, setBoardList] = useState([]);
     const { headers, setHeaders } = useContext(HttpHeadersContext);
+    const jwtToken = localStorage.getItem("bbs_access_token");
 
     // 게시글 전체조회
 
@@ -75,7 +76,12 @@ export default function Main() {
             title: title,
             content: content
         };
-
+        const jwtToken = localStorage.getItem("bbs_access_token"); // JWT 토큰 가져오기
+        const config = {
+            headers: {
+                Authorization: `Bearer ${jwtToken}` // JWT를 헤더에 추가
+            }
+        };
         await axios.post("http://localhost:8080/board/write", req)
             .then((resp) => {
                 console.log(("success"));
@@ -120,6 +126,7 @@ export default function Main() {
         }
     };
 
+    axios.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
 
 
 

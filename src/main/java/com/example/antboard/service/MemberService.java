@@ -1,11 +1,10 @@
 package com.example.antboard.service;
 
 import com.example.antboard.Security.jwt.CustomUserDetailsService;
-import com.example.antboard.Security.jwt.JwtTokenUtil;
+import com.example.antboard.Security.jwt.JwtUtil;
 import com.example.antboard.common.ResourceNotFoundException;
 import com.example.antboard.common.exception.MemberException;
 import com.example.antboard.dto.request.member.JoinDto;
-import com.example.antboard.dto.request.member.MemberRegisterDto;
 import com.example.antboard.dto.response.member.MemberResponseDto;
 import com.example.antboard.dto.response.member.MemberTokenDto;
 import com.example.antboard.dto.response.member.MemberUpdateDto;
@@ -34,19 +33,20 @@ public class MemberService {
 
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService customUserDetailsService;
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtUtil jwtUtil;
 
 
     public void checkIdDuplicate(String email){
         isExistEmail(email);
     }
-    public MemberResponseDto register(MemberRegisterDto registerDto){
+
+    public MemberResponseDto register(JoinDto registerDto){
         isExistEmail(registerDto.getEmail());
         checkPassword(registerDto.getPassword(), registerDto.getPasswordCheck());
 
         String encodePwd = encoder.encode(registerDto.getPassword());
         registerDto.setPassword(encodePwd);
-        Member saveMember = memberRepository.save(MemberRegisterDto.of(registerDto));
+        Member saveMember = memberRepository.save(JoinDto.of(registerDto));
         return MemberResponseDto.from(saveMember);
     }
 
@@ -61,14 +61,14 @@ public class MemberService {
             throw new MemberException("이미사용중인 이메일입니다.",HttpStatus.BAD_REQUEST);
         }
     }
-    public MemberTokenDto login(JoinDto joinDto) {
-        authenticate(joinDto.getEmail(), joinDto.getPassword());
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(joinDto.getEmail());
-        checkPassword(joinDto.getPassword(), userDetails.getPassword());
-        String token = jwtTokenUtil.generatecreateJwt(userDetails);
-        return MemberTokenDto.from(userDetails, token);
-
-    }
+//    public MemberTokenDto login(JoinDto joinDto) {
+//        authenticate(joinDto.getEmail(), joinDto.getPassword());
+//        UserDetails userDetails = customUserDetailsService.loadUserByUsername(joinDto.getEmail());
+//        checkPassword(joinDto.getPassword(), userDetails.getPassword());
+//        String token = jwtUtil.generatecreateJwt(userDetails); // 사용자 정보 전달
+//        return MemberTokenDto.from(userDetails, token);
+//
+//    }
     public MemberResponseDto check(Member member, String password) {
         Member checkMember = (Member) customUserDetailsService.loadUserByUsername(member.getEmail());
         checkEncodePassword(password, checkMember.getPassword());

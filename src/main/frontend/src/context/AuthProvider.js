@@ -1,19 +1,17 @@
-import { createContext, useState } from "react";
+// AuthContext.js
 
-export const AuthContext = createContext();
+import React, { createContext, useState } from 'react';
 
-function AuthProvider({ children }) {
+const AuthContext = createContext();
 
-    const [auth, setAuth] = useState(localStorage.getItem("id"));
-
-    const value = {auth, setAuth };
+export const AuthProvider = ({ children }) => {
+    const [auth, setAuth] = useState(null);
 
     return (
-        <AuthContext.Provider value = {value}>
+        <AuthContext.Provider value={{ auth, setAuth }}>
             {children}
         </AuthContext.Provider>
     );
+};
 
-}
-
-export default AuthProvider;
+export default AuthContext;

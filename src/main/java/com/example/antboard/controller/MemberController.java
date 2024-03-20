@@ -1,7 +1,6 @@
 package com.example.antboard.controller;
 
 import com.example.antboard.dto.request.member.JoinDto;
-import com.example.antboard.dto.request.member.MemberRegisterDto;
 import com.example.antboard.dto.response.member.MemberUpdateDto;
 import com.example.antboard.dto.response.member.MemberResponseDto;
 import com.example.antboard.dto.response.member.MemberTokenDto;
@@ -30,16 +29,21 @@ public class MemberController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<MemberResponseDto> register(@RequestBody MemberRegisterDto memberRegisterDto){
-        MemberResponseDto success = memberService.register(memberRegisterDto);
+    public ResponseEntity<MemberResponseDto> register(@RequestBody JoinDto joinDto){
+        MemberResponseDto success = memberService.register(joinDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(success);
 
     }
-    @PostMapping("/login")
-    public ResponseEntity<MemberTokenDto> login(@RequestBody JoinDto joinDto) {
-        MemberTokenDto loginDTO = memberService.login(joinDto);
-        return ResponseEntity.status(HttpStatus.OK).header(loginDTO.getToken()).body(loginDTO);
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<MemberTokenDto> login(@RequestBody JoinDto joinDto) {
+//        MemberTokenDto loginDTO = memberService.login(joinDto);
+//        return ResponseEntity.status(HttpStatus.OK).header(loginDTO.getToken()).body(loginDTO);
+//    }
+//@PostMapping("/login")
+//public ResponseEntity<MemberTokenDto> login(@RequestBody JoinDto joinDto) {
+//    MemberTokenDto loginDTO = memberService.login(joinDto);
+//    return ResponseEntity.status(HttpStatus.OK).body(loginDTO);
+//}
 
     @PostMapping("/checkPwd")
     public ResponseEntity<MemberResponseDto> check(@AuthenticationPrincipal Member member, @RequestBody Map<String, String> request){

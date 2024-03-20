@@ -7,8 +7,9 @@ import "./index.css";
 import ErrorPage from "./Components/router/ErrorPage";
 import BoardDetail from "./Components/board/BoardDetail";
 import BoardUpdate from "./Components/board/BoardUpdate";
-import HttpHeadersProvider from "./context/HttpHeadersProvider";
+import HttpHeadersProvider, {HttpHeadersContext} from "./context/HttpHeadersProvider";
 import AuthProvider from "./context/AuthProvider";
+import {useState} from "react";
 
 const router = createBrowserRouter([
     {
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage/>
     }
 ]);
+
 
 function App() {
 
