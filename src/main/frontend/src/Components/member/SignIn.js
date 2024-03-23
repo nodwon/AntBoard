@@ -12,6 +12,9 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
+import {useNavigate} from "react-router-dom";
+import {useState} from "react";
+import axios from "axios";
 
 function Copyright(props) {
     return (
@@ -30,8 +33,65 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-function SignIn() {
+class Cookies {
+}
 
+function SignIn() {
+    const navigate = useNavigate();
+
+    const [id, setId] = useState("");
+    const [pwd, setPwd] = useState("");
+
+    const changeId = (event) => {
+        setId(event.target.value);
+    }
+
+    const changePwd = (event) => {
+        setPwd(event.target.value);
+    }
+    const cookies = new Cookies();
+
+    export const setCookie = (name, value, option) => {
+        return cookies.set(name, value, { ...option });
+    };
+
+    export const getCookie = (name) => {
+        return cookies.get(name);
+    };
+
+    export const removeCookie = (name, option) => {
+        return cookies.remove(name, { ...option });
+    };
+    const login = async () => {
+
+        const req = {
+            email: id,
+            password: pwd
+        }
+
+        await axios.post("http://localhost:8080/user/login", req)
+            .then((resp) => {
+                console.log("[Login.js] login() success :D");
+                console.log(resp.data);
+
+                alert(resp.data.email + "님, 성공적으로 로그인 되었습니다 🔐");
+
+                // JWT 토큰 저장
+                setCookie("token", `JWT ${req.data.token}`)
+
+                setAuth(resp.data.email); // 사용자 인증 정보(아이디 저장)
+                setHeaders({"Authorization": `Bearer ${resp.data.toekn}`}); // 헤더 Authorization 필드 저장
+
+                navigate("/bbslist");
+
+
+            }).catch((err) => {
+                console.log("[Login.js] login() error :<");
+                console.log(err);
+
+                alert("⚠️ " + err.response.data);
+            });
+    }
 
     return (
         <ThemeProvider theme={defaultTheme}>

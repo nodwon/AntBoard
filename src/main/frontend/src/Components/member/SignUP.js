@@ -14,6 +14,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 function Copyright(props) {
     return (
@@ -161,21 +162,47 @@ function SignUp(){
                                 <TextField
                                     required
                                     fullWidth
+                                    value={email} onChange={changeEmail}
                                     id="email"
                                     label="Email Address"
                                     name="email"
                                     autoComplete="email"
+                                />
+                                <button className="btn btn-outline-danger" onClick={checkEmailDuplicate}/>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="name"
+                                    alue={name} onChange={changeName}
+                                    label="name"
+                                    type="name"
+                                    id="name"
+                                    autoComplete="new-name"
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                            <TextField
+                                    required
+                                    fullWidth
+                                    name="password"
+                                    value={pwd} onChange={changePwd}
+                                    label="Password"
+                                    type="password"
+                                    id="password"
+                                    autoComplete="new-password"
                                 />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
                                     required
                                     fullWidth
-                                    name="password"
-                                    label="Password"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="new-password"
+                                    name="Checkpassword"
+                                    value={checkPwd} onChange={changeCheckPwd}                                    label="Password"
+                                    type="Checkpassword"
+                                    id="Checkpassword"
+                                    autoComplete="new-Checkpassword"
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -190,12 +217,13 @@ function SignUp(){
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
+                            onClick={join}
                         >
                             Sign Up
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Link href="#" variant="body2">
+                                <Link href="/signin" variant="body2">
                                     Already have an account? Sign in
                                 </Link>
                             </Grid>
