@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import Button from '@mui/joy/Button';
 import {Card, CardContent, Grid, Input, Pagination, styled, Typography} from '@mui/material'; // Import Card and Typography components
 import "../../css/home.css";
@@ -7,7 +7,6 @@ import {AspectRatio, Stack, SvgIcon} from "@mui/joy";
 import axios from "axios";
 import Textarea from "@mui/joy/Textarea";
 import {useNavigate} from "react-router-dom";
-import {HttpHeadersContext} from "../../context/HttpHeadersProvider";
 
 const variant = "outlined"; // or any other variant you want to use
 const VisuallyHiddenInput = styled('input')`
@@ -35,8 +34,6 @@ export default function Main() {
     const [totalPages, setTotalPages] = useState(5);
     const [totalCnt, setTotalCnt] = useState(0);
     const [AllBoard, setBoardList] = useState([]);
-    const { headers, setHeaders } = useContext(HttpHeadersContext);
-    const jwtToken = localStorage.getItem("bbs_access_token");
 
     // 게시글 전체조회
 
@@ -63,25 +60,15 @@ export default function Main() {
     // 페이징 보여주기
     const changePage = async (event, value) => {
         setPage(value)
-        BoardList(value); // 페이지 파라미터를 전달
+        await BoardList(value); // 페이지 파라미터를 전달
     };
-    useEffect(() => {
-        // 컴포넌트가 렌더링될 때마다 localStorage의 토큰 값으로 headers를 업데이트
-        setHeaders({
-            "Authorization": `Bearer ${localStorage.getItem("bbs_access_token")}`
-        });
-    }, []);
+
     const createBoard = async () => {
         const req = {
             title: title,
             content: content
         };
-        const jwtToken = localStorage.getItem("bbs_access_token"); // JWT 토큰 가져오기
-        const config = {
-            headers: {
-                Authorization: `Bearer ${jwtToken}` // JWT를 헤더에 추가
-            }
-        };
+
         await axios.post("http://localhost:8080/board/write", req)
             .then((resp) => {
                 console.log(("success"));
@@ -113,7 +100,7 @@ export default function Main() {
     const BoardList = async (page) => {
         try {
             const response = await axios.get("http://localhost:8080/board/list", {
-                params: { page: page-1},
+                params: {page: page - 1},
             });
             console.log(page);
             console.log(response.data);
@@ -125,9 +112,6 @@ export default function Main() {
             console.log(error);
         }
     };
-
-    axios.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
-
 
 
     return (
@@ -166,7 +150,8 @@ export default function Main() {
                                                         />
                                                     </svg>
                                                 </SvgIcon>
-                                            }>Upload a file <VisuallyHiddenInput type="file" onChange={handleChangeFile} multiple/>
+                                            }>Upload a file <VisuallyHiddenInput type="file" onChange={handleChangeFile}
+                                                                                 multiple/>
                                         </Button>
                                     </form>
                                     <div>
@@ -212,7 +197,8 @@ export default function Main() {
                                                     </div>
                                                     <AspectRatio minHeight="100px" maxHeight="150px">
                                                         {
-                                                            AllBoard ? <div>yes file{JSON.stringify(AllBoard)}</div> : <div>no file</div>
+                                                            AllBoard ? <div>yes file{JSON.stringify(AllBoard)}</div> :
+                                                                <div>no file</div>
                                                         }
                                                         {files && files.length > 0 ? (
                                                             files.map((file, index) => (

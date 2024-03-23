@@ -7,9 +7,6 @@ import "./index.css";
 import ErrorPage from "./Components/router/ErrorPage";
 import BoardDetail from "./Components/board/BoardDetail";
 import BoardUpdate from "./Components/board/BoardUpdate";
-import HttpHeadersProvider, {HttpHeadersContext} from "./context/HttpHeadersProvider";
-import AuthProvider from "./context/AuthProvider";
-import {useState} from "react";
 
 const router = createBrowserRouter([
     {
@@ -41,15 +38,11 @@ function App() {
     return (
         <div>
 
-                <React.StrictMode>
-                    <RouterProvider router={router}/>
-                </React.StrictMode>
-                <BrowserRouter>
-                    <AuthProvider>
-                        <HttpHeadersProvider>
-                        </HttpHeadersProvider>
-                    </AuthProvider>
-                </BrowserRouter>
+            <React.StrictMode>
+                <RouterProvider router={router}/>
+            </React.StrictMode>
+            <BrowserRouter>
+            </BrowserRouter>
 
         </div>
 

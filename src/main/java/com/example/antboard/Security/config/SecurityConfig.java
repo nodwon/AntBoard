@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -59,8 +60,8 @@ public class SecurityConfig {
                     configuration.setMaxAge(3600L);
 
                     configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
+                    configuration.setAllowedMethods(Arrays.asList("GET","POST", "OPTIONS", "PATCH", "DELETE"));
+                    configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
                     return configuration;
 
                 }));
@@ -68,9 +69,19 @@ public class SecurityConfig {
 
         //경로별 인가 작업
         http
-                .authorizeHttpRequests(authorize
-                        -> authorize
-                        .requestMatchers(
+
+                .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/", "/index.html", "/static/**").permitAll()
+                .requestMatchers("/user/**").hasRole("USER")
+                .requestMatchers("/board/**").hasRole("USER")
+                .requestMatchers("/board/{boardId}/comment/**").hasRole("USER")
+                .requestMatchers("/board/{boardId}/file/**").hasRole("USER")
+                .anyRequest().authenticated()
+        );
+
+//                .authorizeHttpRequests(authorize
+//                        -> authorize
+//                        .requestMatchers(
 //                                "/board/list",
 //                                "/board/{boardId}",
 //                                "/user/checkId",
@@ -79,12 +90,12 @@ public class SecurityConfig {
 //                                "/board/{boardId}/comment/list/**",
 //                                "/board/{boardId}/file/download/**",
 //                                "/").permitAll()
-                                new AntPathRequestMatcher("/**")).permitAll()
-
-                        .requestMatchers("/user/**").hasRole("USER")
-                        .requestMatchers("/board/**").hasRole("USER")
-                        .requestMatchers("/board/{boardId}/comment/**").hasRole("USER")
-                        .requestMatchers("/board/{boardId}/file/**").hasRole("USER"));
+//                                new AntPathRequestMatcher("/**")).permitAll()
+//
+//                        .requestMatchers("/user/**").hasRole("USER")
+//                        .requestMatchers("/board/**").hasRole("USER")
+//                        .requestMatchers("/board/{boardId}/comment/**").hasRole("USER")
+//                        .requestMatchers("/board/{boardId}/file/**").hasRole("USER"));
         //세션 설정
         http
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

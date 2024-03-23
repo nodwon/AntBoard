@@ -34,16 +34,12 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.CREATED).body(success);
 
     }
-//    @PostMapping("/login")
-//    public ResponseEntity<MemberTokenDto> login(@RequestBody JoinDto joinDto) {
-//        MemberTokenDto loginDTO = memberService.login(joinDto);
-//        return ResponseEntity.status(HttpStatus.OK).header(loginDTO.getToken()).body(loginDTO);
-//    }
-//@PostMapping("/login")
-//public ResponseEntity<MemberTokenDto> login(@RequestBody JoinDto joinDto) {
-//    MemberTokenDto loginDTO = memberService.login(joinDto);
-//    return ResponseEntity.status(HttpStatus.OK).body(loginDTO);
-//}
+
+    @PostMapping("/login")
+    public ResponseEntity<MemberTokenDto> login(@RequestBody JoinDto joinDto) {
+        MemberTokenDto loginDTO = memberService.login(joinDto);
+        return ResponseEntity.status(HttpStatus.OK).body(loginDTO);
+    }
 
     @PostMapping("/checkPwd")
     public ResponseEntity<MemberResponseDto> check(@AuthenticationPrincipal Member member, @RequestBody Map<String, String> request){

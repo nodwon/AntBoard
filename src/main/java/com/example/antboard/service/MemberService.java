@@ -40,13 +40,13 @@ public class MemberService {
         isExistEmail(email);
     }
 
-    public MemberResponseDto register(JoinDto registerDto){
-        isExistEmail(registerDto.getEmail());
-        checkPassword(registerDto.getPassword(), registerDto.getPasswordCheck());
+    public MemberResponseDto register(JoinDto joinDto){
+        isExistEmail(joinDto.getEmail());
+        checkPassword(joinDto.getPassword(), joinDto.getPasswordCheck());
 
-        String encodePwd = encoder.encode(registerDto.getPassword());
-        registerDto.setPassword(encodePwd);
-        Member saveMember = memberRepository.save(JoinDto.of(registerDto));
+        String encodePwd = encoder.encode(joinDto.getPassword());
+        joinDto.setPassword(encodePwd);
+        Member saveMember = memberRepository.save(JoinDto.of(joinDto));
         return MemberResponseDto.from(saveMember);
     }
 
@@ -61,14 +61,13 @@ public class MemberService {
             throw new MemberException("이미사용중인 이메일입니다.",HttpStatus.BAD_REQUEST);
         }
     }
-//    public MemberTokenDto login(JoinDto joinDto) {
-//        authenticate(joinDto.getEmail(), joinDto.getPassword());
-//        UserDetails userDetails = customUserDetailsService.loadUserByUsername(joinDto.getEmail());
-//        checkPassword(joinDto.getPassword(), userDetails.getPassword());
-//        String token = jwtUtil.generatecreateJwt(userDetails); // 사용자 정보 전달
-//        return MemberTokenDto.from(userDetails, token);
-//
-//    }
+    public MemberTokenDto login(JoinDto joinDto) {
+        authenticate(joinDto.getEmail(), joinDto.getPassword());
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(joinDto.getEmail());
+        checkPassword(joinDto.getPassword(), userDetails.getPassword());
+        return MemberTokenDto.from(String.valueOf(userDetails));
+
+    }
     public MemberResponseDto check(Member member, String password) {
         Member checkMember = (Member) customUserDetailsService.loadUserByUsername(member.getEmail());
         checkEncodePassword(password, checkMember.getPassword());

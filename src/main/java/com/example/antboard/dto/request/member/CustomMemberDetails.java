@@ -28,7 +28,7 @@ public class CustomMemberDetails implements UserDetails, GrantedAuthority{
 
     @Override
     public String getUsername() {
-        return this.member.getUsername();
+        return this.member.getEmail();
     }
 
     @Override

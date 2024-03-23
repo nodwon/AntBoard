@@ -42,17 +42,20 @@ public class JWTFilter extends OncePerRequestFilter {
         // get token
         String accessToken = request.getHeader(HEADER_STRING);
 
+        if (accessToken == null) {
+            filterChain.doFilter(request, response);
 
-        if (accessToken != null && accessToken.startsWith(TOKEN_PREFIX)) {
+        } else {
+//        if (accessToken != null && accessToken.startsWith(TOKEN_PREFIX)) {
             try {
                 this.jwtUtil.isExpired(accessToken);
 
             } catch (IllegalArgumentException ex) {
-                log.info("fail get user id",ex);
+                log.info("fail get user id", ex);
                 response.setStatus(401);
 
             } catch (ExpiredJwtException ex) {
-                log.info("Token expired",ex);
+                log.info("Token expired", ex);
                 response.setStatus(401);
             } catch (MalformedJwtException ex) {
                 log.info("Invalid JWT !!", ex);
@@ -64,26 +67,28 @@ public class JWTFilter extends OncePerRequestFilter {
                 response.setStatus(401);
             }
 
-        } else {
-            log.info("JWT does not begin with Bearer !!");
-            response.setStatus(401);
-        }
-        String category = this.jwtUtil.getCategory(accessToken);
-        if (!category.equals("access")) {
-            log.info("invalid access token");
-            response.setStatus(401);
-        } else {
-            String email = jwtUtil.getUsername(accessToken);
-            String role = this.jwtUtil.getRole(accessToken);
-            Member member = Member.from(email);
+//        } else {
+//            log.info("JWT does not begin with acccess !!");
+//            response.setStatus(401);
+//        }
 
-            CustomMemberDetails customMemberDetails = new CustomMemberDetails(member, role);
-            Authentication authToken = new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-            filterChain.doFilter(request, response);
-        }
+            String category = this.jwtUtil.getCategory(accessToken);
+            if (!category.equals("access")) {
+                log.info("invalid access token");
+                response.setStatus(401);
+            } else {
+                String email = jwtUtil.getUsername(accessToken);
+                String role = this.jwtUtil.getRole(accessToken);
+                Member member = Member.from(email);
 
-        filterChain.doFilter(request, response);
+                CustomMemberDetails customMemberDetails = new CustomMemberDetails(member, role);
+                Authentication authToken = new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+                filterChain.doFilter(request, response);
+            }
+
+//        filterChain.doFilter(request, response);
+        }
     }
 }
 

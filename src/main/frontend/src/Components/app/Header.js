@@ -3,9 +3,7 @@ import {AppBar, Box, IconButton, InputBase, Menu, MenuItem, styled, Toolbar, Typ
 import {AccountCircle, Menu as MenuIcon, MoreVert as MoreIcon, Search as SearchIcon,} from "@mui/icons-material";
 import {alpha} from "@mui/material/styles";
 import {useNavigate} from "react-router-dom";
-import {AuthContext} from "../context/AuthProvider";
 import axios from "axios";
-import {HttpHeadersContext} from "../../context/HttpHeadersProvider";
 
 const Search = styled("div")(({theme}) => ({
     position: "relative",
@@ -53,9 +51,6 @@ function Header() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
     const navigate = useNavigate();
-    const { auth, setAuth } = useContext(AuthContext);
-    const { headers, setHeaders } = useContext(HttpHeadersContext);
-    const jwtToken = localStorage.getItem("bbs_access_token");
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -75,7 +70,6 @@ function Header() {
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
-    axios.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
 
     const menuId = "primary-search-account-menu";
     const renderMenu = (
@@ -130,12 +124,7 @@ function Header() {
             </MenuItem>
         </Menu>
     );
-    useEffect(() => {
-        // 컴포넌트가 렌더링될 때마다 localStorage의 토큰 값으로 headers를 업데이트
-        setHeaders({
-            "Authorization": `Bearer ${localStorage.getItem("bbs_access_token")}`
-        });
-    }, []);
+
     return (
         <Box sx={{flexGrow: 1}}>
             <AppBar position="static">

@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class MemberTokenDto {
 
     private String email;
-    private String Role;
+    private static String Role;
 
     @Builder
     public MemberTokenDto(String email, String Role){
@@ -21,7 +21,7 @@ public class MemberTokenDto {
         this.Role = Role;
     }
 
-    public static MemberTokenDto from(String email, String Role){
+    public static MemberTokenDto from(String email){
         return MemberTokenDto.builder()
                 .email(email)
                 .Role(Role)
