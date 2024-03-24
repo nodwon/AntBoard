@@ -1,6 +1,6 @@
 import { useEffect, useContext } from "react";
 import {useNavigate} from "react-router-dom";
-import {removeCookie} from "./SignIn";
+import {removeCookie} from "./Login";
 function Logout() {
 
 

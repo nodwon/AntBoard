@@ -7,6 +7,9 @@ import "./index.css";
 import ErrorPage from "./Components/router/ErrorPage";
 import BoardDetail from "./Components/board/BoardDetail";
 import BoardUpdate from "./Components/board/BoardUpdate";
+import Login from "./Components/member/Login";
+import SignUP from "./Components/member/Register";
+import Register from "./Components/member/Register";
 
 const router = createBrowserRouter([
     {
@@ -27,6 +30,16 @@ const router = createBrowserRouter([
     {
         path: "/board/:boardId/edit",
         element: <BoardUpdate/>,
+        errorElement: <ErrorPage/>
+    },
+    {
+        path: "/login",
+        element: <Login/>,
+        errorElement: <ErrorPage/>
+    },
+    {
+        path: "/register",
+        element: <Register/>,
         errorElement: <ErrorPage/>
     }
 ]);

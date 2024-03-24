@@ -79,23 +79,6 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
         );
 
-//                .authorizeHttpRequests(authorize
-//                        -> authorize
-//                        .requestMatchers(
-//                                "/board/list",
-//                                "/board/{boardId}",
-//                                "/user/checkId",
-//                                "/user/register",
-//                                "/user/login",
-//                                "/board/{boardId}/comment/list/**",
-//                                "/board/{boardId}/file/download/**",
-//                                "/").permitAll()
-//                                new AntPathRequestMatcher("/**")).permitAll()
-//
-//                        .requestMatchers("/user/**").hasRole("USER")
-//                        .requestMatchers("/board/**").hasRole("USER")
-//                        .requestMatchers("/board/{boardId}/comment/**").hasRole("USER")
-//                        .requestMatchers("/board/{boardId}/file/**").hasRole("USER"));
         //세션 설정
         http
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

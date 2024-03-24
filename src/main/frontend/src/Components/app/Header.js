@@ -70,7 +70,12 @@ function Header() {
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
-
+    const handleRegisterOpen = (event) => {
+        navigate("/register");
+    };
+    const loginopen = (event) => {
+        navigate("/login");
+    };
     const menuId = "primary-search-account-menu";
     const renderMenu = (
         <Menu
@@ -88,8 +93,8 @@ function Header() {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+            <MenuItem onClick={handleRegisterOpen}>Register</MenuItem>
+            <MenuItem onClick={loginopen}>Login</MenuItem>
         </Menu>
     );
 

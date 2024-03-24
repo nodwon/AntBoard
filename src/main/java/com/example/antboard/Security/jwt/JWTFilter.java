@@ -46,32 +46,6 @@ public class JWTFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } else {
-//        if (accessToken != null && accessToken.startsWith(TOKEN_PREFIX)) {
-            try {
-                this.jwtUtil.isExpired(accessToken);
-
-            } catch (IllegalArgumentException ex) {
-                log.info("fail get user id", ex);
-                response.setStatus(401);
-
-            } catch (ExpiredJwtException ex) {
-                log.info("Token expired", ex);
-                response.setStatus(401);
-            } catch (MalformedJwtException ex) {
-                log.info("Invalid JWT !!", ex);
-                System.out.println();
-                response.setStatus(401);
-            } catch (Exception e) {
-                log.info("Unable to get JWT Token !!");
-                e.getStackTrace();
-                response.setStatus(401);
-            }
-
-//        } else {
-//            log.info("JWT does not begin with acccess !!");
-//            response.setStatus(401);
-//        }
-
             String category = this.jwtUtil.getCategory(accessToken);
             if (!category.equals("access")) {
                 log.info("invalid access token");

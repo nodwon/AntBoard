@@ -15,6 +15,7 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import axios from "axios";
+import MemberUpdate from "./MemberUpdate";
 
 function Copyright(props) {
     return (
@@ -33,10 +34,8 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-class Cookies {
-}
 
-function SignIn() {
+function Login() {
     const navigate = useNavigate();
 
     const [id, setId] = useState("");
@@ -49,19 +48,19 @@ function SignIn() {
     const changePwd = (event) => {
         setPwd(event.target.value);
     }
-    const cookies = new Cookies();
+    // const cookies = new Cookies();
+    //
+    // export const setCookie = (name, value, option) => {
+    //     return cookies.set(name, value, { ...option });
+    // };
+    //
+    // export const getCookie = (name) => {
+    //     return cookies.get(name);
+    // };
 
-    export const setCookie = (name, value, option) => {
-        return cookies.set(name, value, { ...option });
-    };
-
-    export const getCookie = (name) => {
-        return cookies.get(name);
-    };
-
-    export const removeCookie = (name, option) => {
-        return cookies.remove(name, { ...option });
-    };
+    // export const removeCookie = (name, option) => {
+    //     return cookies.remove(name, { ...option });
+    // };
     const login = async () => {
 
         const req = {
@@ -77,12 +76,11 @@ function SignIn() {
                 alert(resp.data.email + "님, 성공적으로 로그인 되었습니다 🔐");
 
                 // JWT 토큰 저장
-                setCookie("token", `JWT ${req.data.token}`)
+                // setCookie("token", `JWT ${req.data.token}`)
+                //
+                // setAuth(resp.data.email); // 사용자 인증 정보(아이디 저장)
 
-                setAuth(resp.data.email); // 사용자 인증 정보(아이디 저장)
-                setHeaders({"Authorization": `Bearer ${resp.data.toekn}`}); // 헤더 Authorization 필드 저장
-
-                navigate("/bbslist");
+                navigate("/");
 
 
             }).catch((err) => {
@@ -111,7 +109,7 @@ function SignIn() {
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                    <Box component="form" noValidate sx={{mt: 1}}>
                         <TextField
                             margin="normal"
                             required
@@ -151,7 +149,7 @@ function SignIn() {
                                 </Link>
                             </Grid>
                             <Grid item>
-                                <Link href="#" variant="body2">
+                                <Link href="/Register" variant="body2">
                                     {"Don't have an account? Sign Up"}
                                 </Link>
                             </Grid>
@@ -163,3 +161,4 @@ function SignIn() {
         </ThemeProvider>
     );
 }
+export default Login;
