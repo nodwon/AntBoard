@@ -1,11 +1,7 @@
 package com.example.antboard.Security.jwt;
 
 import com.example.antboard.dto.request.member.LoginDto;
-import com.example.antboard.entity.RefreshEntity;
-import com.example.antboard.repository.RefreshRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.Cookie;
@@ -60,7 +56,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             ObjectMapper objectMapper = new ObjectMapper();
             ServletInputStream inputStream = request.getInputStream();
             String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            loginDto = (LoginDto)objectMapper.readValue(messageBody, LoginDto.class);
+            loginDto = objectMapper.readValue(messageBody, LoginDto.class);
         } catch (IOException var7) {
             throw new RuntimeException(var7);
         }
@@ -77,9 +73,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
-        Date now = new Date();
-        Date expireDate = new Date(now.getTime() + refreshExpirationTime);
-
         // JWT 토큰 생성
         String accessToken = jwtTokenProvider.createJwt("access", username, role, 600000L);
         String refreshToken = jwtTokenProvider.createJwt("refresh", username, role, 86400000L);
@@ -100,10 +93,4 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setStatus(401);
     }
 
-    private Cookie createCookie(String key, String value) {
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(86400);
-        cookie.setHttpOnly(true);
-        return cookie;
-    }
 }

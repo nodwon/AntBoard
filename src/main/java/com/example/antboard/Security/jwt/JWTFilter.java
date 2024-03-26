@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,7 +28,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Value("${spring.jwt.header}")
     private String HEADER_STRING;
-    //     private String HEADER_STRING = "Authorization";
     @Value("${spring.jwt.prefix}")
     private String TOKEN_PREFIX;
 
@@ -72,22 +70,22 @@ public class JWTFilter extends OncePerRequestFilter {
                 response.setStatus(401);
             }
 
-//            String category = this.jwtTokenProvider.getCategory(accessToken);
-//            if (!category.equals("access")) {
-//                log.info("invalid access token");
-//                response.setStatus(401);
-//            } else {
-//                String email = jwtTokenProvider.getUsername(accessToken);
-//                String role = this.jwtTokenProvider.getRole(accessToken);
+            String category = this.jwtTokenProvider.getCategory(accessToken);
+            if (!category.equals("access")) {
+                log.info("invalid access token");
+                response.setStatus(401);
+            } else {
+                String email = jwtTokenProvider.getUsername(accessToken);
+                String role = this.jwtTokenProvider.getRole(accessToken);
 //                Member asd = MemberResponseDto.from(email)
-//                Member member = Member.from(email);
-//
-//                CustomMemberDetails customMemberDetails = new CustomMemberDetails(member, role);
-//                Authentication authToken = new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
-//                SecurityContextHolder.getContext().setAuthentication(authToken);
-//                filterChain.doFilter(request, response);
-//            }
+                Member member = Member.from(email);
 
+                CustomMemberDetails customMemberDetails = new CustomMemberDetails(member, role);
+                Authentication authToken = new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+                filterChain.doFilter(request, response);
+
+            }
         }
     }
 }

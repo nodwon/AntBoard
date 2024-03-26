@@ -3,23 +3,21 @@ package com.example.antboard.controller;
 import com.example.antboard.Security.jwt.JwtTokenProvider;
 import com.example.antboard.common.ErrorException;
 import com.example.antboard.dto.response.member.TokenDto;
-import com.example.antboard.entity.RefreshEntity;
 import com.example.antboard.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Cookie;
-import java.util.Date;
-import java.util.Objects;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.http.ResponseEntity;
+
+import java.util.Objects;
 
 
 @Controller
@@ -67,7 +65,7 @@ public class ReissueController {
                 String newAccess = this.jwtTokenProvider.createJwt("access", email, role, 600000L);
                 String newRefresh = this.jwtTokenProvider.createJwt("refresh", email, role, 86400000L);
 
-                 new TokenDto(newAccess, newRefresh);
+                new TokenDto(newAccess, newRefresh);
                 response.setHeader("access", newAccess);
                 response.addCookie(this.createCookie(newRefresh));
                 return new ResponseEntity<TokenDto>(HttpStatus.OK);

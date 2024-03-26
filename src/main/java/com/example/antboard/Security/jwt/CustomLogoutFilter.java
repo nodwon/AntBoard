@@ -32,7 +32,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
     }
     private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         String requestUri = request.getRequestURI();
-        if (!requestUri.matches("^\\//logout$")) {
+        if (!requestUri.matches("^//logout$")) {
             filterChain.doFilter(request, response);
         } else {
             String requestMethod = request.getMethod();
@@ -67,8 +67,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
                         if (!isExist) {
                             response.setStatus(400);
                         } else {
-                            this.refreshRepository.deleteByRefresh(refresh);
-                            Cookie cookie = new Cookie("refresh", (String)null);
+//                            this.refreshRepository.deleteByRefresh(refresh);
+                            Cookie cookie = new Cookie("refresh", null);
                             cookie.setMaxAge(0);
                             cookie.setPath("/");
                             response.addCookie(cookie);
