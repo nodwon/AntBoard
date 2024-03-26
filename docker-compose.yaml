@@ -1,0 +1,7 @@
+version: "3"
+services:
+  redis:
+    image: redis
+    container_name: intelligent_candrasekhar
+    ports:
+      - "6379:6379"
