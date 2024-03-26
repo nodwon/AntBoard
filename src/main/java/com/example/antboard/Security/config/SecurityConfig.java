@@ -3,6 +3,7 @@ package com.example.antboard.Security.config;
 import com.example.antboard.Security.jwt.JWTFilter;
 import com.example.antboard.Security.jwt.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +15,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -71,12 +74,11 @@ public class SecurityConfig {
         http
 
                 .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/index.html", "/static/**").permitAll()
-                .requestMatchers("/user/**").hasRole("USER")
-                .requestMatchers("/board/**").hasRole("USER")
-                .requestMatchers("/board/{boardId}/comment/**").hasRole("USER")
-                .requestMatchers("/board/{boardId}/file/**").hasRole("USER")
-                .anyRequest().authenticated()
+                        .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations())).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
+                .headers((headers) -> headers
+                        .addHeaderWriter(new XFrameOptionsHeaderWriter(
+                                XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
         );
 
         //세션 설정

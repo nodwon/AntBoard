@@ -11,29 +11,10 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import axios from "axios";
-import MemberUpdate from "./MemberUpdate";
-
-function Copyright(props) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
-// TODO remove, this demo shouldn't need to reset the theme.
-
-const defaultTheme = createTheme();
-
 
 function Login() {
     const navigate = useNavigate();
@@ -48,53 +29,40 @@ function Login() {
     const changePwd = (event) => {
         setPwd(event.target.value);
     }
-    // const cookies = new Cookies();
-    //
-    // export const setCookie = (name, value, option) => {
-    //     return cookies.set(name, value, { ...option });
-    // };
-    //
-    // export const getCookie = (name) => {
-    //     return cookies.get(name);
-    // };
 
-    // export const removeCookie = (name, option) => {
-    //     return cookies.remove(name, { ...option });
-    // };
-    const login = async () => {
+    const login = async (event) => {
+        event.preventDefault(); // 폼 제출 이벤트 기본 동작 방지
 
         const req = {
             email: id,
             password: pwd
         }
+        debugger;
+        try {
+            const resp = await axios.post("http://localhost:8080/user/login", req);
+            console.log("[Login.js] login() success :D", resp.data);
+            alert(resp.data.email + "님, 성공적으로 로그인 되었습니다 🔐");
 
-        await axios.post("http://localhost:8080/user/login", req)
-            .then((resp) => {
-                console.log("[Login.js] login() success :D");
-                console.log(resp.data);
+            // JWT 토큰 저장
+            document.cookie = `token=${resp.data.token}; path=/`;
 
-                alert(resp.data.email + "님, 성공적으로 로그인 되었습니다 🔐");
+            // Refresh-Token 저장
+            document.cookie = `refresh=${resp.data.refreshToken}; path=/`;
 
-                // JWT 토큰 저장
-                // setCookie("token", `JWT ${req.data.token}`)
-                //
-                // setAuth(resp.data.email); // 사용자 인증 정보(아이디 저장)
+            navigate("/"); // 성공적으로 로그인한 경우 리다이렉트
+        } catch (err) {
+            debugger;
 
-                navigate("/");
+            console.error("[Login.js] login() error :", err);
 
-
-            }).catch((err) => {
-                console.log("[Login.js] login() error :<");
-                console.log(err);
-
-                alert("⚠️ " + err.response.data);
-            });
+            alert("⚠️ " + err.response.data);
+        }
     }
 
     return (
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider theme={createTheme()}>
             <Container component="main" maxWidth="xs">
-                <CssBaseline/>
+                <CssBaseline />
                 <Box
                     sx={{
                         marginTop: 8,
@@ -103,13 +71,13 @@ function Login() {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
-                        <LockOutlinedIcon/>
+                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                        <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
-                    <Box component="form" noValidate sx={{mt: 1}}>
+                    <Box component="form" noValidate onSubmit={login} sx={{ mt: 1 }}>
                         <TextField
                             margin="normal"
                             required
@@ -119,6 +87,8 @@ function Login() {
                             name="email"
                             autoComplete="email"
                             autoFocus
+                            value={id}
+                            onChange={changeId}
                         />
                         <TextField
                             margin="normal"
@@ -129,16 +99,18 @@ function Login() {
                             type="password"
                             id="password"
                             autoComplete="current-password"
+                            value={pwd}
+                            onChange={changePwd}
                         />
                         <FormControlLabel
-                            control={<Checkbox value="remember" color="primary"/>}
+                            control={<Checkbox value="remember" color="primary" />}
                             label="Remember me"
                         />
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{mt: 3, mb: 2}}
+                            sx={{ mt: 3, mb: 2 }}
                         >
                             Sign In
                         </Button>
@@ -156,9 +128,9 @@ function Login() {
                         </Grid>
                     </Box>
                 </Box>
-                <Copyright sx={{mt: 8, mb: 4}}/>
             </Container>
         </ThemeProvider>
     );
 }
+
 export default Login;

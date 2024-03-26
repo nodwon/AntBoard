@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -20,7 +21,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Slf4j
 public class CustomLogoutFilter extends GenericFilterBean {
-    private final JwtUtil jwtUtil;
+    @Autowired
+    private final JwtTokenProvider jwtTokenProvider;
     private final RefreshRepository refreshRepository;
 
     @Override
@@ -51,13 +53,13 @@ public class CustomLogoutFilter extends GenericFilterBean {
                     response.setStatus(400);
                 } else {
                     try {
-                        this.jwtUtil.isExpired(refresh);
+                        this.jwtTokenProvider.isExpired(refresh);
                     } catch (ExpiredJwtException var12) {
                         response.setStatus(400);
                         return;
                     }
 
-                    String category = this.jwtUtil.getCategory(refresh);
+                    String category = this.jwtTokenProvider.getCategory(refresh);
                     if (!category.equals("refresh")) {
                         response.setStatus(400);
                     } else {

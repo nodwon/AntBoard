@@ -16,6 +16,7 @@ import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import Login from "./Login";
+import "../../css/register.css";
 
 function Copyright(props) {
     return (
@@ -83,39 +84,29 @@ function Register(){
 
     /* 회원가입 */
     const join = async () => {
-
         const req = {
             email: email,
             password: pwd,
             passwordCheck: checkPwd,
             username: name,
         }
-
-        await axios.post("http://localhost:8080/user/register", req)
-            .then((resp) => {
-                console.log("[Join.js] join() success :D");
-                console.log(resp.data);
-
-                alert(resp.data.username + "님 회원가입을 축하드립니다 🎊");
-                navigate("/login");
-
-            }).catch((err) => {
-                console.log("[Join.js] join() error :<");
-                console.log(err);
-
-                const resp = err.response;
-                if (resp.status === 400) {
-                    alert(resp.data);
-                }
-            });
+        try {
+            const resp = await axios.post("http://localhost:8080/user/register", req);
+            alert(resp.data.username + "님 회원가입을 축하드립니다 🎊");
+            navigate("/"); // 메인 페이지로 이동
+        } catch (err) {
+            console.error("[Join.js] join() error :", err);
+            const resp = err.response;
+            if (resp.status === 400) {
+                alert(resp.data);
+            }
+        }
     }
-    const handleSubmit = (event) => {
+
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        join(); // Sign In 버튼 클릭 시 회원가입 완료
     };
 
     return (
@@ -138,7 +129,7 @@ function Register(){
                     </Typography>
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12}>
+                            <Grid item xs={9}>
                                 <TextField
                                     required
                                     fullWidth
@@ -149,12 +140,17 @@ function Register(){
                                     autoComplete="email"
                                 />
                             </Grid>
+                            <Grid item xs={3}>
+                                <button id="checkDuplicateButton" className="btn btn-outline-danger" onClick={checkEmailDuplicate}>
+                                    <i className="fas fa-check" ></i> 이메일 중복 확인
+                                </button>
+                            </Grid>
                             <Grid item xs={12}>
                                 <TextField
                                     required
                                     fullWidth
                                     name="name"
-                                    alue={name} onChange={changeName}
+                                    value={name} onChange={changeName}
                                     label="name"
                                     type="name"
                                     id="name"
@@ -168,7 +164,7 @@ function Register(){
                                     name="password"
                                     value={pwd} onChange={changePwd}
                                     label="Password"
-                                    type="password"
+                                    type="Checkpassword"
                                     id="password"
                                     autoComplete="new-password"
                                 />
@@ -178,12 +174,14 @@ function Register(){
                                     required
                                     fullWidth
                                     name="Checkpassword"
-                                    value={checkPwd} onChange={changeCheckPwd}                                    label="Password"
+                                    value={checkPwd} onChange={changeCheckPwd}
+                                    label="Password"
                                     type="Checkpassword"
                                     id="Checkpassword"
                                     autoComplete="new-Checkpassword"
                                 />
                             </Grid>
+
                             <Grid item xs={12}>
                                 <FormControlLabel
                                     control={<Checkbox value="allowExtraEmails" color="primary" />}

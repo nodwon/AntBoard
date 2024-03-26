@@ -4,6 +4,8 @@ import com.example.antboard.dto.request.member.LoginDto;
 import com.example.antboard.entity.RefreshEntity;
 import com.example.antboard.repository.RefreshRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.Cookie;
@@ -12,6 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,14 +31,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
+
+    private final RedisTemplate<String, String> redisTemplate;
     private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    @Value("${spring.jwt.token.refresh-expiration-time}")
+    private long refreshExpirationTime;
 
     @Override
     @Autowired // 생성자 주입
@@ -66,27 +75,29 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String username = authentication.getName();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = (GrantedAuthority)iterator.next();
+        GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
-        String access = this.jwtUtil.createJwt("access", username, role, 600000L);
-        String refresh = this.jwtUtil.createJwt("refresh", username, role, 86400000L);
-        this.addRefreshEntity(username, refresh, 86400000L);
-        response.setHeader("access", access);
-        response.addCookie(this.createCookie("refresh", refresh));
+        Date now = new Date();
+        Date expireDate = new Date(now.getTime() + refreshExpirationTime);
+
+        // JWT 토큰 생성
+        String accessToken = jwtTokenProvider.createJwt("access", username, role, 600000L);
+        String refreshToken = jwtTokenProvider.createJwt("refresh", username, role, 86400000L);
+        redisTemplate.opsForValue().set(
+                username,
+                refreshToken,
+                refreshExpirationTime,
+                TimeUnit.MILLISECONDS
+        );
+
+        // 토큰을 응답 헤더에 추가
+        response.setHeader("Authorization", "Bearer " + accessToken);
+        response.setHeader("Refresh-Token", refreshToken);
         response.setStatus(HttpStatus.OK.value());
     }
 
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         response.setStatus(401);
-    }
-
-    private void addRefreshEntity(String email, String refresh, Long expiredMs) {
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
-        RefreshEntity refreshEntity = new RefreshEntity();
-        refreshEntity.setEmail(email);
-        refreshEntity.setRefresh(refresh);
-        refreshEntity.setExpiration(date.toString());
-        this.refreshRepository.save(refreshEntity);
     }
 
     private Cookie createCookie(String key, String value) {

@@ -1,10 +1,12 @@
 package com.example.antboard.service;
 
 import com.example.antboard.Security.jwt.CustomUserDetailsService;
-import com.example.antboard.Security.jwt.JwtUtil;
+import com.example.antboard.Security.jwt.JwtTokenProvider;
+import com.example.antboard.Security.jwt.LoginFilter;
 import com.example.antboard.common.ResourceNotFoundException;
 import com.example.antboard.common.exception.MemberException;
 import com.example.antboard.dto.request.member.JoinDto;
+import com.example.antboard.dto.request.member.LoginDto;
 import com.example.antboard.dto.response.member.MemberResponseDto;
 import com.example.antboard.dto.response.member.MemberTokenDto;
 import com.example.antboard.dto.response.member.MemberUpdateDto;
@@ -24,7 +26,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 @Slf4j
 public class MemberService {
 
@@ -33,8 +35,8 @@ public class MemberService {
 
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService customUserDetailsService;
-    private final JwtUtil jwtUtil;
-
+    private final JwtTokenProvider jwtTokenProvider;
+    private final LoginFilter loginFilter;
 
     public void checkIdDuplicate(String email){
         isExistEmail(email);
@@ -61,13 +63,14 @@ public class MemberService {
             throw new MemberException("이미사용중인 이메일입니다.",HttpStatus.BAD_REQUEST);
         }
     }
-    public MemberTokenDto login(JoinDto joinDto) {
-        authenticate(joinDto.getEmail(), joinDto.getPassword());
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(joinDto.getEmail());
-        checkPassword(joinDto.getPassword(), userDetails.getPassword());
+    @Transactional
+    public MemberTokenDto login(LoginDto loginDto) {
+        authenticate(loginDto.getEmail(), loginDto.getPassword());
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginDto.getEmail());
         return MemberTokenDto.from(String.valueOf(userDetails));
 
     }
+    @Transactional
     public MemberResponseDto check(Member member, String password) {
         Member checkMember = (Member) customUserDetailsService.loadUserByUsername(member.getEmail());
         checkEncodePassword(password, checkMember.getPassword());
@@ -91,7 +94,7 @@ public class MemberService {
             throw new MemberException("패스워드 불일치", HttpStatus.BAD_REQUEST);
         }
     }
-
+    @Transactional
     public MemberResponseDto update(Member member, MemberUpdateDto updateDto) {
         checkPassword(updateDto.getPassword(), updateDto.getPasswordCheck());
         String encodePwd = encoder.encode(updateDto.getPassword());

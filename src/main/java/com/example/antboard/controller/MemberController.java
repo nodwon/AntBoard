@@ -1,6 +1,7 @@
 package com.example.antboard.controller;
 
 import com.example.antboard.dto.request.member.JoinDto;
+import com.example.antboard.dto.request.member.LoginDto;
 import com.example.antboard.dto.response.member.MemberUpdateDto;
 import com.example.antboard.dto.response.member.MemberResponseDto;
 import com.example.antboard.dto.response.member.MemberTokenDto;
@@ -36,9 +37,9 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<MemberTokenDto> login(@RequestBody JoinDto joinDto) {
-        MemberTokenDto loginDTO = memberService.login(joinDto);
-        return ResponseEntity.status(HttpStatus.OK).body(loginDTO);
+    public ResponseEntity<MemberTokenDto> login(@RequestBody LoginDto dto) {
+        MemberTokenDto login = memberService.login(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(login);
     }
 
     @PostMapping("/checkPwd")
