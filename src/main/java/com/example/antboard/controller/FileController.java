@@ -32,6 +32,18 @@ public class FileController {
         List<FileUploadResponseDto> saveFile = fileService.upload(boardId, files);
         return ResponseEntity.status(HttpStatus.CREATED).body(saveFile);
     }
+    @PostMapping("/thumbnail")
+    public ResponseEntity<List<FileUploadResponseDto>> thumbnail(
+            @PathVariable("boardId") Long boardId,
+            @RequestParam("file")List<MultipartFile> files) throws IOException{
+        List<FileUploadResponseDto> saveFile = fileService.upload(boardId, files);
+
+        // 썸네일 생성 및 Base64 인코딩
+        List<FileUploadResponseDto> thumbnails = fileService.generateThumbnails(saveFile);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(thumbnails);
+    }
+
     @GetMapping("/download")
     public ResponseEntity<Resource> download(
             @RequestParam("fileId") Long fileId) throws IOException{

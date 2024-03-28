@@ -6,7 +6,7 @@ import * as PropTypes from "prop-types";
 import {AspectRatio, Stack, SvgIcon} from "@mui/joy";
 import axios from "axios";
 import Textarea from "@mui/joy/Textarea";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 const variant = "outlined"; // or any other variant you want to use
 const VisuallyHiddenInput = styled('input')`
@@ -24,10 +24,13 @@ const VisuallyHiddenInput = styled('input')`
 VisuallyHiddenInput.propTypes = {type: PropTypes.string};
 
 export default function Main() {
+    const { boardId } = useParams();
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const navigate = useNavigate();
-    const [files, setFiles] = useState([]); // 추가: 파일 목록 상태 추가
+    const [files, setFiles] = useState([]);
+    const [thumbnails, setThumbnails] = useState([]);
+
     //Paging
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(5);
@@ -62,6 +65,22 @@ export default function Main() {
         setPage(value)
         await BoardList(value); // 페이지 파라미터를 전달
     };
+    const handleUpload = async () => {
+        const formData = new FormData();
+        selectedFiles.forEach((file) => formData.append("file", file));
+
+        try {
+            const response = await axios.post(`http://localhost:8080/board/${boardId}/file/thumbnail`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            setThumbnails(response.data);
+        } catch (error) {
+            console.error("Error uploading files:", error);
+        }
+    };
 
     const createBoard = async () => {
         const req = {
@@ -71,6 +90,7 @@ export default function Main() {
 
         await axios.post("http://localhost:8080/board/write", req)
             .then((resp) => {
+                handleUpload(); // 파일 업로드 수행
                 console.log(("success"));
                 console.log(resp.data);
                 const boardId = resp.data.boardId;
@@ -196,21 +216,22 @@ export default function Main() {
                                                         <Typography variant="body1">{boardItem.createdDate}</Typography>
                                                     </div>
                                                     <AspectRatio minHeight="100px" maxHeight="150px">
-                                                        {
-                                                            AllBoard ? <div>yes file{JSON.stringify(AllBoard)}</div> :
-                                                                <div>no file</div>
-                                                        }
-                                                        {files && files.length > 0 ? (
-                                                            files.map((file, index) => (
-                                                                <img
-                                                                    key={index}
-                                                                    src={`data:image/jpeg;base64,${file}`}
-                                                                    alt=""
-                                                                />
-                                                            ))
-                                                        ) : (
-                                                            <div>No image available</div>
-                                                        )}
+                                                        {thumbnails.map((thumbnail) => (
+                                                            <div key={thumbnail.fileId} className="thumbnail-item">
+                                                                <img src={`data:image/jpeg;base64,${thumbnail.base64Data}`} alt="Thumbnail" />
+                                                            </div>
+                                                        ))}
+                                                        {/*{files && files.length > 0 ? (*/}
+                                                        {/*    files.map((file, index) => (*/}
+                                                        {/*        <img*/}
+                                                        {/*            key={index}*/}
+                                                        {/*            src={`data:image/jpeg;base64,${file}`}*/}
+                                                        {/*            alt=""*/}
+                                                        {/*        />*/}
+                                                        {/*    ))*/}
+                                                        {/*) : (*/}
+                                                        {/*    <div>No image available</div>*/}
+                                                        {/*)}*/}
                                                     </AspectRatio>
 
                                                     <CardContent>

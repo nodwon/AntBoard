@@ -14,6 +14,31 @@ function BoardDetail() {
     const {boardId} = useParams(); // useParams 사용
     const navigate = useNavigate();
     const [filename, setFiles] = useState([]); // 추가: 파일 목록 상태 추가
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [thumbnails, setThumbnails] = useState([]);
+
+    const handleFileChange = (event) => {
+        setSelectedFiles([...event.target.files]);
+    };
+
+    const handleUpload = async () => {
+        const formData = new FormData();
+        selectedFiles.forEach((file) => formData.append("file", file));
+
+        try {
+            const response = await axios.post(`http://localhost:8080/board/${boardId}/file/thumbnail`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            setThumbnails(response.data);
+        } catch (error) {
+            console.error("Error uploading files:", error);
+        }
+    };
+
+
     const getBoardDetail = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/board/${boardId}`);
@@ -43,8 +68,15 @@ function BoardDetail() {
 
     useEffect(() => {
         getBoardDetail();
+    }, [boardId]);
+    useEffect(() => {
+        // 쿠키에서 액세스 토큰 가져오기
+        const accessToken = document.cookie.split(';').find(cookie => cookie.trim().startsWith('accessToken='));
+        if (accessToken) {
+            // 액세스 토큰을 axios의 기본 헤더에 설정
+            axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken.split('=')[1]}`;
+        }
     }, []);
-
     // updateBoard와 parentBoard의 값 가져오는 부분 이동
     const updateBoard = {
         boardId: getboard.boardId,
@@ -69,13 +101,21 @@ function BoardDetail() {
                         <Typography variant="body1">{getboard.createdDate}</Typography>
                     </div>
                     <AspectRatio minHeight="120px" maxHeight="200px">
-                        {filename && filename.length > 0 ? (
-                            filename.map((file, index) => (
-                                <img key={index} src={URL.createObjectURL(file)} alt="" className="card-image"/>
-                            ))
-                        ) : (
-                            <div>No image available</div>
-                        )}
+                        {/*{filename && filename.length > 0 ? (*/}
+                        {/*    filename.map((file, index) => (*/}
+                        {/*        <img key={index} src={URL.createObjectURL(file)} alt="" className="card-image"/>*/}
+                        {/*    ))*/}
+                        {/*) : (*/}
+                        {/*    <div>No image available</div>*/}
+                        {/*)}*/}
+                        <div className="thumbnails">
+                            {thumbnails.map((thumbnail) => (
+                                <a key={thumbnail.fileId} href={`data:image/jpeg;base64,${thumbnail.base64Data}`}
+                                   target="_blank" rel="noopener noreferrer">
+                                    <img src={`data:image/jpeg;base64,${thumbnail.base64Data}`} alt="Thumbnail"/>
+                                </a>
+                            ))}
+                        </div>
                     </AspectRatio>
                     <CardContent>
                         <div className="btn-group">
@@ -96,6 +136,16 @@ function BoardDetail() {
                                 <i className="fas fa-trash-alt"></i> 삭제
                             </button>
                         </div>
+                        {/* 댓글 리스트 컴포넌트 */}
+                        <CommentList boardId={boardId}/>
+
+                        {/* 댓글 작성 컴포넌트 */}
+                        {
+                            (auth) ? // 로그인한 사용자만 댓글 작성 가능
+                                <CommentWrite boardId={boardId}/>
+                                :
+                                null
+                        }
                     </CardContent>
                 </Card>
             </div>

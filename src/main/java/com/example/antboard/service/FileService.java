@@ -10,11 +10,14 @@ import com.example.antboard.repository.BoardRepository;
 import com.example.antboard.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,6 +58,33 @@ public class FileService {
                 .collect(Collectors.toList());
 
     }
+    @Transactional
+    public List<FileUploadResponseDto> generateThumbnails(List<FileUploadResponseDto> files) {
+        List<FileUploadResponseDto> thumbnails = new ArrayList<>();
+        for (FileUploadResponseDto fileDto : files) {
+            try {
+                // 원본 이미지 데이터 가져오기
+                FileEntity fileEntity = fileRepository.findById(fileDto.getFileId()).orElseThrow(FileNotFoundException::new);
+                byte[] originalImageData = Base64.getDecoder().decode(fileEntity.getBase64Data());
+
+                // 썸네일 생성
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                Thumbnails.of(new ByteArrayInputStream(originalImageData))
+                        .size(100, 100) // 원하는 썸네일 크기 지정
+                        .outputFormat("jpg") // 썸네일 포맷 지정
+                        .toOutputStream(outputStream); // 바이트 배열로 썸네일 생성
+
+                // 생성된 썸네일 데이터를 Base64로 인코딩하여 DTO에 추가
+                String thumbnailBase64 = Base64.getEncoder().encodeToString(outputStream.toByteArray());
+                fileDto.setBase64Data(thumbnailBase64);
+                thumbnails.add(fileDto);
+            } catch (IOException e) {
+                log.error("Error generating thumbnail for file ID {}: {}", fileDto.getFileId(), e.getMessage());
+                // 예외 처리
+            }
+        }
+        return thumbnails;
+    }
 
     @Transactional
     public FileDownloadResponseDto download(Long fileId) throws IOException {
@@ -87,7 +117,7 @@ public class FileService {
     }
     @Transactional
     public List<FileUploadResponseDto> saveS3(Long boardId, List<FileS3Dto> save3File) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() ->
+        boardRepository.findById(boardId).orElseThrow(() ->
                 new ResourceNotFoundException("Board", "boardID", String.valueOf(boardId)));
         List<FileUploadResponseDto> responseDtoList = new ArrayList<>();
         for (FileS3Dto fileS3Dto : save3File) {
