@@ -7,37 +7,44 @@ import {useNavigate, useParams} from "react-router-dom";
 import "../../css/BoardDetail.css"
 import {AspectRatio} from "@mui/joy";
 import {Card, CardContent, Typography} from "@mui/material";
+import CommentList from "../comment/CommentList";
+import CommentWrite from "../comment/CommentWrite";
 
 
 function BoardDetail() {
     const [getboard, setgetboard] = useState({});
     const {boardId} = useParams(); // useParams 사용
     const navigate = useNavigate();
-    const [filename, setFiles] = useState([]); // 추가: 파일 목록 상태 추가
-    const [selectedFiles, setSelectedFiles] = useState([]);
-    const [thumbnails, setThumbnails] = useState([]);
+    const { fileId, setFileId } = useState("");
+    const FileImage = ({boardId, fileId}) => {
+        const [imageSrc, setImageSrc] = useState("");
 
-    const handleFileChange = (event) => {
-        setSelectedFiles([...event.target.files]);
+        useEffect(() => {
+            const fetchImage = async () => {
+                if (!fileId) {
+                    console.error("fileId is missing");
+                    return; // fileId가 없는 경우 요청을 보내지 않음
+                }
+
+                try {
+                    const response = await axios.get(
+                        `http://localhost:8080/board/${boardId}/file/${fileId}/image`,
+                        {responseType: "arraybuffer"}
+                    );
+                    const base64Image = Buffer.from(response.data, "binary").toString("base64");
+                    setImageSrc(`data:image/jpeg;base64,${base64Image}`);
+                } catch (error) {
+                    console.error("이미지 가져오기 오류:", error);
+                    // 에러 처리 로직 추가 가능
+                }
+            };
+
+            fetchImage();
+        }, [fileId, boardId]); // fileId가 변경될 때마다 요청 실행
+
     };
 
-    const handleUpload = async () => {
-        const formData = new FormData();
-        selectedFiles.forEach((file) => formData.append("file", file));
-
-        try {
-            const response = await axios.post(`http://localhost:8080/board/${boardId}/file/thumbnail`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-
-            setThumbnails(response.data);
-        } catch (error) {
-            console.error("Error uploading files:", error);
-        }
-    };
-
+    const accessToken = document.cookie.split(';').find(cookie => cookie.trim().startsWith('accessToken='));
 
     const getBoardDetail = async () => {
         try {
@@ -45,7 +52,7 @@ function BoardDetail() {
             console.log(response.data);
             console.log(response.data);
             setgetboard(response.data);
-            setFiles(response.data.files); // 파일 정보를 가져와 filename 상태 업데이트
+            setFileId(response.data.fileId); // 파일 정보를 가져와 filename 상태 업데이트
         } catch (error) {
             console.error(error);
         }
@@ -71,7 +78,7 @@ function BoardDetail() {
     }, [boardId]);
     useEffect(() => {
         // 쿠키에서 액세스 토큰 가져오기
-        const accessToken = document.cookie.split(';').find(cookie => cookie.trim().startsWith('accessToken='));
+        // const accessToken = document.cookie.split(';').find(cookie => cookie.trim().startsWith('accessToken='));
         if (accessToken) {
             // 액세스 토큰을 axios의 기본 헤더에 설정
             axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken.split('=')[1]}`;
@@ -101,21 +108,14 @@ function BoardDetail() {
                         <Typography variant="body1">{getboard.createdDate}</Typography>
                     </div>
                     <AspectRatio minHeight="120px" maxHeight="200px">
-                        {/*{filename && filename.length > 0 ? (*/}
-                        {/*    filename.map((file, index) => (*/}
-                        {/*        <img key={index} src={URL.createObjectURL(file)} alt="" className="card-image"/>*/}
-                        {/*    ))*/}
-                        {/*) : (*/}
-                        {/*    <div>No image available</div>*/}
-                        {/*)}*/}
-                        <div className="thumbnails">
-                            {thumbnails.map((thumbnail) => (
-                                <a key={thumbnail.fileId} href={`data:image/jpeg;base64,${thumbnail.base64Data}`}
-                                   target="_blank" rel="noopener noreferrer">
-                                    <img src={`data:image/jpeg;base64,${thumbnail.base64Data}`} alt="Thumbnail"/>
-                                </a>
-                            ))}
+                        <div>
+                            {imageSrc ? (
+                                <img src={imageSrc} alt="File" style={{width: "100px", height: "100px"}}/>
+                            ) : (
+                                <div>No image available</div>
+                            )}
                         </div>
+                        );
                     </AspectRatio>
                     <CardContent>
                         <div className="btn-group">
@@ -140,12 +140,13 @@ function BoardDetail() {
                         <CommentList boardId={boardId}/>
 
                         {/* 댓글 작성 컴포넌트 */}
-                        {
-                            (auth) ? // 로그인한 사용자만 댓글 작성 가능
-                                <CommentWrite boardId={boardId}/>
-                                :
-                                null
-                        }
+                        {/*{*/}
+                        {/*    (accessToken) ? // 로그인한 사용자만 댓글 작성 가능*/}
+                        {/*        <CommentWrite boardId={boardId}/>*/}
+                        {/*        :*/}
+                        {/*        null*/}
+                        {/*}*/}
+                        <CommentWrite boardId={boardId}/>
                     </CardContent>
                 </Card>
             </div>

@@ -24,12 +24,12 @@ const VisuallyHiddenInput = styled('input')`
 VisuallyHiddenInput.propTypes = {type: PropTypes.string};
 
 export default function Main() {
-    const { boardId } = useParams();
+    const {boardId} = useParams();
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const navigate = useNavigate();
+    const [fileId, setFileId] = useState("");
     const [files, setFiles] = useState([]);
-    const [thumbnails, setThumbnails] = useState([]);
 
     //Paging
     const [page, setPage] = useState(1);
@@ -37,9 +37,13 @@ export default function Main() {
     const [totalPages, setTotalPages] = useState(5);
     const [totalCnt, setTotalCnt] = useState(0);
     const [AllBoard, setBoardList] = useState([]);
-
     // 게시글 전체조회
 
+    let userId = null;
+    const cookie = document.cookie.split('; ').find(row => row.startsWith('id='));
+    if (cookie) {
+        userId = cookie.split('=')[1];
+    }
     const changeTitle = (event) => {
         setTitle(event.target.value);
     };
@@ -65,23 +69,33 @@ export default function Main() {
         setPage(value)
         await BoardList(value); // 페이지 파라미터를 전달
     };
-    const handleUpload = async () => {
-        const formData = new FormData();
-        selectedFiles.forEach((file) => formData.append("file", file));
+    const FileImage = ({boardId, fileId}) => {
+        const [imageSrc, setImageSrc] = useState("");
 
-        try {
-            const response = await axios.post(`http://localhost:8080/board/${boardId}/file/thumbnail`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+        useEffect(() => {
+            const fetchImage = async () => {
+                if (!fileId) {
+                    console.error("fileId is missing");
+                    return; // fileId가 없는 경우 요청을 보내지 않음
+                }
 
-            setThumbnails(response.data);
-        } catch (error) {
-            console.error("Error uploading files:", error);
-        }
+                try {
+                    const response = await axios.get(
+                        `http://localhost:8080/board/${boardId}/file/${fileId}/image`,
+                        {responseType: "arraybuffer"}
+                    );
+                    const base64Image = Buffer.from(response.data, "binary").toString("base64");
+                    setImageSrc(`data:image/jpeg;base64,${base64Image}`);
+                } catch (error) {
+                    console.error("이미지 가져오기 오류:", error);
+                    // 에러 처리 로직 추가 가능
+                }
+            };
+
+            fetchImage();
+        }, [fileId, boardId]); // fileId가 변경될 때마다 요청 실행
+
     };
-
     const createBoard = async () => {
         const req = {
             title: title,
@@ -90,7 +104,6 @@ export default function Main() {
 
         await axios.post("http://localhost:8080/board/write", req)
             .then((resp) => {
-                handleUpload(); // 파일 업로드 수행
                 console.log(("success"));
                 console.log(resp.data);
                 const boardId = resp.data.boardId;
@@ -117,22 +130,33 @@ export default function Main() {
             });
     }
 
+    const getBoardDetail = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/board/${boardId}`);
+            console.log(response.data);
+            console.log(response.data);
+            setFileId(response.data.fileId); // 파일 정보를 가져와 filename 상태 업데이트
+        } catch (error) {
+            console.error(error);
+        }
+    };
     const BoardList = async (page) => {
         try {
             const response = await axios.get("http://localhost:8080/board/list", {
                 params: {page: page - 1},
             });
-            console.log(page);
-            console.log(response.data);
-            setBoardList(response.data.content);
+            // 서버로부터 받은 데이터가 배열인지 확인하고, 그렇지 않으면 빈 배열을 설정
+            const boards = Array.isArray(response.data.content) ? response.data.content : [];
+            setBoardList(boards);
             setPageSize(response.data.pageSize);
             setTotalPages(response.data.totalPages);
             setTotalCnt(response.data.totalElements);
         } catch (error) {
             console.log(error);
+            // 에러 발생 시에도 안전하게 빈 배열로 초기화
+            setBoardList([]);
         }
     };
-
 
     return (
         <div className="py-4">
@@ -208,7 +232,7 @@ export default function Main() {
                                 </div>
                                 <div className="board-list">
                                     <Grid container spacing={2}>
-                                        {AllBoard.map(boardItem => (
+                                        {Array.isArray(AllBoard) && AllBoard.map((boardItem) => (
                                             <Grid item xs={4} key={boardItem.boardId}>
                                                 <Card className="board-card">
                                                     <div>
@@ -216,22 +240,14 @@ export default function Main() {
                                                         <Typography variant="body1">{boardItem.createdDate}</Typography>
                                                     </div>
                                                     <AspectRatio minHeight="100px" maxHeight="150px">
-                                                        {thumbnails.map((thumbnail) => (
-                                                            <div key={thumbnail.fileId} className="thumbnail-item">
-                                                                <img src={`data:image/jpeg;base64,${thumbnail.base64Data}`} alt="Thumbnail" />
-                                                            </div>
-                                                        ))}
-                                                        {/*{files && files.length > 0 ? (*/}
-                                                        {/*    files.map((file, index) => (*/}
-                                                        {/*        <img*/}
-                                                        {/*            key={index}*/}
-                                                        {/*            src={`data:image/jpeg;base64,${file}`}*/}
-                                                        {/*            alt=""*/}
-                                                        {/*        />*/}
-                                                        {/*    ))*/}
-                                                        {/*) : (*/}
-                                                        {/*    <div>No image available</div>*/}
-                                                        {/*)}*/}
+                                                        <div>
+                                                            {imageSrc ? (
+                                                                <img src={imageSrc} alt="File" style={{width: "100px", height: "100px"}}/>
+                                                            ) : (
+                                                                <div>No image available</div>
+                                                            )}
+                                                        </div>
+                                                        );
                                                     </AspectRatio>
 
                                                     <CardContent>

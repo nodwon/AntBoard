@@ -38,6 +38,7 @@ public class MemberService {
         isExistEmail(email);
     }
 
+    @Transactional
     public MemberResponseDto register(JoinDto joinDto) {
         isExistEmail(joinDto.getEmail());
         checkPassword(joinDto.getPassword(), joinDto.getPasswordCheck());

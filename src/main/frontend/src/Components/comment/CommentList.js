@@ -2,7 +2,6 @@ import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import Pagination from "react-js-pagination";
 import Comment from "./Comment.js"
-import "../../css/commentList.css"; // 스타일 파일 import
 
 function CommentList(props) {
 

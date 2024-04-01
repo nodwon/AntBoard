@@ -1,7 +1,7 @@
 package com.example.antboard.controller;
 
-import com.example.antboard.dto.response.file.FileUploadResponseDto;
 import com.example.antboard.dto.response.file.FileDownloadResponseDto;
+import com.example.antboard.dto.response.file.FileUploadResponseDto;
 import com.example.antboard.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,25 +28,26 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<List<FileUploadResponseDto>> upload(
             @PathVariable("boardId") Long boardId,
-            @RequestParam("file")List<MultipartFile> files) throws IOException{
+            @RequestParam("file") List<MultipartFile> files) throws IOException {
         List<FileUploadResponseDto> saveFile = fileService.upload(boardId, files);
         return ResponseEntity.status(HttpStatus.CREATED).body(saveFile);
     }
-    @PostMapping("/thumbnail")
-    public ResponseEntity<List<FileUploadResponseDto>> thumbnail(
-            @PathVariable("boardId") Long boardId,
-            @RequestParam("file")List<MultipartFile> files) throws IOException{
-        List<FileUploadResponseDto> saveFile = fileService.upload(boardId, files);
 
-        // 썸네일 생성 및 Base64 인코딩
-        List<FileUploadResponseDto> thumbnails = fileService.generateThumbnails(saveFile);
+    @GetMapping("/{fileId}/image")
+    public ResponseEntity<FileDownloadResponseDto> getFileImage(@PathVariable("boardId") Long boardId, @PathVariable("fileId") Long fileId) {
+        FileDownloadResponseDto imageData = fileService.getFile(boardId, fileId);
+        if (imageData == null) {
+            return ResponseEntity.notFound().build();
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(thumbnails);
+        return ResponseEntity.ok().body(imageData);
     }
 
-    @GetMapping("/download")
+
+
+    @GetMapping("/{fileId}/download")
     public ResponseEntity<Resource> download(
-            @RequestParam("fileId") Long fileId) throws IOException{
+            @RequestParam("fileId") Long fileId) throws IOException {
         FileDownloadResponseDto downloadDto = fileService.download(fileId);
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -54,8 +55,9 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; fileName=\"" + downloadDto.getFilename() + "\"")
                 .body(new ByteArrayResource(downloadDto.getContent().getBytes()));
     }
+
     @DeleteMapping("/delete")
-    public ResponseEntity<Long> delete(@RequestParam("fileId") Long fileId){
+    public ResponseEntity<Long> delete(@RequestParam("fileId") Long fileId) {
         fileService.delete(fileId);
         return ResponseEntity.status(HttpStatus.OK).build();
 

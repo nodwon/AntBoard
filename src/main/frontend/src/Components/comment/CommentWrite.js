@@ -4,8 +4,11 @@ import {useNavigate, useParams} from "react-router-dom";
 
 function CommentWrite(props) {
     const {boardId} = useParams(); // 파라미터 가져오기
-
-    const id = localStorage.getItem("id");
+    let userId = null;
+    const cookie = document.cookie.split('; ').find(row => row.startsWith('id='));
+    if (cookie) {
+        userId = cookie.split('=')[1];
+    }
 
     const [content, setContent] = useState("");
     const navigate = useNavigate();
@@ -20,7 +23,7 @@ function CommentWrite(props) {
             content: content,
         }
 
-        await axios.post(`http://localhost:8080/board/${boardId}/comment/write`, req, {headers: headers})
+        await axios.post(`http://localhost:8080/board/${boardId}/comment/write`, req, {userId: userId})
             .then((resp) => {
                 console.log("[CommentWrite.js] createComment() success :D");
                 console.log(resp.data);
@@ -39,7 +42,7 @@ function CommentWrite(props) {
             {/* 상단 영역 (프로필 이미지, 댓글 작성자) */}
             <div className="my-1 d-flex justify-content-center">
                 <div className="col-7">
-                    <span className="comment-id">{id}</span>
+                    <span className="comment-id">{userId}</span>
                 </div>
                 <div className="col-2 my-1 d-flex justify-content-end">
                     <button className="btn btn-outline-secondary" onClick={createComment}><i
