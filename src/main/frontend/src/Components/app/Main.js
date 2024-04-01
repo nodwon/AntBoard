@@ -24,7 +24,6 @@ const VisuallyHiddenInput = styled('input')`
 VisuallyHiddenInput.propTypes = {type: PropTypes.string};
 
 export default function Main() {
-    const {boardId} = useParams();
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const navigate = useNavigate();
@@ -32,7 +31,7 @@ export default function Main() {
 
     //Paging
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(5);
+    const [ setPageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(5);
     const [totalCnt, setTotalCnt] = useState(0);
     const [AllBoard, setBoardList] = useState([]);
