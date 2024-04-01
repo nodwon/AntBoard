@@ -3,7 +3,7 @@ import Button from '@mui/joy/Button';
 import {Card, CardContent, Grid, Input, Pagination, styled, Typography} from '@mui/material'; // Import Card and Typography components
 import "../../css/home.css";
 import * as PropTypes from "prop-types";
-import {AspectRatio, Stack, SvgIcon} from "@mui/joy";
+import {Stack, SvgIcon} from "@mui/joy";
 import axios from "axios";
 import Textarea from "@mui/joy/Textarea";
 import {useNavigate, useParams} from "react-router-dom";
@@ -28,7 +28,6 @@ export default function Main() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const navigate = useNavigate();
-    const [fileId, setFileId] = useState("");
     const [files, setFiles] = useState([]);
 
     //Paging
@@ -69,33 +68,7 @@ export default function Main() {
         setPage(value)
         await BoardList(value); // 페이지 파라미터를 전달
     };
-    const FileImage = ({boardId, fileId}) => {
-        const [imageSrc, setImageSrc] = useState("");
 
-        useEffect(() => {
-            const fetchImage = async () => {
-                if (!fileId) {
-                    console.error("fileId is missing");
-                    return; // fileId가 없는 경우 요청을 보내지 않음
-                }
-
-                try {
-                    const response = await axios.get(
-                        `http://localhost:8080/board/${boardId}/file/${fileId}/image`,
-                        {responseType: "arraybuffer"}
-                    );
-                    const base64Image = Buffer.from(response.data, "binary").toString("base64");
-                    setImageSrc(`data:image/jpeg;base64,${base64Image}`);
-                } catch (error) {
-                    console.error("이미지 가져오기 오류:", error);
-                    // 에러 처리 로직 추가 가능
-                }
-            };
-
-            fetchImage();
-        }, [fileId, boardId]); // fileId가 변경될 때마다 요청 실행
-
-    };
     const createBoard = async () => {
         const req = {
             title: title,
@@ -130,30 +103,18 @@ export default function Main() {
             });
     }
 
-    const getBoardDetail = async () => {
-        try {
-            const response = await axios.get(`http://localhost:8080/board/${boardId}`);
-            console.log(response.data);
-            console.log(response.data);
-            setFileId(response.data.fileId); // 파일 정보를 가져와 filename 상태 업데이트
-        } catch (error) {
-            console.error(error);
-        }
-    };
     const BoardList = async (page) => {
         try {
-            const response = await axios.get("http://localhost:8080/board/list", {
-                params: {page: page - 1},
+            const response = await axios.get(`http://localhost:8080/board/list`, {
+                params: { page: page - 1 },
             });
-            // 서버로부터 받은 데이터가 배열인지 확인하고, 그렇지 않으면 빈 배열을 설정
-            const boards = Array.isArray(response.data.content) ? response.data.content : [];
-            setBoardList(boards);
+            // Directly use the response data since it now includes imageBase64Data
+            setBoardList(response.data.content || []);
             setPageSize(response.data.pageSize);
             setTotalPages(response.data.totalPages);
             setTotalCnt(response.data.totalElements);
         } catch (error) {
             console.log(error);
-            // 에러 발생 시에도 안전하게 빈 배열로 초기화
             setBoardList([]);
         }
     };
@@ -232,28 +193,17 @@ export default function Main() {
                                 </div>
                                 <div className="board-list">
                                     <Grid container spacing={2}>
-                                        {Array.isArray(AllBoard) && AllBoard.map((boardItem) => (
+                                        {AllBoard.map((boardItem) => (
                                             <Grid item xs={4} key={boardItem.boardId}>
-                                                <Card className="board-card">
-                                                    <div>
-                                                        <Typography variant="h6">{boardItem.title}</Typography>
-                                                        <Typography variant="body1">{boardItem.createdDate}</Typography>
-                                                    </div>
-                                                    <AspectRatio minHeight="100px" maxHeight="150px">
-                                                        <div>
-                                                            {imageSrc ? (
-                                                                <img src={imageSrc} alt="File" style={{width: "100px", height: "100px"}}/>
-                                                            ) : (
-                                                                <div>No image available</div>
-                                                            )}
-                                                        </div>
-                                                        );
-                                                    </AspectRatio>
-
+                                                <Card>
                                                     <CardContent>
-                                                        <Typography variant="body1">{boardItem.content}</Typography>
-                                                        <Button variant="outlined" color="primary"
-                                                                onClick={() => navigate(`/board/${boardItem.boardId}`)}>Explore</Button>
+                                                        <Typography variant="h6">{boardItem.title}</Typography>
+                                                        <Typography variant="body2">{boardItem.content}</Typography>
+                                                        {/* Iterate over imageBase64Data to display each image */}
+                                                        {boardItem.imageBase64Data && boardItem.imageBase64Data[0] && (
+                                                            <img src={`data:image/jpeg;base64,${boardItem.imageBase64Data[0]}`} alt="Board" style={{ width: '100%', height: 'auto' }} />
+                                                        )}
+                                                        <Button variant="outlined" onClick={() => navigate(`/board/${boardItem.boardId}`)}>Explore</Button>
                                                     </CardContent>
                                                 </Card>
                                             </Grid>

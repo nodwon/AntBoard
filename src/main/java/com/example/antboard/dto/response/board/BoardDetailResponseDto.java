@@ -21,20 +21,23 @@ public class BoardDetailResponseDto {
     private List<BoardDetailsFileResponseDto> files;
 
     @Builder
-    public BoardDetailResponseDto(Long boardId, String title, String content, String createdDate, String modifiedDate) {
+    public BoardDetailResponseDto(Long boardId, String title, String content, String createdDate, String modifiedDate, List<BoardDetailsFileResponseDto> files) {
         this.boardId = boardId;
         this.title = title;
         this.content = content;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
+        this.files = files;
     }
-    public static BoardDetailResponseDto from(Board board) {
+
+    public static BoardDetailResponseDto from(Board board, List<BoardDetailsFileResponseDto> files) {
         return BoardDetailResponseDto.builder()
                 .boardId(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .createdDate(board.getCreatedDate())
                 .modifiedDate(board.getModifiedDate())
+                .files(files)
                 .build();
     }
 

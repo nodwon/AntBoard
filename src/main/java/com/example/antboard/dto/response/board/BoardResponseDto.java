@@ -15,6 +15,7 @@ public class BoardResponseDto {
     private String content;
     private String createdDate;
     private String modifiedDate;
+
     @Builder
     public BoardResponseDto(Long boardId, String title, String content,String createdDate,String modifiedDate) {
         this.boardId = boardId;

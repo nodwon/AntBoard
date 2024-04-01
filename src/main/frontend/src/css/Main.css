@@ -1,17 +1,20 @@
-main div.py-4 {
+/* Main.css */
+.main-div {
     padding-bottom: 0 !important;
 }
 
-main {
+.main {
     flex: 1;
-    overflow-y: auto; /* 내용이 길어질 경우 스크롤바 표시 */
-    box-sizing: border-box; /* border와 padding을 높이에 포함 */
-    min-height: 85.3vh; /* 화면 높이에 100% 맞추기 */
+    overflow-y: auto;
+    box-sizing: border-box;
+    min-height: 85.3vh;
 }
+
 .pagination-wrapper {
     display: flex;
     justify-content: center;
 }
+
 .basic-card {
     width: 320px;
 }

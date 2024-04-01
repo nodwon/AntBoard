@@ -1,9 +1,11 @@
 import axios from "axios";
-import {useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button, TextField, Grid, Box } from "@mui/material";
+import SendIcon from '@mui/icons-material/Send';
 
-function CommentWrite(props) {
-    const {boardId} = useParams(); // 파라미터 가져오기
+function CommentWrite() {
+    const { boardId } = useParams();
     let userId = null;
     const cookie = document.cookie.split('; ').find(row => row.startsWith('id='));
     if (cookie) {
@@ -13,50 +15,53 @@ function CommentWrite(props) {
     const [content, setContent] = useState("");
     const navigate = useNavigate();
 
-    const chageContent = (event) => {
+    const changeContent = (event) => {
         setContent(event.target.value);
-    }
+    };
 
     const createComment = async () => {
-
         const req = {
             content: content,
+            // Assuming userId is intended to be part of the request body
+            userId: userId
+        };
+
+        try {
+            const resp = await axios.post(`http://localhost:8080/board/${boardId}/comment/write`, req);
+            console.log("[CommentWrite.js] createComment() success :D", resp.data);
+            alert("댓글을 성공적으로 등록했습니다 :D");
+            navigate(0); // Refresh the page to show the new comment
+        } catch (err) {
+            console.error("[CommentWrite.js] createComment() error :<", err);
         }
-
-        await axios.post(`http://localhost:8080/board/${boardId}/comment/write`, req, {userId: userId})
-            .then((resp) => {
-                console.log("[CommentWrite.js] createComment() success :D");
-                console.log(resp.data);
-                alert("댓글을 성공적으로 등록했습니다 :D");
-                navigate(0);
-
-            }).catch((err) => {
-                console.log("[CommentWrite.js] createComment() error :<");
-                console.log(err);
-
-            });
-    }
+    };
 
     return (
-        <>
-            {/* 상단 영역 (프로필 이미지, 댓글 작성자) */}
-            <div className="my-1 d-flex justify-content-center">
-                <div className="col-7">
-                    <span className="comment-id">{userId}</span>
-                </div>
-                <div className="col-2 my-1 d-flex justify-content-end">
-                    <button className="btn btn-outline-secondary" onClick={createComment}><i
-                        className="fas fa-comment-dots"></i> 댓글 추가
-                    </button>
-                </div>
-            </div>
-            {/* 하단 영역 (댓글 내용) */}
-            <div className="my-3 d-flex justify-content-center">
-                <textarea className="col-10" rows="1" value={content} onChange={chageContent}></textarea>
-            </div>
-            <br/><br/>
-        </>
-    )
+        <Box sx={{ width: '100%', my: 2 }}>
+            <Grid container spacing={2} alignItems="center">
+                <Grid item xs={10}>
+                    <TextField
+                        fullWidth
+                        multiline
+                        rows={1}
+                        value={content}
+                        onChange={changeContent}
+                        variant="outlined"
+                        placeholder="Write a comment..."
+                    />
+                </Grid>
+                <Grid item xs={2} display="flex" justifyContent="flex-end">
+                    <Button
+                        variant="contained"
+                        endIcon={<SendIcon />}
+                        onClick={createComment}
+                    >
+                        Add
+                    </Button>
+                </Grid>
+            </Grid>
+        </Box>
+    );
 }
 
 export default CommentWrite;

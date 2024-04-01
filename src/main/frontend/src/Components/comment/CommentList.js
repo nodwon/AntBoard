@@ -1,42 +1,34 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import Pagination from "react-js-pagination";
-import Comment from "./Comment.js"
+import { Pagination, Stack, Typography } from "@mui/material";
+import Comment from "./Comment.js";
 
 function CommentList(props) {
-
     const boardId = props.boardId;
 
-    // Paging
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(5);
+    const [ setPageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(5);
-    const [totalCnt, setTotalCnt] = useState(0);
+    const [setTotalCnt] = useState(0);
     const [commentList, setCommentList] = useState([]);
 
-    // comment에서 참조
     const getCommentListRef = useRef(null);
 
-    const changePage = (page) => {
-        setPage(page);
-        getCommentList(page);
-        getCommentListRef.current(page);
+    const changePage = (newPage) => {
+        setPage(newPage);
+        getCommentList(newPage);
+        getCommentListRef.current(newPage);
     }
 
-    const getCommentList = async (page) => {
-        await axios.get(`http://localhost:8080/board/${boardId}/comment/list`, {params: {"page": page - 1}})
+    const getCommentList = async (newPage) => {
+        await axios.get(`http://localhost:8080/board/${boardId}/comment/list`, { params: { "page": newPage - 1 } })
             .then((resp) => {
-                console.log("[BbsComment.js] getCommentList() success :D");
-                console.log(resp.data);
-
                 setPageSize(resp.data.pageSize);
                 setTotalPages(resp.data.totalPages);
                 setTotalCnt(resp.data.totalElements);
                 setCommentList(resp.data.content);
             }).catch((err) => {
-                console.log("[BbsComment.js] getCommentList() error :<");
-                console.log(err);
-
+                console.error("[CommentList.js] getCommentList() error:", err);
             });
     }
 
@@ -47,31 +39,28 @@ function CommentList(props) {
 
     return (
         <>
-            <div className="my-1 d-flex justify-content-center">
-            </div>
-
-            <Pagination
-                activePage={page}
-                itemsCountPerPage={5}
-                totalItemsCount={totalCnt}
-                pageRangeDisplayed={5}
-                prevPageText={"‹"}
-                nextPageText={"›"}
-                onChange={changePage}/>
-            {
-                commentList.map(function (comment, idx) {
-                    return (
+            {commentList.length > 0 ? (
+                <>
+                    {commentList.map((comment, idx) => (
                         <div className="my-5" key={idx}>
-                            <Comment obj={comment} key={idx} page={page} getCommentList={getCommentListRef.current}/>
+                            <Comment obj={comment} key={`comment-${idx}`} page={page} getCommentList={getCommentListRef.current} />
                         </div>
-                    );
-                })
-            }
-
+                    ))}
+                    <Stack spacing={2} direction="row" justifyContent="center">
+                        <Pagination
+                            count={totalPages}
+                            page={page}
+                            onChange={(event, newPage) => changePage(newPage)}
+                            variant="outlined"
+                            shape="rounded"
+                        />
+                    </Stack>
+                </>
+            ) : (
+                <Typography textAlign="center"></Typography>
+            )}
         </>
-
     );
 }
-
 
 export default CommentList;
