@@ -8,8 +8,8 @@ import ErrorPage from "./Components/router/ErrorPage";
 import BoardDetail from "./Components/board/BoardDetail";
 import BoardUpdate from "./Components/board/BoardUpdate";
 import Login from "./Components/member/Login";
-import SignUP from "./Components/member/Register";
 import Register from "./Components/member/Register";
+import {AuthProvider} from "./Components/file/AuthProvider";
 
 const router = createBrowserRouter([
     {
@@ -49,15 +49,16 @@ function App() {
 
 
     return (
-        <div>
+        <AuthProvider>
 
+        <div>
             <React.StrictMode>
                 <RouterProvider router={router}/>
             </React.StrictMode>
             <BrowserRouter>
             </BrowserRouter>
-
         </div>
+        </AuthProvider>
 
     );
 }

@@ -3,7 +3,6 @@ package com.example.antboard.controller;
 import com.example.antboard.Security.jwt.JwtTokenProvider;
 import com.example.antboard.common.ErrorException;
 import com.example.antboard.dto.response.member.TokenDto;
-import com.example.antboard.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +24,6 @@ import java.util.Objects;
 @ResponseBody
 public class ReissueController {
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshRepository refreshRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
 
@@ -56,22 +54,18 @@ public class ReissueController {
         if (!category.equals("refresh")) {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         } else {
-            Boolean isExist = this.refreshRepository.existsByRefresh(refresh);
-            if (!isExist) {
-                return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
-            } else {
-                String email = this.jwtTokenProvider.getUsername(refresh);
-                String role = this.jwtTokenProvider.getRole(refresh);
-                String newAccess = this.jwtTokenProvider.createJwt("access", email, role, 600000L);
-                String newRefresh = this.jwtTokenProvider.createJwt("refresh", email, role, 86400000L);
+            String email = this.jwtTokenProvider.getUsername(refresh);
+            String role = this.jwtTokenProvider.getRole(refresh);
+            String newAccess = this.jwtTokenProvider.createJwt("access", email, role, 600000L);
+            String newRefresh = this.jwtTokenProvider.createJwt("refresh", email, role, 86400000L);
 
-                new TokenDto(newAccess, newRefresh);
-                response.setHeader("access", newAccess);
-                response.addCookie(this.createCookie(newRefresh));
-                return new ResponseEntity<TokenDto>(HttpStatus.OK);
-            }
+            new TokenDto(newAccess, newRefresh);
+            response.setHeader("access", newAccess);
+            response.addCookie(this.createCookie(newRefresh));
+            return new ResponseEntity<TokenDto>(HttpStatus.OK);
         }
     }
+
 
     private Cookie createCookie(String value) {
         Cookie cookie = new Cookie("refresh", value);

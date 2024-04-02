@@ -17,7 +17,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,9 +63,9 @@ public class MemberService {
     @Transactional
     public MemberTokenDto login(LoginDto loginDto) {
         authenticate(loginDto.getEmail(), loginDto.getPassword());
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginDto.getEmail());
-        return MemberTokenDto.from(String.valueOf(userDetails));
-
+        Member member = memberRepository.findByEmail(loginDto.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Member", "email", loginDto.getEmail()));
+        return MemberTokenDto.from(member);
     }
 
     @Transactional

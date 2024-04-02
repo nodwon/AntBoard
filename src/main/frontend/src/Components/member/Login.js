@@ -37,7 +37,6 @@ function Login() {
             email: id,
             password: pwd
         }
-        debugger;
         try {
             const resp = await axios.post("http://localhost:8080/user/login", req);
             console.log("[Login.js] login() success :D", resp.data);

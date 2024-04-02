@@ -1,17 +1,17 @@
 package com.example.antboard.Security.jwt;
 
 import com.example.antboard.dto.request.member.LoginDto;
+import com.example.antboard.entity.RefreshToken;
+import com.example.antboard.repository.RefreshTokenRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,16 +25,14 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -76,16 +74,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // JWT 토큰 생성
         String accessToken = jwtTokenProvider.createJwt("access", username, role, 600000L);
         String refreshToken = jwtTokenProvider.createJwt("refresh", username, role, 86400000L);
-        redisTemplate.opsForValue().set(
-                username,
-                refreshToken,
-                refreshExpirationTime,
-                TimeUnit.MILLISECONDS
-        );
+        refreshTokenRepository.save(new RefreshToken(username, refreshToken, accessToken));
+        log.info("AccessToken: " + accessToken);
+        log.info("RefreshToken: " + refreshToken);
 
         // 토큰을 응답 헤더에 추가
         response.setHeader("Authorization", "Bearer " + accessToken);
-        response.setHeader("Refresh-Token", refreshToken);
         response.setStatus(HttpStatus.OK.value());
     }
 

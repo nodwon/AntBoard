@@ -5,7 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collection;
+import java.util.Collections;
 
 @Getter
 @Setter
@@ -13,18 +17,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class MemberTokenDto {
 
     private String email;
-    private static String Role;
+    private String role;
 
     @Builder
-    public MemberTokenDto(String email, String Role){
+    public MemberTokenDto(String email, String role) {
         this.email = email;
-        this.Role = Role;
+        this.role = role;
     }
 
-    public static MemberTokenDto from(String email){
+    public static MemberTokenDto from(Member member) {
         return MemberTokenDto.builder()
-                .email(email)
-                .Role(Role)
+                .email(member.getEmail())
+                .role(member.getRole().toString())
                 .build();
     }
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.role));
+    }
+
 }

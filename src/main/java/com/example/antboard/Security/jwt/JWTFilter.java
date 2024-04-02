@@ -1,7 +1,6 @@
 package com.example.antboard.Security.jwt;
 
-import com.example.antboard.dto.request.member.CustomMemberDetails;
-import com.example.antboard.entity.Member;
+import com.example.antboard.dto.response.member.MemberTokenDto;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
@@ -36,57 +35,37 @@ public class JWTFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        Thread currentThread = Thread.currentThread();
-        log.info("현재 실행 중인 스레드: " + currentThread.getName());
-        // get token
-        String accessToken = request.getHeader(HEADER_STRING);
+        String header = request.getHeader(HEADER_STRING);
+        String accessToken;
 
-        if (accessToken == null) {
-            filterChain.doFilter(request, response);
+        if (header != null && header.startsWith(TOKEN_PREFIX)) {
+            accessToken = header.substring(TOKEN_PREFIX.length()).trim();
 
-        } else {
-            if (accessToken.startsWith(TOKEN_PREFIX)) {
-                try {
-                    this.jwtTokenProvider.isExpired(accessToken);
+            try {
+                if (jwtTokenProvider.validateToken(accessToken)) {
+                    String email = jwtTokenProvider.getUsername(accessToken);
+                    String role = jwtTokenProvider.getRole(accessToken);
 
-                } catch (IllegalArgumentException ex) {
-                    log.info("fail get user id", ex);
-                    response.setStatus(401);
+                    MemberTokenDto memberTokenDto = new MemberTokenDto(email, role);
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(memberTokenDto, null, memberTokenDto.getAuthorities());
 
-                } catch (ExpiredJwtException ex) {
-                    log.info("Token expired", ex);
-                    response.setStatus(401);
-                } catch (MalformedJwtException ex) {
-                    log.info("Invalid JWT !!", ex);
-                    System.out.println();
-                    response.setStatus(401);
-                } catch (Exception e) {
-                    log.info("Unable to get JWT Token !!");
-                    e.getStackTrace();
-                    response.setStatus(401);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
-            } else {
-                log.info("JWT does not begin with acccess !!");
-                response.setStatus(401);
-            }
-
-            String category = this.jwtTokenProvider.getCategory(accessToken);
-            if (!category.equals("access")) {
-                log.info("invalid access token");
-                response.setStatus(401);
-            } else {
-                String email = jwtTokenProvider.getUsername(accessToken);
-                String role = this.jwtTokenProvider.getRole(accessToken);
-//                Member asd = MemberResponseDto.from(email)
-                Member member = Member.from(email);
-
-                CustomMemberDetails customMemberDetails = new CustomMemberDetails(member, role);
-                Authentication authToken = new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-                filterChain.doFilter(request, response);
-
+            } catch (ExpiredJwtException e) {
+                log.info("Expired JWT token.", e);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Expired JWT token.");
+                return;
+            } catch (MalformedJwtException e) {
+                log.info("Invalid JWT token.", e);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token.");
+                return;
+            } catch (Exception e) {
+                log.info("JWT processing failed.", e);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT processing failed.");
+                return;
             }
         }
+
+        filterChain.doFilter(request, response);
     }
 }
-

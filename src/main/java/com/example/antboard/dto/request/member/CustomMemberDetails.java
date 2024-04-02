@@ -1,34 +1,33 @@
 package com.example.antboard.dto.request.member;
 
-import com.example.antboard.common.Role;
-import com.example.antboard.entity.Member;
+import com.example.antboard.dto.response.member.MemberTokenDto;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-@AllArgsConstructor
-public class CustomMemberDetails implements UserDetails, GrantedAuthority{
+import java.util.Collections;
 
-    private  final Member member;
-    private final String roles;
+@AllArgsConstructor
+public class CustomMemberDetails implements UserDetails {
+
+    private final MemberTokenDto memberTokenDto;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collection = new ArrayList<>();
-        collection.add(new SimpleGrantedAuthority("ROLE_" + this.roles));
-        return collection;    }
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + memberTokenDto.getRole()));
+    }
 
     @Override
     public String getPassword() {
-        return this.member.getPassword();
+        return "";
     }
 
     @Override
     public String getUsername() {
-        return this.member.getEmail();
+        return memberTokenDto.getEmail();
     }
 
     @Override
@@ -51,8 +50,4 @@ public class CustomMemberDetails implements UserDetails, GrantedAuthority{
         return true;
     }
 
-    @Override
-    public String getAuthority() {
-        return this.member.getRole().toString();
-    }
 }

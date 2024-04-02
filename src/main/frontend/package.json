@@ -14,6 +14,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.7",
     "http-proxy-middleware": "^2.0.6",
+    "js-cookie": "^3.0.5",
     "material-icons": "^1.13.12",
     "prop-types": "^15.8.1",
     "react": "^17.0.0 || ^18.0.0",

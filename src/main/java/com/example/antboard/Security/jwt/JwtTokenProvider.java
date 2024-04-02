@@ -1,7 +1,6 @@
 package com.example.antboard.Security.jwt;
 
 import com.example.antboard.common.ErrorException;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -45,7 +44,9 @@ public class JwtTokenProvider {
     }
 
     public String createJwt(String category, String username, String role, Long expiredMs) {
-        return Jwts.builder().claim("category", category).claim("username", username).claim("role", role).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + expiredMs)).signWith(this.secretKey).compact();
+        return Jwts.builder().claim("category", category).
+                claim("username", username).claim("role", role).
+                issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + expiredMs)).signWith(this.secretKey).compact();
     }
 
     public Authentication getAuthentication(String token) throws ErrorException {
@@ -66,9 +67,9 @@ public class JwtTokenProvider {
         }
     }
 
-    public String createJwt(String token, Authentication authentication) {
-        Claims claims = (Claims) Jwts.claims().subject(authentication.getName());
-        return Jwts.builder().claim(token, claims).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis())).signWith(this.secretKey).compact();
-
-    }
+//    public String createJwt(String token, Authentication authentication) {
+//        Claims claims = (Claims) Jwts.claims().subject(authentication.getName());
+//        return Jwts.builder().claim(token, claims).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis())).signWith(this.secretKey).compact();
+//
+//    }
 }
