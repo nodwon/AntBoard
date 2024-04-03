@@ -1,8 +1,9 @@
 package com.example.antboard.Security.config;
 
-import com.example.antboard.Security.jwt.JWTFilter;
-import com.example.antboard.Security.jwt.JwtAuthenticationEntryPoint;
+import com.example.antboard.Security.jwt.*;
+import com.example.antboard.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -28,20 +30,18 @@ import java.util.Collections;
 public class SecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JWTFilter jwtFilter;
-
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationConfiguration authenticationConfiguration;
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
 
         return new BCryptPasswordEncoder();
     }
-
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -80,13 +80,18 @@ public class SecurityConfig {
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
                 );
 
-        //세션 설정
         http
-                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(excep -> excep.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                // Existing configurations...
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(excep -> excep.authenticationEntryPoint(jwtAuthenticationEntryPoint));
+
+        // Configure LoginFilter directly here if needed or ensure it's correctly autowired.
+        http.addFilterBefore(new JWTFilter(this.jwtTokenProvider), LoginFilter.class);
+        http.addFilterAt(new LoginFilter(this.refreshTokenRepository, this.authenticationManager(this.authenticationConfiguration), jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new CustomLogoutFilter(this.jwtTokenProvider,this.refreshTokenRepository), LogoutFilter.class);
 
         return http.build();
     }
+
 
 }

@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,23 +26,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Iterator;
 
-@Component
 @RequiredArgsConstructor
-@Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Value("${spring.jwt.token.refresh-expiration-time}")
-    private long refreshExpirationTime;
-
-    @Override
-    @Autowired // 생성자 주입
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        super.setAuthenticationManager(authenticationManager);
-    }
+//    @Value("${spring.jwt.token.refresh-expiration-time}")
+//    private long refreshExpirationTime;
 
 
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -75,8 +66,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String accessToken = jwtTokenProvider.createJwt("access", username, role, 600000L);
         String refreshToken = jwtTokenProvider.createJwt("refresh", username, role, 86400000L);
         refreshTokenRepository.save(new RefreshToken(username, refreshToken, accessToken));
-        log.info("AccessToken: " + accessToken);
-        log.info("RefreshToken: " + refreshToken);
+
 
         // 토큰을 응답 헤더에 추가
         response.setHeader("Authorization", "Bearer " + accessToken);
