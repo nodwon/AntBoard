@@ -25,10 +25,13 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Value("${spring.jwt.header}")
-    private String HEADER_STRING;
-    @Value("${spring.jwt.prefix}")
-    private String TOKEN_PREFIX;
+//    @Value("${spring.jwt.header}")
+//    private String HEADER_STRING;
+//    @Value("${spring.jwt.prefix}")
+//    private String TOKEN_PREFIX;
+    private String HEADER_STRING = "Authorization";
+    private String TOKEN_PREFIX = "Bearer ";
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

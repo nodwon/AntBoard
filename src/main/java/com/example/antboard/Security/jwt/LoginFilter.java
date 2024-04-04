@@ -9,8 +9,6 @@ import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -56,7 +54,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         return this.authenticationManager.authenticate(authToken);
     }
 
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         String username = authentication.getName();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -71,6 +69,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 토큰을 응답 헤더에 추가
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setStatus(HttpStatus.OK.value());
+        response.setContentType("application/json");
+        response.getWriter().write("{\"access_token\": \"" + accessToken + "\", \"refresh_token\": \"" + refreshToken + "\"}");
+        response.getWriter().flush();
     }
 
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
