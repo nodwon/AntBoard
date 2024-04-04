@@ -32,17 +32,13 @@ import java.util.Iterator;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final RefreshTokenRepository refreshTokenRepository;
-    private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
 
     @Value("${spring.jwt.token.refresh-expiration-time}")
     private long refreshExpirationTime;
 
-//    @Override
-//    @Autowired // 생성자 주입
-//    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-//        super.setAuthenticationManager(authenticationManager);
-//    }
+
 
 
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -61,7 +57,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String email = loginDto.getEmail();
         String password = loginDto.getPassword();
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password);
-        return this.authenticationManager.authenticate(authToken);
+        return authenticationManager.authenticate(authToken);
     }
 
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {

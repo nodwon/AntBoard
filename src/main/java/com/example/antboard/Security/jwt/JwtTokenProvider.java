@@ -67,9 +67,4 @@ public class JwtTokenProvider {
         }
     }
 
-//    public String createJwt(String token, Authentication authentication) {
-//        Claims claims = (Claims) Jwts.claims().subject(authentication.getName());
-//        return Jwts.builder().claim(token, claims).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis())).signWith(this.secretKey).compact();
-//
-//    }
 }

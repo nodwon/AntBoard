@@ -1,5 +1,6 @@
 package com.example.antboard.Security.jwt;
 
+import com.example.antboard.dto.response.member.MemberPrincipal;
 import com.example.antboard.dto.response.member.MemberTokenDto;
 import com.example.antboard.entity.Member;
 import com.example.antboard.repository.MemberRepository;
@@ -24,6 +25,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         // Assuming we create a method in MemberTokenDto to build itself from a Member entity
         MemberTokenDto memberTokenDto = MemberTokenDto.from(member);
 
-        return new User(memberTokenDto.getEmail(), member.getPassword(), true, true, true, true, memberTokenDto.getAuthorities());
+        return MemberPrincipal.create(member);
     }
 }

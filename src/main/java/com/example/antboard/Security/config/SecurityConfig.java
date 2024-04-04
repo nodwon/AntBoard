@@ -1,10 +1,9 @@
 package com.example.antboard.Security.config;
 
+import com.example.antboard.Security.jwt.CustomUserDetailsService;
 import com.example.antboard.Security.jwt.JWTFilter;
 import com.example.antboard.Security.jwt.JwtAuthenticationEntryPoint;
-import com.example.antboard.Security.jwt.JwtTokenProvider;
 import com.example.antboard.Security.jwt.LoginFilter;
-import com.example.antboard.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,12 +31,10 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CustomUserDetailsService customUserDetailsService;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JWTFilter jwtFilter;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final AuthenticationConfiguration authenticationConfiguration;
-
+    private final LoginFilter loginFilter;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -53,9 +51,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
-        LoginFilter loginFilter = new LoginFilter( refreshTokenRepository, authenticationManager,jwtTokenProvider);
-        loginFilter.setAuthenticationManager(authenticationManager);
+
         // form 로그인 방식(default 방식) disable
         http.formLogin(AbstractHttpConfigurer::disable);
         // http basic 인증 방식 disable
