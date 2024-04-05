@@ -65,6 +65,7 @@ public class MemberService {
         authenticate(loginDto.getEmail(), loginDto.getPassword());
         Member member = memberRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("Member", "email", loginDto.getEmail()));
+
         return MemberTokenDto.from(member);
     }
 

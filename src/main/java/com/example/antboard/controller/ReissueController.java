@@ -3,74 +3,75 @@ package com.example.antboard.controller;
 import com.example.antboard.Security.jwt.JwtTokenProvider;
 import com.example.antboard.common.ErrorException;
 import com.example.antboard.dto.response.member.TokenDto;
+import com.example.antboard.entity.RefreshToken;
+import com.example.antboard.repository.RefreshTokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.Objects;
-
 
 @Controller
 @RequiredArgsConstructor
 @ResponseBody
 public class ReissueController {
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-
-    @PostMapping({"/reissue"})
+    @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
-        String refresh = null;
+        String refreshTokenValue = null;
         Cookie[] cookies = request.getCookies();
 
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("refresh")) {
-                    refresh = cookie.getValue();
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshTokenValue = cookie.getValue();
+                    break;
                 }
             }
         }
-        Authentication authentication = jwtTokenProvider.getAuthentication(refresh);
-        String redisRefreshToken = redisTemplate.opsForValue().get(authentication.getName());
-        if (!Objects.requireNonNull(redisRefreshToken).equals(refresh)) {
-            throw new ErrorException("NOT_EXIST_REFRESH_JWT");
+
+        if (refreshTokenValue == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(refreshTokenValue)
+                .orElseThrow(() -> new ErrorException("NOT_EXIST_REFRESH_JWT"));
+
         try {
-            this.jwtTokenProvider.isExpired(refresh);
-        } catch (ExpiredJwtException var11) {
-            return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
+            jwtTokenProvider.validateToken(refreshToken.getRefreshToken());
+        } catch (ExpiredJwtException e) {
+            return new ResponseEntity<>("Refresh token expired", HttpStatus.UNAUTHORIZED);
         }
 
-        String category = this.jwtTokenProvider.getCategory(refresh);
-        if (!category.equals("refresh")) {
-            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
-        } else {
-            String email = this.jwtTokenProvider.getUsername(refresh);
-            String role = this.jwtTokenProvider.getRole(refresh);
-            String newAccess = this.jwtTokenProvider.createJwt("access", email, role, 600000L);
-            String newRefresh = this.jwtTokenProvider.createJwt("refresh", email, role, 86400000L);
+        String username = jwtTokenProvider.getUsername(refreshToken.getRefreshToken());
+        String role = jwtTokenProvider.getRole(refreshToken.getRefreshToken());
 
-            new TokenDto(newAccess, newRefresh);
-            response.setHeader("access", newAccess);
-            response.addCookie(this.createCookie(newRefresh));
-            return new ResponseEntity<TokenDto>(HttpStatus.OK);
-        }
+        String newAccessToken = jwtTokenProvider.createJwt("access", username, role, 600000L); // 10 minutes
+        String newRefreshToken = jwtTokenProvider.createJwt("refresh", username, role, 86400000L); // 24 hours
+
+        refreshToken.setRefreshToken(newRefreshToken);
+        refreshTokenRepository.save(refreshToken);
+
+        TokenDto tokenDto = new TokenDto(newAccessToken, newRefreshToken);
+
+        Cookie newRefreshTokenCookie = createCookie(newRefreshToken);
+        response.addCookie(newRefreshTokenCookie);
+
+        return ResponseEntity.ok(tokenDto);
     }
 
-
     private Cookie createCookie(String value) {
-        Cookie cookie = new Cookie("refresh", value);
-        cookie.setMaxAge(86400);
+        Cookie cookie = new Cookie("refreshToken", value);
         cookie.setHttpOnly(true);
+        cookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
+        cookie.setPath("/");
         return cookie;
     }
 }

@@ -7,11 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,9 +38,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
 
-    @Value("${spring.jwt.token.refresh-expiration-time}")
-    private long refreshExpirationTime;
-
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         logger.info("Attempt authentication...");
@@ -62,11 +58,26 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
         String username = authentication.getName();
         String accessToken = jwtTokenProvider.createJwt("access", username, "ROLE_USER", 600000L); // 예제를 단순화하기 위해 'role'을 직접 지정했습니다.
         String refreshToken = jwtTokenProvider.createJwt("refresh", username, "ROLE_USER", 86400000L);
-        refreshTokenRepository.save(new RefreshToken(username, refreshToken,accessToken));
+        refreshTokenRepository.save(new RefreshToken(username, refreshToken, accessToken));
+
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+        accessTokenCookie.setMaxAge(10 * 60); // 액세스 토큰의 유효 시간과 일치시킵니다 (예: 10분)
+        accessTokenCookie.setHttpOnly(true); // JavaScript를 통한 접근 방지
+        accessTokenCookie.setPath("/"); // 전체 도메인에 대해 유효
+
+        // 리프레시 토큰을 쿠키에 저장
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setMaxAge(14 * 24 * 60 * 60); // 리프레시 토큰의 유효 시간 (예: 14일)
+        refreshTokenCookie.setHttpOnly(true); // JavaScript를 통한 접근 방지
+        refreshTokenCookie.setPath("/"); // 전체 도메인에 대해 유효
+
+        // 쿠키를 응답에 추가
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
 
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("Refresh-Token", refreshToken);
@@ -74,7 +85,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         SecurityContextHolder.clearContext();
         response.sendError(HttpStatus.UNAUTHORIZED.value(), "Authentication Failed: " + failed.getMessage());
     }
