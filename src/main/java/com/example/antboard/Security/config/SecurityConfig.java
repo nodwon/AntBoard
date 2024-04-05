@@ -19,7 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,15 +30,15 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JWTFilter jwtFilter;
-//    private final LoginFilter loginFilter;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationConfiguration authenticationConfiguration;
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
     @Bean
     public LoginFilter loginFilter() throws Exception {
         LoginFilter loginFilter = new LoginFilter(refreshTokenRepository, jwtTokenProvider);
@@ -109,8 +108,7 @@ public class SecurityConfig {
         http
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(excep -> excep.authenticationEntryPoint(jwtAuthenticationEntryPoint));
-//                .addFilterBefore(new JWTFilter(this.jwtTokenProvider), LoginFilter.class)
-//                .addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
+//
         return http.build();
     }
 
