@@ -70,8 +70,6 @@ public class SecurityConfig {
                 .addFilterBefore(new JWTFilter(this.jwtTokenProvider), LoginFilter.class)
                 .addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
 
-//                .formLogin(AbstractHttpConfigurer::disable);
-        // http basic 인증 방식 disable
         http.httpBasic(AbstractHttpConfigurer::disable);
         //csrf disable
         http
@@ -108,7 +106,7 @@ public class SecurityConfig {
         http
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(excep -> excep.authenticationEntryPoint(jwtAuthenticationEntryPoint));
-//
+
         return http.build();
     }
 

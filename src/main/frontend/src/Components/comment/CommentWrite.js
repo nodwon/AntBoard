@@ -7,6 +7,8 @@ import SendIcon from '@mui/icons-material/Send';
 function CommentWrite() {
     const { boardId } = useParams();
     let userId = null;
+    // const isLoggedIn = false;
+
     const cookie = document.cookie.split('; ').find(row => row.startsWith('id='));
     if (cookie) {
         userId = cookie.split('=')[1];

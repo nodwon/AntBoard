@@ -21,9 +21,9 @@ function Footer() {
                 </a>
             </p>
             <div>
-                <h1>쿠키 데이터 확인</h1>
-                <p>특정 쿠키 값: {myCookie}</p>
-                <p>모든 쿠키 값 확인: {JSON.stringify(allCookies)}</p>
+                {/*<h1>쿠키 데이터 확인</h1>*/}
+                {/*<p>특정 쿠키 값: {myCookie}</p>*/}
+                {/*<p>모든 쿠키 값 확인: {JSON.stringify(allCookies)}</p>*/}
             </div>
         </footer>
 

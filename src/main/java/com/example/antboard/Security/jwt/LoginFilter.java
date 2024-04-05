@@ -5,7 +5,6 @@ import com.example.antboard.entity.RefreshToken;
 import com.example.antboard.repository.RefreshTokenRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,18 +65,20 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
         accessTokenCookie.setMaxAge(10 * 60); // 액세스 토큰의 유효 시간과 일치시킵니다 (예: 10분)
-        accessTokenCookie.setHttpOnly(true); // JavaScript를 통한 접근 방지
+//        accessTokenCookie.setHttpOnly(true); // JavaScript를 통한 접근 방지
         accessTokenCookie.setPath("/"); // 전체 도메인에 대해 유효
 
         // 리프레시 토큰을 쿠키에 저장
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setMaxAge(14 * 24 * 60 * 60); // 리프레시 토큰의 유효 시간 (예: 14일)
-        refreshTokenCookie.setHttpOnly(true); // JavaScript를 통한 접근 방지
+//        refreshTokenCookie.setHttpOnly(true); // JavaScript를 통한 접근 방지
         refreshTokenCookie.setPath("/"); // 전체 도메인에 대해 유효
 
         // 쿠키를 응답에 추가
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
+
+        log.info(String.valueOf(refreshTokenCookie));
 
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("Refresh-Token", refreshToken);
