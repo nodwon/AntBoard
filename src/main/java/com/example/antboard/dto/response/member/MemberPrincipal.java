@@ -21,7 +21,7 @@ public class MemberPrincipal implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(String.valueOf(this.member.getRole()));
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getRole().toString());
         authorities.add(grantedAuthority);
 
         return authorities;
@@ -29,12 +29,12 @@ public class MemberPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.member.getPassword();
+        return member.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return this.member.getUsername();
+        return member.getUsername();
     }
 
     @Override

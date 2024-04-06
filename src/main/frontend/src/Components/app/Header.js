@@ -3,7 +3,8 @@ import {AppBar, Box, IconButton, InputBase, Menu, MenuItem, styled, Toolbar, Typ
 import {AccountCircle, Menu as MenuIcon, MoreVert as MoreIcon, Search as SearchIcon,} from "@mui/icons-material";
 import {alpha} from "@mui/material/styles";
 import {useNavigate} from "react-router-dom";
-
+import Cookies from "js-cookie";
+import { useAuth } from '../file/AuthProvider'; // AuthContext 경로에 맞게 조정
 const Search = styled("div")(({theme}) => ({
     position: "relative",
     borderRadius: theme.shape.borderRadius,
@@ -51,6 +52,8 @@ function Header() {
     const navigate = useNavigate();
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+    const jwtToken = Cookies.get('jwtToken'); // Accessing the JWT token from cookies
+    const { isLoggedIn, logout } = useAuth(); // useAuth 훅을 사용하여 로그인 상태와 로그아웃 함수를 가져옴
 
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -68,11 +71,11 @@ function Header() {
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
-    const handleRegisterOpen = (event) => {
-        navigate("/register");
-    };
-    const loginopen = (event) => {
-        navigate("/login");
+
+    const handleLogoutClick = () => {
+        logout();
+        handleMenuClose();
+        navigate('/'); // 로그아웃 후 홈으로 리다이렉트
     };
     const menuId = "primary-search-account-menu";
     const renderMenu = (
@@ -91,8 +94,14 @@ function Header() {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleRegisterOpen}>Register</MenuItem>
-            <MenuItem onClick={loginopen}>Login</MenuItem>
+            {isLoggedIn  ? (
+                <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+            ) : (
+                <>
+                    <MenuItem onClick={() => navigate("/register")}>Register</MenuItem>
+                    <MenuItem onClick={() => navigate("/login")}>Login</MenuItem>
+                </>
+            )}
         </Menu>
     );
 

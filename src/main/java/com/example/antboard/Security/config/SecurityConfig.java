@@ -3,6 +3,7 @@ package com.example.antboard.Security.config;
 import com.example.antboard.Security.jwt.*;
 import com.example.antboard.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +36,7 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationConfiguration authenticationConfiguration;
 
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -41,7 +44,7 @@ public class SecurityConfig {
 
     @Bean
     public LoginFilter loginFilter() throws Exception {
-        LoginFilter loginFilter = new LoginFilter(refreshTokenRepository, jwtTokenProvider);
+        LoginFilter loginFilter = new LoginFilter(refreshTokenRepository, jwtTokenProvider,this.authenticationManager(this.authenticationConfiguration));
         loginFilter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return loginFilter;
     }
@@ -65,11 +68,6 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         // form 로그인 방식(default 방식) disable
-        http
-                .formLogin(form -> form.loginProcessingUrl("/login"))
-                .addFilterBefore(new JWTFilter(this.jwtTokenProvider), LoginFilter.class)
-                .addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
-
         http.httpBasic(AbstractHttpConfigurer::disable);
         //csrf disable
         http
@@ -80,12 +78,14 @@ public class SecurityConfig {
                     configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
                     configuration.setAllowedMethods(Collections.singletonList("*"));
                     configuration.setAllowCredentials(true);
-                    configuration.setAllowedHeaders(Collections.singletonList("*"));
+//                    configuration.setAllowedHeaders(Collections.singletonList("*"));
                     configuration.setMaxAge(3600L);
 
                     configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
                     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PATCH", "DELETE"));
                     configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+                    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                    source.registerCorsConfiguration("/**", configuration);
                     return configuration;
 
                 }));
@@ -96,7 +96,8 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations())).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
+                        .requestMatchers(new AntPathRequestMatcher("/**"),new AntPathRequestMatcher("/user/login", "/user/register")).permitAll().anyRequest().authenticated())
+//                        .requestMatchers(new AntPathRequestMatcher("/user/status")).authenticated().anyRequest().permitAll()
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
@@ -105,7 +106,14 @@ public class SecurityConfig {
         //세션 설정
         http
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(excep -> excep.authenticationEntryPoint(jwtAuthenticationEntryPoint));
+                .exceptionHandling(except -> except.authenticationEntryPoint(jwtAuthenticationEntryPoint));
+
+        http
+                .formLogin(form -> form.loginProcessingUrl("/login"))
+                .addFilterBefore(new JWTFilter(this.jwtTokenProvider), LoginFilter.class)
+                .addFilterAfter(loginFilter(), UsernamePasswordAuthenticationFilter.class);
+//                .addFilterAt(new JWTFilter(this.jwtTokenProvider), LoginFilter.class);
+
 
         return http.build();
     }

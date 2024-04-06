@@ -69,8 +69,7 @@ function Comment(props) {
     }
 
 
-    // 삭제되지 않은 댓글의 경우
-    //if (comment.del == 0) {
+
     return (
         <>
             {/* 상단 영역 (프로필 이미지, 댓글 작성자, 댓글 작성시간) */}

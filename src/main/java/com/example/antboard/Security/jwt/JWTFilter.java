@@ -1,6 +1,9 @@
 package com.example.antboard.Security.jwt;
 
+import com.example.antboard.dto.request.member.CustomMemberDetails;
+import com.example.antboard.dto.response.member.MemberPrincipal;
 import com.example.antboard.dto.response.member.MemberTokenDto;
+import com.example.antboard.entity.Member;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.SignatureException;
 
 @Component
 @RequiredArgsConstructor
@@ -30,44 +34,40 @@ public class JWTFilter extends OncePerRequestFilter {
 //    private String TOKEN_PREFIX;
     private String HEADER_STRING = "Authorization";
     private String TOKEN_PREFIX = "Bearer ";
-
+    MemberPrincipal memberPrincipal;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String header = request.getHeader(HEADER_STRING);
-        String accessToken;
+        try {
+            String header = request.getHeader(HEADER_STRING);
+            if (header != null && header.startsWith(TOKEN_PREFIX)) {
+                String accessToken = header.substring(TOKEN_PREFIX.length()).trim();
 
-        if (header != null && header.startsWith(TOKEN_PREFIX)) {
-            accessToken = header.substring(TOKEN_PREFIX.length()).trim();
-
-            try {
                 if (jwtTokenProvider.validateToken(accessToken)) {
                     String email = jwtTokenProvider.getUsername(accessToken);
                     String role = jwtTokenProvider.getRole(accessToken);
-
+                    Member member
+                    CustomMemberDetails customMemberDetails = new CustomMemberDetails()
                     MemberTokenDto memberTokenDto = new MemberTokenDto(email, role);
-                    Authentication authentication = new UsernamePasswordAuthenticationToken(memberTokenDto, null, memberTokenDto.getAuthorities());
-
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(memberTokenDto, null, memberPrincipal.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
-            } catch (ExpiredJwtException e) {
-                log.info("Expired JWT token.", e);
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Expired JWT token.");
-                return;
-            } catch (MalformedJwtException e) {
-                log.info("Invalid JWT token.", e);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token.");
-                return;
-            } catch (Exception e) {
-                log.info("JWT processing failed.", e);
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT processing failed.");
-                return;
             }
-        }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT token.", e);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Expired JWT token.");
+        } catch (MalformedJwtException e) {
+            log.info("Invalid JWT token.", e);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token.");
+        } catch (Exception e) {
+            log.info("JWT processing failed.", e);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT processing failed.");
+            return;
+        }
     }
 }

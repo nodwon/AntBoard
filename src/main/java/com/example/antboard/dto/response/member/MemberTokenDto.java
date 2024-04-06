@@ -32,8 +32,5 @@ public class MemberTokenDto {
                 .build();
     }
 
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.role));
-    }
 
 }
