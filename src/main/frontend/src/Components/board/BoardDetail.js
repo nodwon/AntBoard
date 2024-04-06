@@ -54,14 +54,14 @@ function BoardDetail() {
                         <Typography variant="h6">{boardDetails.title}</Typography>
                         <Typography variant="body1">{boardDetails.createdDate}</Typography>
                     </div>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <Box className="aspectRatioBox">
                         {boardDetails.files?.map((file, index) => (
-                            <AspectRatio key={index} minHeight="120px" maxHeight="200px" sx={{ maxWidth: '100%' }}>
-                                {/* Directly use file.imageBase64Data assuming it's correctly formatted */}
-                                <img src={file.imageBase64Data} alt={`Attachment ${index + 1}`} style={{ objectFit: 'contain', width: '100%' }}/>
+                            <AspectRatio key={index} minHeight="60px" maxHeight="100px" sx={{ maxWidth: '50%' }}>
+                                <img src={file.imageBase64Data} alt={`Attachment ${index + 1}`} className="aspectRatioImg"/>
                             </AspectRatio>
                         ))}
                     </Box>
+
                     <CardContent>
                         <Stack direction="row" spacing={1} mb={2}>
                             <Button variant="outlined" onClick={() => navigate('/')}>글목록</Button>

@@ -62,24 +62,28 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String accessToken = jwtTokenProvider.createJwt("access", username, "ROLE_USER", 600000L); // 예제를 단순화하기 위해 'role'을 직접 지정했습니다.
         String refreshToken = jwtTokenProvider.createJwt("refresh", username, "ROLE_USER", 86400000L);
         refreshTokenRepository.save(new RefreshToken(username, refreshToken, accessToken));
-
+        // 액세스 토큰 쿠키 설정
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        accessTokenCookie.setMaxAge(10 * 60); // 액세스 토큰의 유효 시간과 일치시킵니다 (예: 10분)
-//        accessTokenCookie.setHttpOnly(true); // JavaScript를 통한 접근 방지
-        accessTokenCookie.setPath("/"); // 전체 도메인에 대해 유효
+        accessTokenCookie.setMaxAge(10 * 60); // 10분
+        accessTokenCookie.setHttpOnly(true); // JavaScript 접근 방지
+        accessTokenCookie.setPath("/"); // 전체 도메인 유효
+        // HTTPS 환경에서만 아래 주석을 해제하세요.
+        // accessTokenCookie.setSecure(true);
 
-        // 리프레시 토큰을 쿠키에 저장
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setMaxAge(14 * 24 * 60 * 60); // 리프레시 토큰의 유효 시간 (예: 14일)
-//        refreshTokenCookie.setHttpOnly(true); // JavaScript를 통한 접근 방지
-        refreshTokenCookie.setPath("/"); // 전체 도메인에 대해 유효
+        // 리프레시 토큰 쿠키 설정
+//        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+//        refreshTokenCookie.setMaxAge(14 * 24 * 60 * 60); // 14일
+//        refreshTokenCookie.setHttpOnly(true); // JavaScript 접근 방지
+//        refreshTokenCookie.setPath("/"); // 전체 도메인 유효
+        // HTTPS 환경에서만 아래 주석을 해제하세요.
+        // refreshTokenCookie.setSecure(true);
 
         // 쿠키를 응답에 추가
         response.addCookie(accessTokenCookie);
-        response.addCookie(refreshTokenCookie);
+//        response.addCookie(refreshTokenCookie);
 
-        log.info(String.valueOf(refreshTokenCookie));
-
+        // 로그와 헤더 설정
+//        log.info("Refresh Token Cookie: {}", refreshTokenCookie);
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("Refresh-Token", refreshToken);
         response.setStatus(HttpStatus.OK.value());

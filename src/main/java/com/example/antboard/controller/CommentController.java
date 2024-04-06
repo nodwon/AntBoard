@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,7 +32,7 @@ public class CommentController {
     @PostMapping("/write")
     public ResponseEntity<CommentResponseDto> write(
             @PathVariable Long boardId,
-            Member member,
+            @AuthenticationPrincipal Member member,
             @RequestBody CommentDto commentDto) {
 
         CommentResponseDto saveCommentDTO = commentService.write(boardId,member,commentDto);
