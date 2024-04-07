@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,9 +31,10 @@ public class Member extends BaseEntity{
 
     @Column(nullable = false)
     private String password;
+    @Setter
     @Column(nullable = false)
     private String username;
-
+    @Setter
     @Enumerated(EnumType.STRING)
     private Role role;
 

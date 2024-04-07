@@ -1,6 +1,8 @@
 package com.example.antboard.dto.request.member;
 
+import com.example.antboard.common.Role;
 import com.example.antboard.dto.response.member.MemberTokenDto;
+import com.example.antboard.entity.Member;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,12 +14,12 @@ import java.util.Collections;
 @AllArgsConstructor
 public class CustomMemberDetails implements UserDetails {
 
-    private final MemberTokenDto memberTokenDto;
+    private final Member member;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + memberTokenDto.getRole()));
+        return Collections.singletonList(new SimpleGrantedAuthority(String.valueOf(member.getRole())));
     }
 
     @Override
@@ -27,7 +29,7 @@ public class CustomMemberDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return memberTokenDto.getEmail();
+        return member.getEmail();
     }
 
     @Override
