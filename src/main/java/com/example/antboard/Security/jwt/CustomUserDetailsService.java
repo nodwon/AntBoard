@@ -22,9 +22,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         Member member = memberRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
 
-        // Assuming we create a method in MemberTokenDto to build itself from a Member entity
-        MemberTokenDto memberTokenDto = MemberTokenDto.from(member);
-
         return MemberPrincipal.create(member);
     }
 }

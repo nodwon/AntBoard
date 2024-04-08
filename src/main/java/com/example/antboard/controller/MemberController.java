@@ -29,8 +29,6 @@ public class MemberController {
     public ResponseEntity<?> checkAuthStatus(@AuthenticationPrincipal Authentication authentication) {
         // AuthenticationPrincipal을 통해 가져온 Authentication 객체가 null이 아닌지 확인
         if (authentication != null && authentication.isAuthenticated()) {
-            // 인증 객체에서 필요한 정보를 추출하여 반환
-            // 여기서는 예시로 간단히 인증 상태와 사용자 이름을 반환하고 있음
             return ResponseEntity.ok().body(Map.of(
                     "status", "authenticated",
                     "username", authentication.getName()

@@ -1,6 +1,8 @@
 package com.example.antboard.Security.jwt;
 
 import com.example.antboard.common.ErrorException;
+import com.example.antboard.dto.response.member.MemberPrincipal;
+import com.example.antboard.entity.Member;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -50,10 +52,11 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) throws ErrorException {
-        String MemberPrincipal = Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token).getPayload().getSubject();
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(MemberPrincipal);
+//        String MemberPrincipal = Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token).getPayload().getSubject();
+        Member member = new Member();
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(member.getUsername());
 
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
 
     public boolean validateToken(String token) {

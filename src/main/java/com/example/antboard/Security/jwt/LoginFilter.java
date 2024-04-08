@@ -15,16 +15,18 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -45,22 +47,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        new LoginDto();
-
-        logger.info("Attempt authentication...");
-        LoginDto loginDto;
+        LoginDto loginDto =null;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            ServletInputStream inputStream = request.getInputStream();
-            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            loginDto = objectMapper.readValue(messageBody, LoginDto.class);
+//            ServletInputStream inputStream = request.getInputStream();
+//            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            loginDto = objectMapper.readValue(request.getInputStream(), LoginDto.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         String email = loginDto.getEmail();
         String password = loginDto.getPassword();
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password,new ArrayList<>());
         return authenticationManager.authenticate(authToken);
     }
 
@@ -71,10 +70,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = (GrantedAuthority)iterator.next();
         String role = auth.getAuthority();
-        String accessToken = jwtTokenProvider.createJwt("access", username, "ROLE_USER", 600000L); // 예제를 단순화하기 위해 'role'을 직접 지정했습니다.
-        String refreshToken = jwtTokenProvider.createJwt("refresh", username, "ROLE_USER", 86400000L);
+        String accessToken = jwtTokenProvider.createJwt("access", username, role, 600000L); // 예제를 단순화하기 위해 'role'을 직접 지정했습니다.
+        String refreshToken = jwtTokenProvider.createJwt("refresh", username, role, 86400000L);
         refreshTokenRepository.save(new RefreshToken(username, refreshToken, accessToken));
-        // 액세스 토큰 쿠키 설정
+        // 리프레시 토큰을 쿠키에 저장
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
         accessTokenCookie.setMaxAge(10 * 60); // 10분
         accessTokenCookie.setHttpOnly(true); // JavaScript 접근 방지
@@ -83,9 +82,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 쿠키를 응답에 추가
         response.addCookie(accessTokenCookie);
 
-        // 로그와 헤더 설정
+        log.info(String.valueOf(accessTokenCookie));
+
         response.setHeader("Authorization", "Bearer " + accessToken);
-        response.setHeader("accessToken", accessToken);
         response.setStatus(HttpStatus.OK.value());
     }
 
