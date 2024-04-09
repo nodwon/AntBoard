@@ -2,6 +2,7 @@ package com.example.antboard.controller;
 
 import com.example.antboard.dto.request.member.JoinDto;
 import com.example.antboard.dto.request.member.LoginDto;
+import com.example.antboard.dto.response.member.JwtResponseDTO;
 import com.example.antboard.dto.response.member.MemberResponseDto;
 import com.example.antboard.dto.response.member.MemberTokenDto;
 import com.example.antboard.dto.response.member.MemberUpdateDto;
@@ -10,6 +11,8 @@ import com.example.antboard.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -23,7 +26,6 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
-
     // 로그인 상태 확인 엔드포인트
     @GetMapping("/status")
     public ResponseEntity<?> checkAuthStatus(@AuthenticationPrincipal Authentication authentication) {
@@ -57,6 +59,12 @@ public class MemberController {
         MemberTokenDto login = memberService.login(dto);
         return ResponseEntity.status(HttpStatus.OK).body(login);
     }
+//    @PostMapping("/login")
+//    public ResponseEntity<JwtResponseDTO> AuthenicateAndGetToken(@RequestBody LoginDto dto) {
+//        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+//        MemberTokenDto login = memberService.login(dto);
+//        return ResponseEntity.status(HttpStatus.OK).body(login);
+//    }
 
     @PostMapping("/checkPwd")
     public ResponseEntity<MemberResponseDto> check(@AuthenticationPrincipal Member member, @RequestBody Map<String, String> request) {

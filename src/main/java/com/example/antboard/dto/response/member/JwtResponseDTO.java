@@ -5,11 +5,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class TokenDto {
+public class JwtResponseDTO {
     private String accessToken;
     private String refreshToken;
 
-    public TokenDto(String accessToken, String refreshToken) {
+    public JwtResponseDTO(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }

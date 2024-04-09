@@ -1,7 +1,7 @@
 package com.example.antboard.service;
 
-import com.example.antboard.entity.RefreshToken;
-import com.example.antboard.repository.RefreshTokenRepository;
+import com.example.antboard.entity.JwtToken;
+import com.example.antboard.repository.JwtTokenRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,16 +9,16 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtTokenRepository jwtTokenRepository;
 
     @Transactional
     public void saveTokenInfo(Long id, String refreshToken, String accessToken) {
-        refreshTokenRepository.save(new RefreshToken(String.valueOf(id), refreshToken, accessToken));
+        jwtTokenRepository.save(new JwtToken(String.valueOf(id), refreshToken, accessToken));
     }
 
     @Transactional
     public void removeRefreshToken(String accessToken) {
-        refreshTokenRepository.findByAccessToken(accessToken)
-                .ifPresent(refreshTokenRepository::delete);
+        jwtTokenRepository.findByAccessToken(accessToken)
+                .ifPresent(jwtTokenRepository::delete);
     }
 }

@@ -1,12 +1,7 @@
 package com.example.antboard.dto.request.member;
 
-import com.example.antboard.Security.jwt.CustomUserDetailsService;
-import com.example.antboard.common.Role;
-import com.example.antboard.dto.response.member.MemberTokenDto;
 import com.example.antboard.entity.Member;
 import lombok.AllArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

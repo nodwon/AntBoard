@@ -15,6 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance from './axiosInstance'; // 경로는 실제 경로에 맞게 조정해야 합니다.
 
 function Login() {
     const navigate = useNavigate();
@@ -40,13 +41,13 @@ function Login() {
         try {
             const resp = await axios.post("http://localhost:8080/user/login", req);
             console.log("[Login.js] login() success :D", resp.data);
-            alert(resp.data.email + "님, 성공적으로 로그인 되었습니다 🔐");
+            const {accessToken} = resp.data;
+            axios.defaults.headers.common[
+                "Authorization"
+                ] = `Bearer ${accessToken}`;
 
-            // JWT 토큰 저장
-            document.cookie = `token=${resp.data.token}; path=/`;
+            alert(resp.data.username + "님, 성공적으로 로그인 되었습니다 🔐"+ document.cookie +"쿠키");
 
-            // Refresh-Token 저장
-            document.cookie = `refresh=${resp.data.refreshToken}; path=/`;
 
             navigate("/"); // 성공적으로 로그인한 경우 리다이렉트
         } catch (err) {

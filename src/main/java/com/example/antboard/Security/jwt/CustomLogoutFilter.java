@@ -1,6 +1,6 @@
 package com.example.antboard.Security.jwt;
 
-import com.example.antboard.repository.RefreshTokenRepository;
+import com.example.antboard.repository.JwtTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -21,7 +21,7 @@ import java.io.IOException;
 public class CustomLogoutFilter extends GenericFilterBean {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtTokenRepository jwtTokenRepository;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
