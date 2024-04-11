@@ -54,7 +54,6 @@ function Header() {
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
     const jwtToken = Cookies.get('jwtToken'); // Accessing the JWT token from cookies
     const { isLoggedIn, logout } = useAuth(); // useAuth 훅을 사용하여 로그인 상태와 로그아웃 함수를 가져옴
-
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };

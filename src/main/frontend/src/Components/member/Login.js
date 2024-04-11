@@ -15,49 +15,55 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-import axiosInstance from './axiosInstance'; // 경로는 실제 경로에 맞게 조정해야 합니다.
 
 function Login() {
     const navigate = useNavigate();
-
     const [id, setId] = useState("");
     const [pwd, setPwd] = useState("");
 
-    const changeId = (event) => {
-        setId(event.target.value);
-    }
-
-    const changePwd = (event) => {
-        setPwd(event.target.value);
-    }
-
     const login = async (event) => {
-        event.preventDefault(); // 폼 제출 이벤트 기본 동작 방지
+        event.preventDefault(); // Prevent form submit default action
 
         const req = {
             email: id,
             password: pwd
-        }
+        };
+
         try {
             const resp = await axios.post("http://localhost:8080/user/login", req);
-            console.log("[Login.js] login() success :D", resp.data);
-            const {accessToken} = resp.data;
-            axios.defaults.headers.common[
-                "Authorization"
-                ] = `Bearer ${accessToken}`;
 
-            alert(resp.data.username + "님, 성공적으로 로그인 되었습니다 🔐"+ document.cookie +"쿠키");
+            // Assuming the token is returned in resp.data.token
+            const { token } = resp.data;
 
+            // Store token in localStorage
+            localStorage.setItem('authToken', token);
 
-            navigate("/"); // 성공적으로 로그인한 경우 리다이렉트
+            // Use token to make another request or navigate
+            fetchUserStatus(token);
+
+            navigate("/"); // Redirect after successful login
         } catch (err) {
-            debugger;
-
             console.error("[Login.js] login() error :", err);
-
-            alert("⚠️ " + err.response.data);
+            alert("⚠️ Login failed: " + (err.response ? err.response.data : "Network error"));
         }
-    }
+    };
+
+    const fetchUserStatus = (token) => {
+        fetch('/user/status', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert("User status: " + JSON.stringify(data));
+            })
+            .catch(error => {
+                console.error("Failed to fetch user status", error);
+            });
+    };
 
     return (
         <ThemeProvider theme={createTheme()}>
@@ -88,7 +94,7 @@ function Login() {
                             autoComplete="email"
                             autoFocus
                             value={id}
-                            onChange={changeId}
+                            // onChange={changeId}
                         />
                         <TextField
                             margin="normal"
@@ -100,7 +106,7 @@ function Login() {
                             id="password"
                             autoComplete="current-password"
                             value={pwd}
-                            onChange={changePwd}
+                            // onChange={changePwd}
                         />
                         <FormControlLabel
                             control={<Checkbox value="remember" color="primary" />}

@@ -1,32 +1,23 @@
 import { useEffect } from "react";
 import {useAuth} from "../file/AuthProvider";
+import axios from "axios";
 
 const MyComponent = () => {
-    const { jwtToken } = useAuth();
+    const { jwtToken } = useAuth(); // JWT 토큰을 컨텍스트로부터 받아옵니다.
 
-    useEffect(() => {
-        // JWT 토큰이 변경될 때마다 헤더에 설정
-        if (jwtToken) {
-            fetch(apiUrl, {
-                method: 'GET',
+    useEffect(async () => {
+        try {
+            const token = localStorage.getItem('jwtToken'); // 로컬 스토리지에서 토큰 가져오기
+            const response = await axios.get('/user/status', {
                 headers: {
-                    'Authorization': `Bearer ${jwtToken}`
+                    Authorization: `Bearer ${token}`
                 }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Data:', data);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+            });
+            console.log(response.data); // 로그인한 사용자 정보 확인
+        } catch (error) {
+            console.error(error.response.data); // 에러 발생시 출력
         }
-    }, [jwtToken]); // jwtToken이 변경될 때만 호출
-};
+    })
+}
 
 export default MyComponent;

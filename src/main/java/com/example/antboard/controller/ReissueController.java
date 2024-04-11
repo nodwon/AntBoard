@@ -81,7 +81,7 @@ public class ReissueController {
         cookie.setPath("/");
         return cookie;
     }
-    @GetMapping("/test-cookies")
+    @GetMapping("/cookies")
     public ResponseEntity<Map<String, String>> getCookies(HttpServletRequest request) {
         // 쿠키 배열을 맵으로 변환
         Map<String, String> cookies = Arrays.stream(request.getCookies())
