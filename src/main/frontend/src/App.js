@@ -9,7 +9,8 @@ import BoardDetail from "./Components/board/BoardDetail";
 import BoardUpdate from "./Components/board/BoardUpdate";
 import Login from "./Components/member/Login";
 import Register from "./Components/member/Register";
-import {AuthProvider} from "./Components/file/AuthProvider";
+import AuthProvider from "./Components/file/AuthProvider";
+import HttpHeadersProvider from "./Components/file/HttpHeadersProvider";
 
 const router = createBrowserRouter([
     {
@@ -47,18 +48,18 @@ const router = createBrowserRouter([
 
 function App() {
 
-
     return (
-        <AuthProvider>
-
         <div>
             <React.StrictMode>
                 <RouterProvider router={router}/>
             </React.StrictMode>
             <BrowserRouter>
+                <AuthProvider>
+                    <HttpHeadersProvider>
+                    </HttpHeadersProvider>
+                </AuthProvider>
             </BrowserRouter>
         </div>
-        </AuthProvider>
 
     );
 }

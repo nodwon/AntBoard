@@ -1,10 +1,10 @@
-import React from "react";
+import React, {createContext, useContext, useEffect} from "react";
 import {AppBar, Box, IconButton, InputBase, Menu, MenuItem, styled, Toolbar, Typography,} from "@mui/material";
 import {AccountCircle, Menu as MenuIcon, MoreVert as MoreIcon, Search as SearchIcon,} from "@mui/icons-material";
 import {alpha} from "@mui/material/styles";
 import {useNavigate} from "react-router-dom";
-import Cookies from "js-cookie";
-import { useAuth } from '../file/AuthProvider'; // AuthContext 경로에 맞게 조정
+import {HttpHeadersContext} from "../file/HttpHeadersProvider";
+import AuthProvider from "../file/AuthProvider"; // AuthContext 경로에 맞게 조정
 const Search = styled("div")(({theme}) => ({
     position: "relative",
     borderRadius: theme.shape.borderRadius,
@@ -47,13 +47,19 @@ const StyledInputBase = styled(InputBase)(({theme}) => ({
 
 
 function Header() {
+
+
+// 초기 상태를 기본값으로 사용하여 Context 생성
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
     const navigate = useNavigate();
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-    const jwtToken = Cookies.get('jwtToken'); // Accessing the JWT token from cookies
-    const { isLoggedIn, logout } = useAuth(); // useAuth 훅을 사용하여 로그인 상태와 로그아웃 함수를 가져옴
+    const { auth, setAuth } = useContext(AuthProvider);
+    const { headers, setHeaders } = useContext(HttpHeadersContext);
+
+
+
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -70,9 +76,19 @@ function Header() {
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
+    useEffect(() => {
+        // 컴포넌트가 마운트될 때 실행됩니다.
+        const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
 
+        if (accessToken && refreshToken) {
+            setAuth(accessToken); // 또는 저장된 사용자 정보를 사용하여 auth 상태를 설정
+            setHeaders({ ...headers, Authorization: `Bearer ${accessToken}` });
+        }
+    }, []); // 의존성 배열을 비워서 컴포넌트가 처음 마운트될 때만 실행되도록 합니다.
     const handleLogoutClick = () => {
-        logout();
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         handleMenuClose();
         navigate('/'); // 로그아웃 후 홈으로 리다이렉트
     };
@@ -93,7 +109,8 @@ function Header() {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            {isLoggedIn  ? (
+            {auth  ? (
+
                 <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
             ) : (
                 <>
@@ -158,8 +175,10 @@ function Header() {
                     >
                         수익 인증 게시판
                     </Typography>
+                    <p>{`안녕하세요, ${auth}님`}</p>
+                    <p>{`안녕하세요, ${headers}님`}</p>
                     <Search>
-                        <SearchIconWrapper>
+                <SearchIconWrapper>
                             <SearchIcon/>
                         </SearchIconWrapper>
                         <StyledInputBase

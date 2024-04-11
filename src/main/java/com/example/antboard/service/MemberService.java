@@ -1,6 +1,7 @@
 package com.example.antboard.service;
 
 import com.example.antboard.Security.jwt.CustomUserDetailsService;
+import com.example.antboard.Security.jwt.JwtTokenProvider;
 import com.example.antboard.common.ResourceNotFoundException;
 import com.example.antboard.common.exception.MemberException;
 import com.example.antboard.dto.request.member.JoinDto;
@@ -32,7 +33,7 @@ public class MemberService {
 
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService customUserDetailsService;
-
+    private final JwtTokenProvider jwtTokenProvider;
     public void checkIdDuplicate(String email) {
         isExistEmail(email);
     }

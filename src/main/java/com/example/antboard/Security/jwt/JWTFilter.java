@@ -1,8 +1,6 @@
 package com.example.antboard.Security.jwt;
 
 import com.example.antboard.common.Role;
-import com.example.antboard.dto.request.member.CustomMemberDetails;
-import com.example.antboard.dto.response.member.MemberPrincipal;
 import com.example.antboard.entity.JwtToken;
 import com.example.antboard.entity.Member;
 import com.example.antboard.repository.JwtTokenRepository;
@@ -68,11 +66,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
                 }
 
-                    String email = jwtTokenProvider.getUsername(accessToken);
-                    String role = jwtTokenProvider.getRole(accessToken);
-                    Member member = new Member();
-                    member.setUsername(email);
-                    member.setRole(Role.valueOf(role));
+                String email = jwtTokenProvider.getUsername(accessToken);
+                String role = jwtTokenProvider.getRole(accessToken);
+                Member member = new Member();
+                member.setUsername(email);
+                member.setRole(Role.valueOf(role));
 
                 User principal = new User(email, "", Collections.singletonList(new SimpleGrantedAuthority(role)));
                 Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());

@@ -13,56 +13,34 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState} from "react";
 import axios from "axios";
-
+import {HttpHeadersContext} from "../file/HttpHeadersProvider"; // AuthContext 경로에 맞게 조정
+import {AuthContext} from "../file/AuthProvider";
 function Login() {
+
+// 초기 상태를 기본값으로 사용하여 Context 생성
+    const { auth, setAuth } = useContext(AuthContext);
+    const { headers, setHeaders } = useContext(HttpHeadersContext);
     const navigate = useNavigate();
-    const [id, setId] = useState("");
-    const [pwd, setPwd] = useState("");
-
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const login = async (event) => {
-        event.preventDefault(); // Prevent form submit default action
-
-        const req = {
-            email: id,
-            password: pwd
-        };
-
+        event.preventDefault();
         try {
-            const resp = await axios.post("http://localhost:8080/user/login", req);
-
-            // Assuming the token is returned in resp.data.token
-            const { token } = resp.data;
-
-            // Store token in localStorage
-            localStorage.setItem('authToken', token);
-
-            // Use token to make another request or navigate
-            fetchUserStatus(token);
-
-            navigate("/"); // Redirect after successful login
+            const { data } = await axios.post('/user/login', { email, password });
+            localStorage.setItem('accessToken', data.accessToken);
+            localStorage.setItem('refreshToken', data.refreshToken);
+            setAuth(data.id); // 사용자 인증 정보(아이디 저장)
+            setHeaders({"Authorization": `Bearer ${data.accessToken}`}); // 헤더 Authorization 필드 저장
+            setAuth({ auth: data.id });
+            debugger;
+            navigate('/');
+            alert(data.id + "님 로그인 되었습니다.");  // 유저의 이름을 이용한 알림
         } catch (err) {
             console.error("[Login.js] login() error :", err);
-            alert("⚠️ Login failed: " + (err.response ? err.response.data : "Network error"));
+            alert("⚠️ 로그인 실패: " + (err.response ? err.response.data : "네트워크 오류"));
         }
-    };
-
-    const fetchUserStatus = (token) => {
-        fetch('/user/status', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                alert("User status: " + JSON.stringify(data));
-            })
-            .catch(error => {
-                console.error("Failed to fetch user status", error);
-            });
     };
 
     return (
@@ -93,8 +71,8 @@ function Login() {
                             name="email"
                             autoComplete="email"
                             autoFocus
-                            value={id}
-                            // onChange={changeId}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                         <TextField
                             margin="normal"
@@ -105,8 +83,8 @@ function Login() {
                             type="password"
                             id="password"
                             autoComplete="current-password"
-                            value={pwd}
-                            // onChange={changePwd}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                         <FormControlLabel
                             control={<Checkbox value="remember" color="primary" />}

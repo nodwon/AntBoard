@@ -1,15 +1,10 @@
 package com.example.antboard.Security.jwt;
 
 import com.example.antboard.common.ErrorException;
-import com.example.antboard.dto.response.member.MemberPrincipal;
-import com.example.antboard.entity.Member;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -51,13 +46,13 @@ public class JwtTokenProvider {
                 issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + expiredMs)).signWith(this.secretKey).compact();
     }
 
-    public Authentication getAuthentication(String token) throws ErrorException {
+//    public String generateToken(UserDetails userDetails) throws ErrorException {
 //        String MemberPrincipal = Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token).getPayload().getSubject();
-        Member member = new Member();
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(member.getUsername());
-
-        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
-    }
+//        Member member = new Member();
+//        userDetails = customUserDetailsService.loadUserByUsername(member.getUsername());
+//
+//        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
+//    }
 
     public boolean validateToken(String token) {
         try {
