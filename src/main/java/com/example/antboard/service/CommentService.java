@@ -41,8 +41,8 @@ public class CommentService {
                 () -> new ResourceNotFoundException("Board", "Board id", String.valueOf(boardId))
         );
         // member(댓글 작성자) 정보 검색
-        Member commentWriter = memberRepository.findById(member.getId()).orElseThrow(
-                () -> new ResourceNotFoundException("Member", "Member id", String.valueOf(member.getId()))
+        Member commentWriter = memberRepository.findByEmail(member.getEmail()).orElseThrow(
+                () -> new ResourceNotFoundException("Member", "Member id", String.valueOf(member.getEmail()))
         );
         // Entity 변환, 연관관계 매핑
         Comment comment = CommentDto.of(commentDto);

@@ -17,15 +17,13 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final SecretKey secretKey;
-    private final CustomUserDetailsService customUserDetailsService;
 
     public JwtTokenProvider(@Value("${spring.jwt.secret}") String secret, CustomUserDetailsService customUserDetailsService) {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
-        this.customUserDetailsService = customUserDetailsService;
     }
 
     public String getUsername(String token) {
-        return Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
+        return Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
     }
 
     public String getRole(String token) {
@@ -40,19 +38,11 @@ public class JwtTokenProvider {
         return Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createJwt(String category, String username, String role, Long expiredMs) {
+    public String createJwt(String category, String email, String role, Long expiredMs) {
         return Jwts.builder().claim("category", category).
-                claim("username", username).claim("role", role).
+                claim("email", email).claim("role", role).
                 issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + expiredMs)).signWith(this.secretKey).compact();
     }
-
-//    public String generateToken(UserDetails userDetails) throws ErrorException {
-//        String MemberPrincipal = Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token).getPayload().getSubject();
-//        Member member = new Member();
-//        userDetails = customUserDetailsService.loadUserByUsername(member.getUsername());
-//
-//        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
-//    }
 
     public boolean validateToken(String token) {
         try {

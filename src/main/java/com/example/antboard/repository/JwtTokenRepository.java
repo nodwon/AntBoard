@@ -1,6 +1,7 @@
 package com.example.antboard.repository;
 
 import com.example.antboard.entity.JwtToken;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface JwtTokenRepository extends CrudRepository<JwtToken, String> {
 
-    Optional<JwtToken> findByAccessToken(String accessToken);
+    Optional<JwtToken> findByAccessToken(@Param("accessToken") String accessToken);
 
-    Optional<JwtToken> findByRefreshToken(String refreshToeken);
+    Optional<JwtToken> findByRefreshToken(@Param("refreshToken")String refreshToeken);
 }

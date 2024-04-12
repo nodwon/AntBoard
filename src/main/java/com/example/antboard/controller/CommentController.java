@@ -31,13 +31,24 @@ public class CommentController {
 
     @PostMapping("/write")
     public ResponseEntity<CommentResponseDto> write(
-            @PathVariable Long boardId,
-            @AuthenticationPrincipal Member member,
+            @PathVariable("boardId") Long boardId,
+            @AuthenticationPrincipal(errorOnInvalidType=true)  Member member,
             @RequestBody CommentDto commentDto) {
 
-        CommentResponseDto saveCommentDTO = commentService.write(boardId,member,commentDto);
+
+        CommentResponseDto saveCommentDTO = commentService.write(boardId, member, commentDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(saveCommentDTO);
     }
+
+//    @PostMapping("/write")
+//    public ResponseEntity<CommentResponseDto> write(
+//            @PathVariable("boardId") Long boardId,
+//            @AuthenticationPrincipal Member member,
+//            @RequestBody CommentDto commentDto) {
+//
+//        CommentResponseDto saveCommentDTO = commentService.write(boardId,member,commentDto);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(saveCommentDTO);
+//    }
     @PostMapping("/update/{commentId}")
     public ResponseEntity<CommentResponseDto> update(
             @PathVariable Long commentId,

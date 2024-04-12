@@ -5,6 +5,7 @@ import com.example.antboard.dto.request.board.BoardEditDto;
 import com.example.antboard.dto.response.BoardListResponse;
 import com.example.antboard.dto.response.board.BoardDetailResponseDto;
 import com.example.antboard.dto.response.board.BoardResponseDto;
+import com.example.antboard.entity.Member;
 import com.example.antboard.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,24 +32,29 @@ public class BoardController {
         Page<BoardListResponse> listDTO = boardService.getAllBoards(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(listDTO);
     }
+
     @PostMapping("/write")
     public ResponseEntity<BoardResponseDto> write(
-            @RequestBody BoardDto boardDto){
+            @RequestBody BoardDto boardDto,
+            @AuthenticationPrincipal Member member) {
         BoardResponseDto write = boardService.save(boardDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(write);
     }
+
     @GetMapping("/{boardId}")
-    public ResponseEntity<BoardDetailResponseDto> getBoard(@PathVariable("boardId") Long boardId){
-        BoardDetailResponseDto findBoard =boardService.getBoard(boardId);
+    public ResponseEntity<BoardDetailResponseDto> getBoard(@PathVariable("boardId") Long boardId) {
+        BoardDetailResponseDto findBoard = boardService.getBoard(boardId);
         return ResponseEntity.status(HttpStatus.OK).body(findBoard);
     }
+
     //수정
     @PostMapping("/{boardId}/edit")
     public ResponseEntity<BoardDetailResponseDto> Edit(@PathVariable("boardId") Long boardId,
-                                                       @RequestBody BoardEditDto dto){
+                                                       @RequestBody BoardEditDto dto) {
         BoardDetailResponseDto board = boardService.update(boardId, dto);
         return ResponseEntity.status(HttpStatus.OK).body(board);
     }
+
     // 상세보기 -> 삭제
     @DeleteMapping("/{boardId}/delete")
     public ResponseEntity<Long> delete(@PathVariable("boardId") Long boardId) {

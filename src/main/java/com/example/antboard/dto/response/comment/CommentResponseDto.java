@@ -32,7 +32,7 @@ public class CommentResponseDto {
                 .content(comment.getContent())
                 .createdDate(comment.getCreatedDate())
                 .modifiedDate(comment.getModifiedDate())
-                .commentWriterName(comment.getMember().getUsername())
+                .commentWriterName(comment.getMember().getEmail())
                 .build();
     }
 }

@@ -59,16 +59,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
-        String username = authentication.getName();
+        String email = authentication.getName();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
-        String refreshToken = jwtTokenProvider.createJwt("refresh", username, role, 600000L); // 예제를 단순화하기 위해 'role'을 직접 지정했습니다.
-        String accessToken = jwtTokenProvider.createJwt("access", username, role, 86400000L);
-        jwtTokenRepository.save(new JwtToken(username, refreshToken, accessToken));
+        String refreshToken = jwtTokenProvider.createJwt("refresh", email, role, 600000L); // 예제를 단순화하기 위해 'role'을 직접 지정했습니다.
+        String accessToken = jwtTokenProvider.createJwt("access", email, role, 86400000L);
+        jwtTokenRepository.save(new JwtToken(email, refreshToken, accessToken));
 
-        JwtToken jwtToken = new JwtToken(username, refreshToken, accessToken);
+        JwtToken jwtToken = new JwtToken(email, refreshToken, accessToken);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jwtTokenJson = objectMapper.writeValueAsString(jwtToken);

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Header from "../app/Header";
 import Footer from "../app/Footer";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,6 +8,7 @@ import { AspectRatio, Box } from "@mui/joy";
 import { Button, Card, CardContent, Typography, Stack } from '@mui/material';
 import CommentList from "../comment/CommentList";
 import CommentWrite from "../comment/CommentWrite";
+import {AuthContext} from "../file/AuthProvider";
 
 function BoardDetail() {
     const [boardDetails, setBoardDetails] = useState({
@@ -20,6 +21,7 @@ function BoardDetail() {
     });
     const { boardId } = useParams();
     const navigate = useNavigate();
+    const { auth, setAuth } = useContext(AuthContext);
 
     const getBoardDetail = async () => {
         try {
@@ -68,8 +70,10 @@ function BoardDetail() {
                             <Button variant="outlined" onClick={() => navigate(`/board/${boardDetails?.boardId}/edit`)}>수정</Button>
                             <Button variant="outlined" color="error" onClick={deleteBoard}>삭제</Button>
                         </Stack>
-
+                        {auth  ? (
                         <CommentList boardId={boardId}/>
+                            ):null
+                        }
                         <CommentWrite boardId={boardId}/>
                     </CardContent>
                 </Card>

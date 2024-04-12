@@ -1,18 +1,15 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, {useContext, useState} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, TextField, Grid, Box } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
+import {HttpHeadersContext} from "../file/HttpHeadersProvider";
 
 function CommentWrite() {
-    const { boardId } = useParams();
-    let userId = null;
-    // const isLoggedIn = false;
+    const { headers, setHeaders } = useContext(HttpHeadersContext);
+    const { boardId } = useParams(); // 파라미터 가져오기
 
-    const cookie = document.cookie.split('; ').find(row => row.startsWith('id='));
-    if (cookie) {
-        userId = cookie.split('=')[1];
-    }
+    const id = localStorage.getItem("accessToken");
 
     const [content, setContent] = useState("");
     const navigate = useNavigate();
@@ -24,13 +21,12 @@ function CommentWrite() {
     const createComment = async () => {
         const req = {
             content: content,
-            // Assuming userId is intended to be part of the request body
-            userId: userId
         };
 
         try {
-            const resp = await axios.post(`http://localhost:8080/board/${boardId}/comment/write`, req);
+            const resp = await axios.post(`http://localhost:8080/board/${boardId}/comment/write`, req, {headers: headers});
             console.log("[CommentWrite.js] createComment() success :D", resp.data);
+            debugger;
             alert("댓글을 성공적으로 등록했습니다 :D");
             navigate(0); // Refresh the page to show the new comment
         } catch (err) {

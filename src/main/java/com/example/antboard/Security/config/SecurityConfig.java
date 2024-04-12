@@ -75,33 +75,12 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource));
-
-//                .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
-//                    CorsConfiguration configuration = new CorsConfiguration();
-//
-//                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-//                    configuration.setAllowedMethods(Collections.singletonList("*"));
-//                    configuration.setAllowCredentials(true);
-////                    configuration.setAllowedHeaders(Collections.singletonList("*"));
-//                    configuration.setMaxAge(3600L);
-//
-//                    configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-//                    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PATCH", "DELETE"));
-//                    configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
-//                    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//                    source.registerCorsConfiguration("/**", configuration);
-//                    return configuration;
-//
-//                }));
-
-
         //경로별 인가 작업
         http
 
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations())).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/**"),new AntPathRequestMatcher("/user/login", "/user/register")).permitAll().anyRequest().authenticated())
-//                        .requestMatchers(new AntPathRequestMatcher("/user/status")).authenticated().anyRequest().permitAll()
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
@@ -114,9 +93,8 @@ public class SecurityConfig {
 
         http
                 .formLogin(form -> form.loginProcessingUrl("/login"))
-                .addFilterBefore(new JWTFilter(this.jwtTokenProvider,this.jwtTokenRepository), LoginFilter.class)
+                .addFilterBefore(new JWTFilter(this.jwtTokenProvider,this.jwtTokenRepository,this.customUserDetailsService), LoginFilter.class)
                 .addFilterAfter(loginFilter(), UsernamePasswordAuthenticationFilter.class);
-//                .addFilterAt(new JWTFilter(this.jwtTokenProvider), LoginFilter.class);
 
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
         return http.build();

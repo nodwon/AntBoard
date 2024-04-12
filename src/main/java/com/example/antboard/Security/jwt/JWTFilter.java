@@ -1,8 +1,5 @@
 package com.example.antboard.Security.jwt;
 
-import com.example.antboard.common.Role;
-import com.example.antboard.entity.JwtToken;
-import com.example.antboard.entity.Member;
 import com.example.antboard.repository.JwtTokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -13,15 +10,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -30,13 +24,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    //    @Value("${spring.jwt.header}")
-//    private String HEADER_STRING;
-//    @Value("${spring.jwt.prefix}")
-//    private String TOKEN_PREFIX;
+
     private final String HEADER_STRING = "Authorization";
     private final String TOKEN_PREFIX = "Bearer ";
     private final JwtTokenRepository jwtTokenRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -49,35 +41,34 @@ public class JWTFilter extends OncePerRequestFilter {
             if (header != null && header.startsWith(TOKEN_PREFIX)) {
                 String accessToken = header.substring(TOKEN_PREFIX.length()).trim();
                 log.info("Extracted Access Token: {}", accessToken);  // Log the token for debugging
-                Optional<JwtToken> tokenOptional = jwtTokenRepository.findByAccessToken(accessToken);
-                if (tokenOptional.isEmpty()) {
-                    log.warn("Token not found in repository");
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    return;
-                }
+//                Optional<JwtToken> tokenOptional = jwtTokenRepository.findByAccessToken(accessToken);
+//                if (tokenOptional.isEmpty()) {
+//                    log.warn("Token not found in repository");
+//                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                    return;
+//                }
 
                 if (!jwtTokenProvider.validateToken(accessToken)) {
                     log.warn("Token validation failed");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
-                if (jwtTokenProvider.validateToken(accessToken)) {
-                    response.setStatus(401);
-
-                }
 
                 String email = jwtTokenProvider.getUsername(accessToken);
-                String role = jwtTokenProvider.getRole(accessToken);
-                Member member = new Member();
-                member.setUsername(email);
-                member.setRole(Role.valueOf(role));
+                System.out.println(email);
+//                String role = jwtTokenProvider.getRole(accessToken);
+//                Member member = new Member();
+//                member.setUsername(email);
+//                member.setRole(Role.valueOf(role));
 
-                User principal = new User(email, "", Collections.singletonList(new SimpleGrantedAuthority(role)));
-                Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+//                User principal = new User(email, "", Collections.singletonList(new SimpleGrantedAuthority(role)));
+//                CustomMemberDetails memberDetails = new CustomMemberDetails(member);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+
+//                Authentication authentication = new UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.getAuthorities());
+                Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
             }
-
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT token.", e);
