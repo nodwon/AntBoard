@@ -1,10 +1,13 @@
 import axios from "axios";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {useParams} from "react-router-dom"
+import {AuthContext} from "../file/AuthProvider";
+import {HttpHeadersContext} from "../file/HttpHeadersProvider";
 
 /* 댓글 컴포넌트 */
 function Comment(props) {
-
+    const {auth, setAuth} = useContext(AuthContext);
+    const {headers, setHeaders} = useContext(HttpHeadersContext);
     const page = props.page;
     const comment = props.obj;
     const commentId = comment.commentId;
@@ -29,7 +32,7 @@ function Comment(props) {
             content: content
         };
 
-        await axios.patch(`http://localhost:8080/board/${boardId}/comment/update/${commentId}`, req, {userId: userId})
+        await axios.patch(`http://localhost:8080/board/${boardId}/comment/update/${commentId}`, req, {headers: headers})
             .then((resp) => {
                 console.log("[Comment.js] updateComment() success :D");
                 console.log(resp.data);
@@ -50,7 +53,7 @@ function Comment(props) {
 
     /* 댓글 삭제 */
     const deleteComment = async () => {
-        await axios.delete(`http://localhost:8080/board/${boardId}}/comment/delete/${commentId}`, {cookie: cookie})
+        await axios.delete(`http://localhost:8080/board/${boardId}}/comment/delete/${commentId}`, {headers: headers})
             .then((resp) => {
                 console.log("[BbsComment.js] deleteComment() success :D");
                 console.log(resp.data);
@@ -87,7 +90,7 @@ function Comment(props) {
                 <div className="col-4 d-flex justify-content-end">
                     {
                         /* 자신이 작성한 댓글인 경우에만 수정 삭제 가능 */
-                        (userId === comment.commentWriterName) ?
+                        (localStorage.getItem("id") === comment.commentWriterName) ?
                             <>
                                 <button className="btn btn-outline-secondary" onClick={updateToggle}><i
                                     className="fas fa-edit"></i> 수정
