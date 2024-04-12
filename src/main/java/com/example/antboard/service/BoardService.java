@@ -1,5 +1,6 @@
 package com.example.antboard.service;
 
+import com.example.antboard.common.ResourceNotFoundException;
 import com.example.antboard.dto.request.board.BoardDto;
 import com.example.antboard.dto.request.board.BoardEditDto;
 import com.example.antboard.dto.response.BoardListResponse;
@@ -8,9 +9,13 @@ import com.example.antboard.dto.response.board.BoardResponseDto;
 import com.example.antboard.dto.response.file.BoardDetailsFileResponseDto;
 import com.example.antboard.entity.Board;
 import com.example.antboard.entity.FileEntity;
+import com.example.antboard.entity.Member;
 import com.example.antboard.repository.BoardRepository;
 import com.example.antboard.repository.FileRepository;
+import com.example.antboard.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +34,7 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final FileRepository fileRepository;
+    private final MemberRepository memberRepository;
     //게시글 페이징 리스트
     @Transactional
     public Page<BoardListResponse> getAllBoards(Pageable pageable) {
@@ -60,11 +66,23 @@ public class BoardService {
 
     // 게시글 등록
     @Transactional
-    public BoardResponseDto save(BoardDto dto){
+    public BoardResponseDto save(BoardDto dto, Member member){
         Board board = BoardDto.ofEntity(dto);
+//        Member writerMember = memberRepository.findByEmail(member.getEmail()).orElseThrow(
+//                () -> new ResourceNotFoundException("Member", "Member Email", member.getEmail())
+//        );
+        Member writerMember = getMember();
+        board.setMappingMember(writerMember);
         Board newBoard = boardRepository.save(board);
-        return BoardResponseDto.from(newBoard);
+        return BoardResponseDto.from(newBoard, writerMember.getUsername());
     }
+
+    private Member getMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        authentication.getName();
+        return memberRepository.findByEmail(authentication.getName()).orElseThrow(() -> new ResourceNotFoundException("Member", "Member Email",  authentication.getName()));
+    }
+
     // 게시글 수정
     @Transactional
     public BoardDetailResponseDto update(Long boardId, BoardEditDto dto){

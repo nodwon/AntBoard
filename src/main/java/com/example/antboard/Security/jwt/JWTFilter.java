@@ -55,17 +55,9 @@ public class JWTFilter extends OncePerRequestFilter {
                 }
 
                 String email = jwtTokenProvider.getUsername(accessToken);
-                System.out.println(email);
-//                String role = jwtTokenProvider.getRole(accessToken);
-//                Member member = new Member();
-//                member.setUsername(email);
-//                member.setRole(Role.valueOf(role));
 
-//                User principal = new User(email, "", Collections.singletonList(new SimpleGrantedAuthority(role)));
-//                CustomMemberDetails memberDetails = new CustomMemberDetails(member);
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
-
-//                Authentication authentication = new UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.getAuthorities());
+                System.out.println(userDetails);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

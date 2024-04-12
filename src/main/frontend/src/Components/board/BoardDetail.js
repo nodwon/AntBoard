@@ -25,11 +25,19 @@ function BoardDetail() {
 
     const getBoardDetail = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/board/${boardId}`);
-            // Assuming the backend returns the files array with base64 image data correctly
-            setBoardDetails(response.data);
+            const response = await axios.get(`http://localhost:8080/board/${boardId}`, { responseType: 'blob' });
+            if (response.headers['content-type']?.includes('application/json')) {
+                setBoardDetails(response.data);
+            } else {
+                throw new Error('Invalid content type');
+            }
         } catch (error) {
             console.error("Failed to fetch board details:", error);
+            // Handle the error according to the content type or error message
+            if (error.response && error.response.headers['content-type']?.includes('text/html')) {
+                // This may indicate that an HTML error page was returned, possibly due to a server error
+            }
+            // Add any additional error handling logic here
         }
     };
 

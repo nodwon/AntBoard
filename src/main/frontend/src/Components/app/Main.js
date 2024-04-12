@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Button from '@mui/joy/Button';
 import {Card, CardContent, Grid, Input, Pagination, styled, Typography} from '@mui/material'; // Import Card and Typography components
 import "../../css/home.css";
@@ -7,6 +7,8 @@ import {Stack, SvgIcon} from "@mui/joy";
 import axios from "axios";
 import Textarea from "@mui/joy/Textarea";
 import {useNavigate, useParams} from "react-router-dom";
+import {AuthContext} from "../file/AuthProvider";
+import {HttpHeadersContext} from "../file/HttpHeadersProvider";
 
 const variant = "outlined"; // or any other variant you want to use
 const VisuallyHiddenInput = styled('input')`
@@ -37,7 +39,8 @@ export default function Main() {
     const [totalCnt, setTotalCnt] = useState(0);
     const [AllBoard, setBoardList] = useState([]);
     // 게시글 전체조회
-
+    const { auth, setAuth } = useContext(AuthContext);
+    const { headers, setHeaders } = useContext(HttpHeadersContext);
     let userId = null;
     const cookie = document.cookie.split('; ').find(row => row.startsWith('id='));
     if (cookie) {
@@ -62,6 +65,9 @@ export default function Main() {
     // 첫 로딩 시, 한 페이지만 가져옴
     useEffect(() => {
         BoardList(1);
+        setHeaders({
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        });
     }, []);
     // 페이징 보여주기
     const changePage = async (event, value) => {
@@ -70,12 +76,16 @@ export default function Main() {
     };
 
     const createBoard = async () => {
+        if (!auth) {
+            alert("로그인 한 사용자만 게시글을 작성할 수 있습니다 !");
+            return; // Stop the function from proceeding further
+        }
         const req = {
             title: title,
             content: content
         };
 
-        await axios.post("http://localhost:8080/board/write", req)
+        await axios.post("http://localhost:8080/board/write", req,{ headers: headers })
             .then((resp) => {
                 console.log(("success"));
                 console.log(resp.data);

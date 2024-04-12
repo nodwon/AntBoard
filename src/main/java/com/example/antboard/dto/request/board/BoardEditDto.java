@@ -14,6 +14,7 @@ public class BoardEditDto {
     @NotEmpty
     private String title;
     private String content;
+
     @Builder
     public BoardEditDto(String title, String content) {
         this.title = title;

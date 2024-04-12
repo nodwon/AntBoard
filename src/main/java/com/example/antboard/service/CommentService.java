@@ -12,6 +12,8 @@ import com.example.antboard.repository.MemberRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,9 +43,7 @@ public class CommentService {
                 () -> new ResourceNotFoundException("Board", "Board id", String.valueOf(boardId))
         );
         // member(댓글 작성자) 정보 검색
-        Member commentWriter = memberRepository.findByEmail(member.getEmail()).orElseThrow(
-                () -> new ResourceNotFoundException("Member", "Member id", String.valueOf(member.getEmail()))
-        );
+        Member commentWriter = getMember();
         // Entity 변환, 연관관계 매핑
         Comment comment = CommentDto.of(commentDto);
         comment.setBoard(board);
@@ -51,6 +51,11 @@ public class CommentService {
 
         Comment saveComment = commentRepository.save(comment);
         return CommentResponseDto.from(saveComment);
+    }
+    private Member getMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        authentication.getName();
+        return memberRepository.findByEmail(authentication.getName()).orElseThrow(() -> new ResourceNotFoundException("Member", "Member Email",  authentication.getName()));
     }
     @Transactional
     public CommentResponseDto update(Long commentId, CommentDto commentDto) {

@@ -36,8 +36,11 @@ public class BoardController {
     @PostMapping("/write")
     public ResponseEntity<BoardResponseDto> write(
             @RequestBody BoardDto boardDto,
-            @AuthenticationPrincipal Member member) {
-        BoardResponseDto write = boardService.save(boardDto);
+            @AuthenticationPrincipal(expression = "#this == 'anonymousUser' ? null : member") Member member) {
+        if(member == null){
+            log.error("member is null");
+        }
+        BoardResponseDto write = boardService.save(boardDto, member);
         return ResponseEntity.status(HttpStatus.CREATED).body(write);
     }
 
