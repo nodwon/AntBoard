@@ -1,5 +1,4 @@
 import {Route, Routes} from "react-router-dom";
-import Home from "../app/Main"
 import BoardDetail from "../board/BoardDetail";
 import BoardUpdate from "../board/BoardUpdate";
 import Main from "../app/Main";

@@ -1,11 +1,13 @@
 import { createContext, useState } from "react";
 
-export const HttpHeadersContext = createContext({
-    headers: {
-        "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
-    },
-    setHeaders: () => {}
-});
+// export const HttpHeadersContext = createContext({
+//     headers: {
+//         "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
+//     },
+//     setHeaders: () => {}
+// });
+export const HttpHeadersContext = createContext();
+
 function HttpHeadersProvider({ children }) {
 
     const [headers, setHeaders] = useState({

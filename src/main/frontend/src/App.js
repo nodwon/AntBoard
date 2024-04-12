@@ -2,7 +2,7 @@ import * as React from 'react';
 import Footer from "./Components/app/Footer"
 import Header from "./Components/app/Header"
 import Main from "./Components/app/Main";
-import {BrowserRouter, createBrowserRouter, RouterProvider} from "react-router-dom";
+import { createBrowserRouter, RouterProvider} from "react-router-dom";
 import "./index.css";
 import ErrorPage from "./Components/router/ErrorPage";
 import BoardDetail from "./Components/board/BoardDetail";
@@ -15,9 +15,9 @@ import HttpHeadersProvider from "./Components/file/HttpHeadersProvider";
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <div><Header/>
+        element: <div>
+            <Header/>
             <div className="container">
-
                 <Main/>
             </div>
             <Footer/></div>,
@@ -49,17 +49,26 @@ const router = createBrowserRouter([
 function App() {
 
     return (
-        <div>
-            <React.StrictMode>
-                <RouterProvider router={router}/>
-            </React.StrictMode>
-            <BrowserRouter>
-                <AuthProvider>
-                    <HttpHeadersProvider>
-                    </HttpHeadersProvider>
-                </AuthProvider>
-            </BrowserRouter>
-        </div>
+        <React.StrictMode>
+            <HttpHeadersProvider>
+
+            <AuthProvider>
+                    <RouterProvider router={router} />
+            </AuthProvider>
+            </HttpHeadersProvider>
+        </React.StrictMode>
+
+// <div>
+//             <React.StrictMode>
+//                 <RouterProvider router={router}/>
+//             </React.StrictMode>
+//             <BrowserRouter>
+//                 <AuthProvider>
+//                     <HttpHeadersProvider>
+//                     </HttpHeadersProvider>
+//                 </AuthProvider>
+//             </BrowserRouter>
+//         </div>
 
     );
 }

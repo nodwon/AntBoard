@@ -1,10 +1,9 @@
-import React, {createContext, useContext, useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import {AppBar, Box, IconButton, InputBase, Menu, MenuItem, styled, Toolbar, Typography,} from "@mui/material";
 import {AccountCircle, Menu as MenuIcon, MoreVert as MoreIcon, Search as SearchIcon,} from "@mui/icons-material";
 import {alpha} from "@mui/material/styles";
 import {useNavigate} from "react-router-dom";
-import {HttpHeadersContext} from "../file/HttpHeadersProvider";
-import AuthProvider from "../file/AuthProvider"; // AuthContext 경로에 맞게 조정
+import { AuthContext } from "../file/AuthProvider"; // AuthContext 경로에 맞게 조정
 const Search = styled("div")(({theme}) => ({
     position: "relative",
     borderRadius: theme.shape.borderRadius,
@@ -55,8 +54,7 @@ function Header() {
     const navigate = useNavigate();
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-    const { auth, setAuth } = useContext(AuthProvider);
-    const { headers, setHeaders } = useContext(HttpHeadersContext);
+    const { auth, setAuth } = useContext(AuthContext);
 
 
 
@@ -77,15 +75,13 @@ function Header() {
         setMobileMoreAnchorEl(event.currentTarget);
     };
     useEffect(() => {
-        // 컴포넌트가 마운트될 때 실행됩니다.
         const accessToken = localStorage.getItem('accessToken');
-        const refreshToken = localStorage.getItem('refreshToken');
-
-        if (accessToken && refreshToken) {
-            setAuth(accessToken); // 또는 저장된 사용자 정보를 사용하여 auth 상태를 설정
-            setHeaders({ ...headers, Authorization: `Bearer ${accessToken}` });
+        if (accessToken) {
+            setAuth(accessToken);
         }
-    }, []); // 의존성 배열을 비워서 컴포넌트가 처음 마운트될 때만 실행되도록 합니다.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const handleLogoutClick = () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
@@ -175,8 +171,6 @@ function Header() {
                     >
                         수익 인증 게시판
                     </Typography>
-                    <p>{`안녕하세요, ${auth}님`}</p>
-                    <p>{`안녕하세요, ${headers}님`}</p>
                     <Search>
                 <SearchIconWrapper>
                             <SearchIcon/>
