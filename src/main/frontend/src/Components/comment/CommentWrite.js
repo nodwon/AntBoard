@@ -27,7 +27,7 @@ function CommentWrite(props) {
             // 새로운 댓글 데이터를 commentList 상태에 추가
             props.onNewComment(resp.data);
             alert("댓글을 성공적으로 등록했습니다 :D");
-            // navigate(0); // 페이지 리로드 대신 상태 업데이트로 처리
+            navigate('/')
         } catch (err) {
             console.error("[CommentWrite.js] createComment() error :<", err);
         }

@@ -18,15 +18,15 @@ public class JoinDto {
     private String username;
 
     @Builder
-    public JoinDto(String email, String password, String passwordCheck, String username){
-        this.email =email;
-        this.password =password;
+    public JoinDto(String email, String password, String passwordCheck, String username) {
+        this.email = email;
+        this.password = password;
         this.passwordCheck = passwordCheck;
         this.username = username;
     }
 
-    //Dto -> Entity
-    public static Member of(JoinDto dto){
+    // Dto -> Entity
+    public static Member of(JoinDto dto) {
         return Member.builder()
                 .email(dto.getEmail())
                 .password(dto.getPassword())

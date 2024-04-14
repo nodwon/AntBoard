@@ -43,7 +43,7 @@ public class MemberController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<MemberResponseDto> register(@RequestBody JoinDto joinDto) {
+    public ResponseEntity<MemberResponseDto> register(@RequestBody JoinDto joinDto) throws Exception {
         MemberResponseDto success = memberService.register(joinDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(success);
 

@@ -39,8 +39,10 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberResponseDto register(JoinDto joinDto) {
-        isExistEmail(joinDto.getEmail());
+    public MemberResponseDto register(JoinDto joinDto) throws Exception {
+        if (isExistEmail(joinDto.getEmail())) {
+            throw new Exception("이미 등록된 이메일입니다.");
+        }
         checkPassword(joinDto.getPassword(), joinDto.getPasswordCheck());
 
         String encodePwd = encoder.encode(joinDto.getPassword());
@@ -55,10 +57,8 @@ public class MemberService {
         }
     }
 
-    private void isExistEmail(String email) {
-        if (memberRepository.findByEmail(email).isPresent()) {
-            throw new MemberException("이미사용중인 이메일입니다.", HttpStatus.BAD_REQUEST);
-        }
+    public boolean isExistEmail(String email) {
+        return memberRepository.findByEmail(email).isPresent();
     }
 
     @Transactional

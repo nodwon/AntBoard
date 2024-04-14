@@ -58,7 +58,8 @@ function Login() {
                     <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                         <LockOutlinedIcon />
                     </Avatar>
-                    <Typography component="h1" variant="h5">
+                    <Typography component="h1" variant="h5"
+                                onClick={() => navigate('/')}>
                         Sign in
                     </Typography>
                     <Box component="form" noValidate onSubmit={login} sx={{ mt: 1 }}>

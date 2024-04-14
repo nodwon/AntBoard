@@ -25,6 +25,7 @@ function BoardDetail() {
     const { auth, setAuth } = useContext(AuthContext);
     const [commentList, setCommentList] = useState([]);
     const { headers, setHeaders } = useContext(HttpHeadersContext);
+
     // BoardDetail.js 안에 onNewComment 함수를 추가하고 CommentWrite에 전달
     function onNewComment(newComment) {
         setCommentList(currentComments => [...currentComments, newComment]);
@@ -37,6 +38,7 @@ function BoardDetail() {
             } else {
                 throw new Error('Invalid content type');
             }
+            navigate
         } catch (error) {
             console.error("Failed to fetch board details:", error);
             if (error.response && error.response.headers['content-type']?.includes('text/html')) {
@@ -87,8 +89,8 @@ function BoardDetail() {
                             <Button variant="outlined" onClick={() => navigate(`/board/${boardDetails?.boardId}/edit`)}>수정</Button>
                             <Button variant="outlined" color="error" onClick={deleteBoard}>삭제</Button>
                         </Stack>
-                        <CommentList boardId={boardId}/>
                         <CommentWrite onNewComment={onNewComment} boardId={boardId} />
+                        <CommentList boardId={boardId}/>
                     </CardContent>
                 </Card>
             </div>
