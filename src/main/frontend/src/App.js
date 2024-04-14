@@ -58,18 +58,6 @@ function App() {
             </HttpHeadersProvider>
         </React.StrictMode>
 
-// <div>
-//             <React.StrictMode>
-//                 <RouterProvider router={router}/>
-//             </React.StrictMode>
-//             <BrowserRouter>
-//                 <AuthProvider>
-//                     <HttpHeadersProvider>
-//                     </HttpHeadersProvider>
-//                 </AuthProvider>
-//             </BrowserRouter>
-//         </div>
-
     );
 }
 

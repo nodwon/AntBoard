@@ -7,7 +7,7 @@ function CommentList(props) {
     const boardId = props.boardId;
 
     const [page, setPage] = useState(1);
-    const [ setPageSize] = useState(5);
+    const [pageSize, setPageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(5);
     const [setTotalCnt] = useState(0);
     const [commentList, setCommentList] = useState([]);

@@ -121,7 +121,7 @@ export default function Main() {
             const boardId = resp.data.boardId;
 
             // Resize images before uploading
-            const resizedImages = await Promise.all(files.map(file => resizeImage(file, 180)));
+            const resizedImages = await Promise.all(files.map(file => resizeImage(file, 360)));
 
             // Prepare form data for file upload
             const fd = new FormData();
@@ -252,7 +252,7 @@ export default function Main() {
                                 <Stack spacing={2}>
                                     <Pagination
                                         totalPages={totalPages}
-                                        activePage={page} // 현재 페이지 번호를 activePage prop에 전달
+                                        // activePage={page} // 현재 페이지 번호를 activePage prop에 전달
                                         count={totalPages}
                                         // totalItemsCount={totalCnt}
                                         onChange={changePage}

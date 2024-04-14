@@ -31,7 +31,7 @@ function BoardDetail() {
     }
     const getBoardDetail = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/board/${boardId}`, { responseType: 'blob' } ,{headers: headers});
+            const response = await axios.get(`http://localhost:8080/board/${boardId}`, {headers: headers});
             if (response.headers['content-type']?.includes('application/json')) {
                 setBoardDetails(response.data);
             } else {
@@ -55,11 +55,14 @@ function BoardDetail() {
     };
 
     useEffect(() => {
+        const accessToken = localStorage.getItem("accessToken");
+        if (accessToken) {
+            setHeaders({
+                Authorization: `Bearer ${accessToken}`,
+            });
+        }
         getBoardDetail();
-        setHeaders({
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        });
-    }, [boardId]);
+    },  [boardId, setHeaders]);
 
     return (
         <div id="boardDetail" className="board-detail">
@@ -72,8 +75,8 @@ function BoardDetail() {
                     </div>
                     <Box className="aspectRatioBox">
                         {boardDetails.files?.map((file, index) => (
-                            <AspectRatio key={index} minHeight="60px" maxHeight="100px" sx={{ maxWidth: '50%' }}>
-                                <img src={file.imageBase64Data} alt={`Attachment ${index + 1}`} className="aspectRatioImg"/>
+                            <AspectRatio key={index} minHeight="60px" maxHeight="200px" sx={{ maxWidth: '50%' }}>
+                                <img src={`data:${file.fileType};base64,${file.imageBase64Data}`} alt={`Attachment ${index + 1}`} className="aspectRatioImg"/>
                             </AspectRatio>
                         ))}
                     </Box>
@@ -85,10 +88,7 @@ function BoardDetail() {
                             <Button variant="outlined" color="error" onClick={deleteBoard}>삭제</Button>
                         </Stack>
                         <CommentList boardId={boardId}/>
-                        {auth  ? (
                         <CommentWrite onNewComment={onNewComment} boardId={boardId} />
-                        ):null
-                        }
                     </CardContent>
                 </Card>
             </div>
