@@ -22,7 +22,7 @@ public class CommentController {
 
     @GetMapping("/list")
     public ResponseEntity<Page<CommentResponseDto>> commentList(
-            @PathVariable Long boardId,
+            @PathVariable("boardId") Long boardId,
             @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         Page<CommentResponseDto> commentList = commentService.getAllComments(pageable, boardId);

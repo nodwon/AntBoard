@@ -49,8 +49,7 @@ public class BoardService {
                 .collect(Collectors.toList());
         return new PageImpl<>(list,pageable, boards.getTotalElements());
     }
-
-    //게시글 가져오기
+    @Transactional//게시글 가져오기
     public BoardDetailResponseDto getBoard(Long boardId){
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다 " + boardId));
@@ -59,8 +58,9 @@ public class BoardService {
                         .fileId(file.getId())
                         .FileName(file.getFileName())
                         .fileType(file.getFileType())
-                        .imageBase64Data(List.of(file.getBase64Data()).toString())
+                        .imageBase64Data(file.getBase64Data()) // Base64 인코딩된 데이터 직접 전달
                         .build()).collect(Collectors.toList());
+
         return BoardDetailResponseDto.from(board, files);
     }
 

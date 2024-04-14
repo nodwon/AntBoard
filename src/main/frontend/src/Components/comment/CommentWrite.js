@@ -5,11 +5,9 @@ import { Button, TextField, Grid, Box } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import {HttpHeadersContext} from "../file/HttpHeadersProvider";
 
-function CommentWrite() {
+function CommentWrite(props) {
     const { headers, setHeaders } = useContext(HttpHeadersContext);
     const { boardId } = useParams(); // 파라미터 가져오기
-
-    const id = localStorage.getItem("accessToken");
 
     const [content, setContent] = useState("");
     const navigate = useNavigate();
@@ -24,11 +22,12 @@ function CommentWrite() {
         };
 
         try {
-            const resp = await axios.post(`http://localhost:8080/board/${boardId}/comment/write`, req, {headers: headers});
+            const resp = await axios.post(`http://localhost:8080/board/${boardId}/comment/write`, req, { headers: headers });
             console.log("[CommentWrite.js] createComment() success :D", resp.data);
-            debugger;
+            // 새로운 댓글 데이터를 commentList 상태에 추가
+            props.onNewComment(resp.data);
             alert("댓글을 성공적으로 등록했습니다 :D");
-            navigate(0); // Refresh the page to show the new comment
+            // navigate(0); // 페이지 리로드 대신 상태 업데이트로 처리
         } catch (err) {
             console.error("[CommentWrite.js] createComment() error :<", err);
         }

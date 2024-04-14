@@ -30,7 +30,7 @@ public class CommentService {
     private final MemberRepository memberRepository;
 
     public Page<CommentResponseDto> getAllComments(Pageable pageable, Long boardId) {
-        Page<Comment> comments = commentRepository.findAllWithMemberAndBoard(pageable, boardId);
+        Page<Comment> comments = commentRepository.findCommentsByBoardId(pageable, boardId);
         List<CommentResponseDto> commentList = comments.getContent().stream()
                 .map(CommentResponseDto::from)
                 .collect(Collectors.toList());

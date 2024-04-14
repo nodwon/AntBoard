@@ -74,44 +74,112 @@ export default function Main() {
         setPage(value)
         await BoardList(value); // 페이지 파라미터를 전달
     };
+    const resizeImage = (file, maxWidth) => {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.src = URL.createObjectURL(file);
+            image.onload = () => {
+                let width = image.width;
+                let height = image.height;
+
+                if (width > maxWidth) {
+                    height = height * (maxWidth / width);
+                    width = maxWidth;
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(image, 0, 0, width, height);
+                canvas.toBlob((blob) => {
+                    resolve(blob);
+                }, file.type, 0.7); // Adjust image quality here
+            };
+            image.onerror = () => {
+                reject(new Error('Image load error'));
+            };
+        });
+    };
 
     const createBoard = async () => {
         if (!auth) {
-            alert("로그인 한 사용자만 게시글을 작성할 수 있습니다 !");
-            return; // Stop the function from proceeding further
+            alert("로그인 한 사용자만 게시글을 작성할 수 있습니다!");
+            return;
         }
+
+        // Prepare the request for creating a board
         const req = {
             title: title,
             content: content
         };
 
-        await axios.post("http://localhost:8080/board/write", req,{ headers: headers })
-            .then((resp) => {
-                console.log(("success"));
-                console.log(resp.data);
-                const boardId = resp.data.boardId;
-                changePage();
-                // 게시글이 생성된 후에 파일 업로드 수행
-                const fd = new FormData();
-                files.forEach((file) => fd.append("file", file));
-                axios.post(`http://localhost:8080/board/${boardId}/file/upload`, fd)
-                    .then((resp) => {
-                        console.log("[file.js] fileUpload() success :D");
-                        console.log(resp.data);
-                        alert("파일 업로드 성공 :D");
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                        console.log("[FileData.js] fileUpload() error :<");
-                        alert("파일 업로드 실패 :(");
-                    });
+        try {
+            // Create a new board
+            const resp = await axios.post("http://localhost:8080/board/write", req, { headers: headers });
+            console.log("Board creation success:", resp.data);
+            const boardId = resp.data.boardId;
 
-                alert("새로운 게시글이 작성되었습니다.");
-                changePage();
-            }).catch((err) => {
-                console.log(err);
+            // Resize images before uploading
+            const resizedImages = await Promise.all(files.map(file => resizeImage(file, 180)));
+
+            // Prepare form data for file upload
+            const fd = new FormData();
+            resizedImages.forEach((resizedBlob, index) => {
+                fd.append("file", resizedBlob, files[index].name); // Use the original file name
             });
-    }
+
+            // Upload files to the newly created board
+            await axios.post(`http://localhost:8080/board/${boardId}/file/upload`, fd);
+            console.log("File upload success");
+            alert("파일 업로드 성공 :D");
+
+            changePage(); // Some function to change the page or update the state
+        } catch (err) {
+            console.error("Error during the board creation or file upload:", err);
+            alert("An error occurred. Please try again.");
+        }
+    };
+
+
+
+    // const createBoard = async () => {
+    //     if (!auth) {
+    //         alert("로그인 한 사용자만 게시글을 작성할 수 있습니다 !");
+    //         return; // Stop the function from proceeding further
+    //     }
+    //     const req = {
+    //         title: title,
+    //         content: content
+    //     };
+    //
+    //     await axios.post("http://localhost:8080/board/write", req,{ headers: headers })
+    //         .then((resp) => {
+    //             console.log(("success"));
+    //             console.log(resp.data);
+    //             const boardId = resp.data.boardId;
+    //             changePage();
+    //             // 게시글이 생성된 후에 파일 업로드 수행
+    //             const fd = new FormData();
+    //             files.forEach((file) => fd.append("file", file));
+    //             axios.post(`http://localhost:8080/board/${boardId}/file/upload`, fd)
+    //                 .then((resp) => {
+    //                     console.log("[file.js] fileUpload() success :D");
+    //                     console.log(resp.data);
+    //                     alert("파일 업로드 성공 :D");
+    //                 })
+    //                 .catch((err) => {
+    //                     console.log(err);
+    //                     console.log("[FileData.js] fileUpload() error :<");
+    //                     alert("파일 업로드 실패 :(");
+    //                 });
+    //
+    //             alert("새로운 게시글이 작성되었습니다.");
+    //             changePage();
+    //         }).catch((err) => {
+    //             console.log(err);
+    //         });
+    // }
 
     const BoardList = async (page) => {
         try {

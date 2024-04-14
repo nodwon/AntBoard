@@ -22,7 +22,12 @@ function BoardDetail() {
     const { boardId } = useParams();
     const navigate = useNavigate();
     const { auth, setAuth } = useContext(AuthContext);
+    const [commentList, setCommentList] = useState([]);
 
+    // BoardDetail.js 안에 onNewComment 함수를 추가하고 CommentWrite에 전달
+    function onNewComment(newComment) {
+        setCommentList(currentComments => [...currentComments, newComment]);
+    }
     const getBoardDetail = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/board/${boardId}`, { responseType: 'blob' });
@@ -33,11 +38,8 @@ function BoardDetail() {
             }
         } catch (error) {
             console.error("Failed to fetch board details:", error);
-            // Handle the error according to the content type or error message
             if (error.response && error.response.headers['content-type']?.includes('text/html')) {
-                // This may indicate that an HTML error page was returned, possibly due to a server error
             }
-            // Add any additional error handling logic here
         }
     };
 
@@ -78,11 +80,11 @@ function BoardDetail() {
                             <Button variant="outlined" onClick={() => navigate(`/board/${boardDetails?.boardId}/edit`)}>수정</Button>
                             <Button variant="outlined" color="error" onClick={deleteBoard}>삭제</Button>
                         </Stack>
-                        {auth  ? (
                         <CommentList boardId={boardId}/>
-                            ):null
+                        {auth  ? (
+                        <CommentWrite onNewComment={onNewComment} boardId={boardId} />
+                        ):null
                         }
-                        <CommentWrite boardId={boardId}/>
                     </CardContent>
                 </Card>
             </div>
