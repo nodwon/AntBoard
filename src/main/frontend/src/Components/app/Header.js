@@ -86,7 +86,7 @@ function Header() {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         handleMenuClose();
-        navigate('/'); // 로그아웃 후 홈으로 리다이렉트
+        navigate("/"); // 로그아웃 후 홈으로 리다이렉트
     };
     const menuId = "primary-search-account-menu";
     const renderMenu = (
@@ -105,15 +105,12 @@ function Header() {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            {auth  ? (
-
+            {auth ? (
                 <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
-            ) : (
-                <>
-                    <MenuItem onClick={() => navigate("/register")}>Register</MenuItem>
-                    <MenuItem onClick={() => navigate("/login")}>Login</MenuItem>
-                </>
-            )}
+            ) : [
+                <MenuItem key="register" onClick={() => navigate("/register")}>Register</MenuItem>,
+                <MenuItem key="login" onClick={() => navigate("/login")}>Login</MenuItem>
+            ]}
         </Menu>
     );
 

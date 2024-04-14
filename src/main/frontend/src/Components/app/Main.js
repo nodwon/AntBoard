@@ -137,49 +137,10 @@ export default function Main() {
             changePage(); // Some function to change the page or update the state
         } catch (err) {
             console.error("Error during the board creation or file upload:", err);
-            alert("An error occurred. Please try again.");
+            // alert("An error occurred. Please try again.");
         }
     };
 
-
-
-    // const createBoard = async () => {
-    //     if (!auth) {
-    //         alert("로그인 한 사용자만 게시글을 작성할 수 있습니다 !");
-    //         return; // Stop the function from proceeding further
-    //     }
-    //     const req = {
-    //         title: title,
-    //         content: content
-    //     };
-    //
-    //     await axios.post("http://localhost:8080/board/write", req,{ headers: headers })
-    //         .then((resp) => {
-    //             console.log(("success"));
-    //             console.log(resp.data);
-    //             const boardId = resp.data.boardId;
-    //             changePage();
-    //             // 게시글이 생성된 후에 파일 업로드 수행
-    //             const fd = new FormData();
-    //             files.forEach((file) => fd.append("file", file));
-    //             axios.post(`http://localhost:8080/board/${boardId}/file/upload`, fd)
-    //                 .then((resp) => {
-    //                     console.log("[file.js] fileUpload() success :D");
-    //                     console.log(resp.data);
-    //                     alert("파일 업로드 성공 :D");
-    //                 })
-    //                 .catch((err) => {
-    //                     console.log(err);
-    //                     console.log("[FileData.js] fileUpload() error :<");
-    //                     alert("파일 업로드 실패 :(");
-    //                 });
-    //
-    //             alert("새로운 게시글이 작성되었습니다.");
-    //             changePage();
-    //         }).catch((err) => {
-    //             console.log(err);
-    //         });
-    // }
 
     const BoardList = async (page) => {
         try {
@@ -293,7 +254,7 @@ export default function Main() {
                                         totalPages={totalPages}
                                         activePage={page} // 현재 페이지 번호를 activePage prop에 전달
                                         count={totalPages}
-                                        totalItemsCount={totalCnt}
+                                        // totalItemsCount={totalCnt}
                                         onChange={changePage}
                                         variant="outlined"
                                         color="secondary"

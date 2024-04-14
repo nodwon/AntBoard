@@ -9,10 +9,11 @@ import { Button, Card, CardContent, Typography, Stack } from '@mui/material';
 import CommentList from "../comment/CommentList";
 import CommentWrite from "../comment/CommentWrite";
 import {AuthContext} from "../file/AuthProvider";
+import {HttpHeadersContext} from "../file/HttpHeadersProvider";
 
 function BoardDetail() {
     const [boardDetails, setBoardDetails] = useState({
-        boardId: null,
+        boardId: '',
         title: '',
         content: '',
         createdDate: '',
@@ -23,14 +24,14 @@ function BoardDetail() {
     const navigate = useNavigate();
     const { auth, setAuth } = useContext(AuthContext);
     const [commentList, setCommentList] = useState([]);
-
+    const { headers, setHeaders } = useContext(HttpHeadersContext);
     // BoardDetail.js 안에 onNewComment 함수를 추가하고 CommentWrite에 전달
     function onNewComment(newComment) {
         setCommentList(currentComments => [...currentComments, newComment]);
     }
     const getBoardDetail = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/board/${boardId}`, { responseType: 'blob' });
+            const response = await axios.get(`http://localhost:8080/board/${boardId}`, { responseType: 'blob' } ,{headers: headers});
             if (response.headers['content-type']?.includes('application/json')) {
                 setBoardDetails(response.data);
             } else {
@@ -55,6 +56,9 @@ function BoardDetail() {
 
     useEffect(() => {
         getBoardDetail();
+        setHeaders({
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        });
     }, [boardId]);
 
     return (
