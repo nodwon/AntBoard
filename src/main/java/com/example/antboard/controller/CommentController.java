@@ -40,15 +40,6 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saveCommentDTO);
     }
 
-//    @PostMapping("/write")
-//    public ResponseEntity<CommentResponseDto> write(
-//            @PathVariable("boardId") Long boardId,
-//            @AuthenticationPrincipal Member member,
-//            @RequestBody CommentDto commentDto) {
-//
-//        CommentResponseDto saveCommentDTO = commentService.write(boardId,member,commentDto);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(saveCommentDTO);
-//    }
     @PostMapping("/update/{commentId}")
     public ResponseEntity<CommentResponseDto> update(
             @PathVariable Long commentId,
