@@ -194,7 +194,6 @@ function Register(){
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
-                            onClick={join}
                         >
                             Sign Up
                         </Button>
