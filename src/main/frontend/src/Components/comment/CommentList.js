@@ -24,6 +24,7 @@ function CommentList(props) {
     };
 
     const getCommentList = async (newPage) => {
+
         await axios
             .get(`http://localhost:8080/board/${boardId}/comment/list`, { params: { page: newPage - 1 } })
             .then((resp) => {
@@ -32,7 +33,6 @@ function CommentList(props) {
                 setTotalCnt(resp.data.totalElements);
                 setCommentList(resp.data.content);
             })
-            navigate('/')
             .catch((err) => {
                 console.error('[CommentList.js] getCommentList() error:', err);
             });

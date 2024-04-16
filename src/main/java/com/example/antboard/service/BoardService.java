@@ -59,6 +59,7 @@ public class BoardService {
                         .FileName(file.getFileName())
                         .fileType(file.getFileType())
                         .imageBase64Data(file.getBase64Data()) // Base64 인코딩된 데이터 직접 전달
+                        .S3Url(file.getS3Url())
                         .build()).collect(Collectors.toList());
 
         return BoardDetailResponseDto.from(board, files);

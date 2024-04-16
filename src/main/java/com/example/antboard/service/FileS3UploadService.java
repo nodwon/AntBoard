@@ -31,7 +31,6 @@ import java.util.UUID;
 public class FileS3UploadService {
     private final FileRepository fileRepository;
     private final AmazonS3 amazonS3; // AmazonS3 인터페이스를 주입 받음
-    private final BoardRepository boardRepository;
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
@@ -71,8 +70,7 @@ public class FileS3UploadService {
     }
 
     private String generateFileName(MultipartFile multipartFile) {
-        // 파일 이름 생성 로직 구현
-        // 예시: UUID.randomUUID()를 사용하여 고유한 파일 이름 생성
+
         return UUID.randomUUID().toString();
     }
 

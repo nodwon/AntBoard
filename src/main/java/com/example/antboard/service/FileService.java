@@ -87,23 +87,53 @@ public class FileService {
         };
     }
 
-    @Transactional
-    public List<FileUploadResponseDto> saveS3(Long boardId, List<FileS3Dto> save3File) {
-        boardRepository.findById(boardId).orElseThrow(() ->
-                new ResourceNotFoundException("Board", "boardID", String.valueOf(boardId)));
-        List<FileUploadResponseDto> responseDtoList = new ArrayList<>();
-        for (FileS3Dto fileS3Dto : save3File) {
-            FileUploadResponseDto responseDto = FileUploadResponseDto.builder()
-                    .fileId(fileS3Dto.getFileId()) // 파일의 ID
-                    .fileName(fileS3Dto.getFileName()) // 파일 이름
-                    .fileType(fileS3Dto.getFileType()) // 파일 유형
-                    .build();
-            responseDtoList.add(responseDto);
+//    @Transactional
+//    public List<FileUploadResponseDto> saveS3(Long boardId, List<FileS3Dto> save3File) {
+//        boardRepository.findById(boardId).orElseThrow(() ->
+//                new ResourceNotFoundException("Board", "boardID", String.valueOf(boardId)));
+//        List<FileUploadResponseDto> responseDtoList = new ArrayList<>();
+//        for (FileS3Dto fileS3Dto : save3File) {
+//            FileUploadResponseDto responseDto = FileUploadResponseDto.builder()
+//                    .fileId(fileS3Dto.getFileId()) // 파일의 ID
+//                    .fileName(fileS3Dto.getFileName()) // 파일 이름
+//                    .fileType(fileS3Dto.getFileType()) // 파일 유형
+//                    .build();
+//            responseDtoList.add(responseDto);
+//
+//        }
+//        return responseDtoList; // 저장된 파일 정보를 반환
+//
+//    }
+@Transactional
+public List<FileUploadResponseDto> saveS3(Long boardId, List<FileS3Dto> save3File) {
+    Board board = boardRepository.findById(boardId).orElseThrow(() ->
+            new ResourceNotFoundException("Board", "boardID", String.valueOf(boardId)));
 
-        }
-        return responseDtoList; // 저장된 파일 정보를 반환
+    List<FileEntity> fileEntities = new ArrayList<>();
+    for (FileS3Dto fileS3Dto : save3File) {
+        // FileEntity 생성 및 초기화
+        FileEntity fileEntity = FileEntity.builder()
+                .FileName(fileS3Dto.getFileName())
+                .fileType(fileS3Dto.getFileType())
+                .s3Url(fileS3Dto.getS3url()) // S3 URL을 포함시키는 것으로 가정
+                .build();
 
+        fileEntity.setMappingBoard(board); // Board와의 연관관계 설정
+        fileRepository.save(fileEntity); // 파일 엔티티 저장
+        fileEntities.add(fileEntity);
     }
+
+    // 저장된 FileEntity 객체들을 DTO로 변환하여 반환
+    return fileEntities.stream()
+            .map(file -> new FileUploadResponseDto(
+                    file.getId(),
+                    file.getFileName(),
+                    file.getFileType(),
+                    file.getS3Url()
+            ))
+            .collect(Collectors.toList());
+}
+
 
     @Transactional
     public void S3delete(Long fileId) {

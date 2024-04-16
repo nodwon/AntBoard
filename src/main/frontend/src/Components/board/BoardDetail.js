@@ -38,7 +38,6 @@ function BoardDetail() {
             } else {
                 throw new Error('Invalid content type');
             }
-            navigate
         } catch (error) {
             console.error("Failed to fetch board details:", error);
             if (error.response && error.response.headers['content-type']?.includes('text/html')) {
@@ -75,10 +74,21 @@ function BoardDetail() {
                         <Typography variant="h6">{boardDetails.title}</Typography>
                         <Typography variant="body1">{boardDetails.createdDate}</Typography>
                     </div>
+                    {/*<Box className="aspectRatioBox">*/}
+                    {/*    {boardDetails.files?.map((file, index) => (*/}
+                    {/*        <AspectRatio key={index} minHeight="60px" maxHeight="200px" sx={{ maxWidth: '50%' }}>*/}
+                    {/*            <img src={`data:${file.fileType};base64,${file.imageBase64Data}`} alt={`Attachment ${index + 1}`} className="aspectRatioImg"/>*/}
+                    {/*        </AspectRatio>*/}
+                    {/*    ))}*/}
+                    {/*</Box>*/}
                     <Box className="aspectRatioBox">
                         {boardDetails.files?.map((file, index) => (
                             <AspectRatio key={index} minHeight="60px" maxHeight="200px" sx={{ maxWidth: '50%' }}>
-                                <img src={`data:${file.fileType};base64,${file.imageBase64Data}`} alt={`Attachment ${index + 1}`} className="aspectRatioImg"/>
+                                {file.s3Url ? (
+                                    <img src={file.s3Url} alt={`Attachment ${index + 1}`} className="aspectRatioImg"/>
+                                ) : (
+                                    <img src={`data:${file.fileType};base64,${file.imageBase64Data}`} alt={`Attachment ${index + 1}`} className="aspectRatioImg"/>
+                                )}
                             </AspectRatio>
                         ))}
                     </Box>

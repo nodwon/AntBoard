@@ -42,10 +42,7 @@ export default function Main() {
     const { auth, setAuth } = useContext(AuthContext);
     const { headers, setHeaders } = useContext(HttpHeadersContext);
     let userId = null;
-    const cookie = document.cookie.split('; ').find(row => row.startsWith('id='));
-    if (cookie) {
-        userId = cookie.split('=')[1];
-    }
+
     const changeTitle = (event) => {
         setTitle(event.target.value);
     };
@@ -101,7 +98,6 @@ export default function Main() {
             };
         });
     };
-
     const createBoard = async () => {
         if (!auth) {
             alert("로그인 한 사용자만 게시글을 작성할 수 있습니다!");
@@ -130,7 +126,7 @@ export default function Main() {
             });
 
             // Upload files to the newly created board
-            await axios.post(`http://localhost:8080/board/${boardId}/file/upload`, fd);
+            await axios.post(`http://localhost:8080/board/${boardId}/file/S3upload`, fd);
             console.log("File upload success");
             alert("파일 업로드 성공 :D");
 

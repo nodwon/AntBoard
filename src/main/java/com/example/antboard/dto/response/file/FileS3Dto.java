@@ -29,6 +29,7 @@ public class FileS3Dto {
                 .fileId(file.getId())
                 .fileName(file.getFileName())
                 .fileType(file.getFileType())
+                .S3url(file.getS3Url())
                 .build();
     }
 }

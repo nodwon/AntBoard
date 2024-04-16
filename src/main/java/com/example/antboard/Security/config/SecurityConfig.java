@@ -37,6 +37,8 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CorsConfigurationSource corsConfigurationSource;
+    private final AmazonS3Config amazonS3Config;
+
 
 
     @Bean

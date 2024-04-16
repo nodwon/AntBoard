@@ -4,7 +4,6 @@ import {AccountCircle, Menu as MenuIcon, MoreVert as MoreIcon, Search as SearchI
 import {alpha} from "@mui/material/styles";
 import {useNavigate} from "react-router-dom";
 import { AuthContext } from "../file/AuthProvider";
-import Logout from "../member/Logout"; // AuthContext 경로에 맞게 조정
 const Search = styled("div")(({theme}) => ({
     position: "relative",
     borderRadius: theme.shape.borderRadius,
@@ -84,8 +83,12 @@ function Header() {
     }, []);
 
     const handleLogoutClick = () => {
-        Logout();
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken')
+        alert(" 성공적으로 로그아웃 됐습니다 🔒");
         handleMenuClose();
+        navigate('/');
+
     };
     const menuId = "primary-search-account-menu";
     const renderMenu = (

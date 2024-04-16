@@ -34,20 +34,20 @@ public class FileEntity extends BaseEntity {
     @JoinColumn(name = "BOARD_ID")
     public Board board;
 
-    @Builder
-    public FileEntity(Long id, String FileName, String fileType,String base64Data){
-        this.id= id;
-        this.FileName = FileName;
-        this.fileType = fileType;
-        this.base64Data = base64Data;
-    }
 //    @Builder
-//    public  FileEntity(Long id, String FileName, String fileType, String s3Url){
+//    public FileEntity(Long id, String FileName, String fileType,String base64Data){
 //        this.id= id;
 //        this.FileName = FileName;
 //        this.fileType = fileType;
-//        this.s3Url =s3Url;
+//        this.base64Data = base64Data;
 //    }
+    @Builder
+    public  FileEntity(Long id, String FileName, String fileType, String s3Url){
+        this.id= id;
+        this.FileName = FileName;
+        this.fileType = fileType;
+        this.s3Url =s3Url;
+    }
 
 
     public void setMappingBoard(Board board) {

@@ -15,13 +15,16 @@ public class BoardDetailsFileResponseDto {
     private String FileName;
     private String fileType;
     private String imageBase64Data;
+    private String S3Url;
 
     @Builder
-    public BoardDetailsFileResponseDto(Long fileId, String FileName, String fileType,String imageBase64Data) {
+    public BoardDetailsFileResponseDto(Long fileId, String FileName, String fileType,String imageBase64Data,String S3Url) {
         this.fileId = fileId;
         this.FileName = FileName;
         this.fileType = fileType;
         this.imageBase64Data = imageBase64Data;
+        this.S3Url = S3Url;
+
     }
 
     public static BoardDetailsFileResponseDto from(FileEntity file) {
@@ -30,6 +33,7 @@ public class BoardDetailsFileResponseDto {
                 .FileName(file.getFileName())
                 .fileType(file.getFileType())
                 .imageBase64Data(file.getBase64Data())
+                .S3Url(file.getS3Url())
                 .build();
     }
 }
