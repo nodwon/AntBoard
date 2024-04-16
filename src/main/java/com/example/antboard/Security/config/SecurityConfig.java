@@ -19,12 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -37,8 +32,6 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CorsConfigurationSource corsConfigurationSource;
-    private final AmazonS3Config amazonS3Config;
-
 
 
     @Bean
@@ -48,7 +41,7 @@ public class SecurityConfig {
 
     @Bean
     public LoginFilter loginFilter() throws Exception {
-        LoginFilter loginFilter = new LoginFilter(jwtTokenRepository, jwtTokenProvider,this.authenticationManager(this.authenticationConfiguration));
+        LoginFilter loginFilter = new LoginFilter(jwtTokenRepository, jwtTokenProvider, this.authenticationManager(this.authenticationConfiguration));
         loginFilter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return loginFilter;
     }
@@ -82,7 +75,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations())).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/**"),new AntPathRequestMatcher("/user/login", "/user/register")).permitAll().anyRequest().authenticated())
+                        .requestMatchers(new AntPathRequestMatcher("/**"), new AntPathRequestMatcher("/user/login", "/user/register")).permitAll().anyRequest().authenticated())
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
@@ -95,7 +88,7 @@ public class SecurityConfig {
 
         http
                 .formLogin(form -> form.loginProcessingUrl("/login"))
-                .addFilterBefore(new JWTFilter(this.jwtTokenProvider,this.jwtTokenRepository,this.customUserDetailsService), LoginFilter.class)
+                .addFilterBefore(new JWTFilter(this.jwtTokenProvider, this.jwtTokenRepository, this.customUserDetailsService), LoginFilter.class)
                 .addFilterAfter(loginFilter(), UsernamePasswordAuthenticationFilter.class);
 
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);

@@ -9,7 +9,6 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.antboard.common.ResourceNotFoundException;
 import com.example.antboard.dto.response.file.FileS3Dto;
 import com.example.antboard.entity.FileEntity;
-import com.example.antboard.repository.BoardRepository;
 import com.example.antboard.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,8 +59,6 @@ public class FileS3UploadService {
                 // DTO 리스트에 추가
                 fileList.add(fileS3Dto);
             }
-        } catch (AmazonServiceException e) {
-            e.printStackTrace();
         } catch (SdkClientException e) {
             e.printStackTrace();
         }
