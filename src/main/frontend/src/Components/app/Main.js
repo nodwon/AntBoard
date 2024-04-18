@@ -91,7 +91,7 @@ export default function Main() {
                 ctx.drawImage(image, 0, 0, width, height);
                 canvas.toBlob((blob) => {
                     resolve(blob);
-                }, file.type, 0.7); // Adjust image quality here
+                }, file.type, 1); // Adjust image quality here
             };
             image.onerror = () => {
                 reject(new Error('Image load error'));

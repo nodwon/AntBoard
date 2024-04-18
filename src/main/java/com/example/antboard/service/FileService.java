@@ -87,23 +87,6 @@ public class FileService {
         };
     }
 
-//    @Transactional
-//    public List<FileUploadResponseDto> saveS3(Long boardId, List<FileS3Dto> save3File) {
-//        boardRepository.findById(boardId).orElseThrow(() ->
-//                new ResourceNotFoundException("Board", "boardID", String.valueOf(boardId)));
-//        List<FileUploadResponseDto> responseDtoList = new ArrayList<>();
-//        for (FileS3Dto fileS3Dto : save3File) {
-//            FileUploadResponseDto responseDto = FileUploadResponseDto.builder()
-//                    .fileId(fileS3Dto.getFileId()) // 파일의 ID
-//                    .fileName(fileS3Dto.getFileName()) // 파일 이름
-//                    .fileType(fileS3Dto.getFileType()) // 파일 유형
-//                    .build();
-//            responseDtoList.add(responseDto);
-//
-//        }
-//        return responseDtoList; // 저장된 파일 정보를 반환
-//
-//    }
 @Transactional
 public List<FileUploadResponseDto> saveS3(Long boardId, List<FileS3Dto> save3File) {
     Board board = boardRepository.findById(boardId).orElseThrow(() ->
