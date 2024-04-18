@@ -98,7 +98,7 @@ public List<FileUploadResponseDto> saveS3(Long boardId, List<FileS3Dto> save3Fil
         FileEntity fileEntity = FileEntity.builder()
                 .FileName(fileS3Dto.getFileName())
                 .fileType(fileS3Dto.getFileType())
-                .s3Url(fileS3Dto.getS3url()) // S3 URL을 포함시키는 것으로 가정
+//                .s3Url(fileS3Dto.getS3url()) // S3 URL을 포함시키는 것으로 가정
                 .build();
 
         fileEntity.setMappingBoard(board); // Board와의 연관관계 설정

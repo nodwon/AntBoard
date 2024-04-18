@@ -126,7 +126,7 @@ export default function Main() {
             });
 
             // Upload files to the newly created board
-            await axios.post(`http://localhost:8080/board/${boardId}/file/S3upload`, fd);
+            await axios.post(`http://localhost:8080/board/${boardId}/file/upload`, fd);
             console.log("File upload success");
             alert("파일 업로드 성공 :D");
 
