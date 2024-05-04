@@ -69,9 +69,6 @@ public class BoardService {
     @Transactional
     public BoardResponseDto save(BoardDto dto, Member member){
         Board board = BoardDto.ofEntity(dto);
-//        Member writerMember = memberRepository.findByEmail(member.getEmail()).orElseThrow(
-//                () -> new ResourceNotFoundException("Member", "Member Email", member.getEmail())
-//        );
         Member writerMember = getMember();
         board.setMappingMember(writerMember);
         Board newBoard = boardRepository.save(board);

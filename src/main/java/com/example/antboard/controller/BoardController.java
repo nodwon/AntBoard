@@ -28,7 +28,7 @@ public class BoardController {
     // 페이징 목록
     @GetMapping("/list")
     public ResponseEntity<Page<BoardListResponse>> boardList(
-            @PageableDefault(size = 2, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<BoardListResponse> listDTO = boardService.getAllBoards(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(listDTO);
     }

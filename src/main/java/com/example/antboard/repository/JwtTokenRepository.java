@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface JwtTokenRepository extends CrudRepository<JwtToken, String> {
 
-    Optional<JwtToken> findByAccessToken(@Param("accessToken") String accessToken);
+    Optional<JwtToken> findByAccessToken(@Param("Refresh") String accessToken);
 
-    Optional<JwtToken> findByRefreshToken(@Param("refreshToken")String refreshToeken);
+    Optional<JwtToken> findByRefreshToken(@Param("RefreshToken")String refreshToeken);
 }
