@@ -35,20 +35,35 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final FileRepository fileRepository;
     private final MemberRepository memberRepository;
-    //게시글 페이징 리스트
+//    //게시글 페이징 리스트
+//    @Transactional
+//    public Page<BoardListResponse> getAllBoards(Pageable pageable) {
+//        Page<Board> boards = boardRepository.findAll(pageable);
+//        List<BoardListResponse> list = boards.getContent().stream()
+//                .map(board -> {
+//                    List<String> imageBase64Data = fileRepository.findByBoard(board).stream()
+//                            .map(FileEntity::getBase64Data)
+//                            .collect(Collectors.toList());
+//                    return new BoardListResponse(board, imageBase64Data); // 이미지 데이터 포함하여 생성
+//                })
+//                .collect(Collectors.toList());
+//        return new PageImpl<>(list,pageable, boards.getTotalElements());
+//    }
+
     @Transactional
     public Page<BoardListResponse> getAllBoards(Pageable pageable) {
-        Page<Board> boards = boardRepository.findAll(pageable);
+        Page<Board> boards = boardRepository.findAllWithFiles(pageable);
+
         List<BoardListResponse> list = boards.getContent().stream()
-                .map(board -> {
-                    List<String> imageBase64Data = fileRepository.findByBoard(board).stream()
-                            .map(FileEntity::getBase64Data)
-                            .collect(Collectors.toList());
-                    return new BoardListResponse(board, imageBase64Data); // 이미지 데이터 포함하여 생성
-                })
+                .map(board -> new BoardListResponse(
+                        board,
+                        board.getFiles().stream().map(FileEntity::getBase64Data).collect(Collectors.toList())
+                ))
                 .collect(Collectors.toList());
-        return new PageImpl<>(list,pageable, boards.getTotalElements());
+
+        return new PageImpl<>(list, pageable, boards.getTotalElements());
     }
+
     @Transactional//게시글 가져오기
     public BoardDetailResponseDto getBoard(Long boardId){
         Board board = boardRepository.findById(boardId)

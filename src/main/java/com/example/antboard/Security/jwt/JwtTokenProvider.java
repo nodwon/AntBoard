@@ -1,22 +1,44 @@
 package com.example.antboard.Security.jwt;
 
 import com.example.antboard.common.ErrorException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
+import java.util.function.Function;
 
 //0.12.3
 @Component
 public class JwtTokenProvider {
 
     private final SecretKey secretKey;
+
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+    private Claims extractAllClaims(String token) {
+        return Jwts
+                .parser()
+                .verifyWith(this.secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
 
     public JwtTokenProvider(@Value("${spring.jwt.secret}") String secret, CustomUserDetailsService customUserDetailsService) {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
@@ -44,15 +66,9 @@ public class JwtTokenProvider {
                 issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + expiredMs)).signWith(this.secretKey).compact();
     }
 
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token);
-            return true;
-        } catch (ExpiredJwtException e) {
-            throw new ErrorException("만료된 Access 토큰입니다. Refresh 토큰을 이용해서 새로운 Access 토큰을 발급 받으세요.");
-        } catch (JwtException e) {
-            throw new ErrorException("false, 2003, 지원되지 않거나 잘못된 토큰 입니다.");
-        }
+    public boolean validateToken(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isExpired(token));
     }
 
 }

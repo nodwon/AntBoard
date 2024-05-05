@@ -8,7 +8,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -61,22 +63,32 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         String email = authentication.getName();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
-        String refreshToken = jwtTokenProvider.createJwt("refresh", email, role, 600000L); // 예제를 단순화하기 위해 'role'을 직접 지정했습니다.
+        String role = authorities.iterator().next().getAuthority();
+
+        // Create the JWT tokens
+        String refreshToken = jwtTokenProvider.createJwt("refresh", email, role, 600000L);
         String accessToken = jwtTokenProvider.createJwt("access", email, role, 86400000L);
         jwtTokenRepository.save(new JwtToken(email, refreshToken, accessToken));
 
-        JwtToken jwtToken = new JwtToken(email, refreshToken, accessToken);
+        // Create HTTP-only, secure cookies for the tokens
+        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
+                .httpOnly(true)
+                .secure(true)  // Use true in production
+                .sameSite("Strict")
+                .path("/")
+                .build();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jwtTokenJson = objectMapper.writeValueAsString(jwtToken);
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)  // Use true in production
+                .sameSite("Strict")
+                .path("/")
+                .build();
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(jwtTokenJson);
-        response.setStatus(HttpStatus.OK.value());
+        // Add the cookies to the response
+        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
     }
 
     @Override

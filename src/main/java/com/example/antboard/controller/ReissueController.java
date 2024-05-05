@@ -51,11 +51,11 @@ public class ReissueController {
         JwtToken jwtToken = jwtTokenRepository.findByRefreshToken(refreshTokenValue)
                 .orElseThrow(() -> new ErrorException("NOT_EXIST_REFRESH_JWT"));
 
-        try {
-            jwtTokenProvider.validateToken(jwtToken.getRefreshToken());
-        } catch (ExpiredJwtException e) {
-            return new ResponseEntity<>("Refresh token expired", HttpStatus.UNAUTHORIZED);
-        }
+//        try {
+//            jwtTokenProvider.validateToken(jwtToken.getRefreshToken());
+//        } catch (ExpiredJwtException e) {
+//            return new ResponseEntity<>("Refresh token expired", HttpStatus.UNAUTHORIZED);
+//        }
 
         String username = jwtTokenProvider.getUsername(jwtToken.getRefreshToken());
         String role = jwtTokenProvider.getRole(jwtToken.getRefreshToken());

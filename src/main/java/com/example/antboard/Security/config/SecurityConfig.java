@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -32,7 +33,6 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CorsConfigurationSource corsConfigurationSource;
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -88,9 +88,8 @@ public class SecurityConfig {
 
         http
                 .formLogin(form -> form.loginProcessingUrl("/login"))
-                .addFilterBefore(new JWTFilter(this.jwtTokenProvider, this.jwtTokenRepository, this.customUserDetailsService), LoginFilter.class)
+                .addFilterBefore(new JWTFilter(this.jwtTokenProvider,this.customUserDetailsService), LoginFilter.class)
                 .addFilterAfter(loginFilter(), UsernamePasswordAuthenticationFilter.class);
-
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
         return http.build();
     }
