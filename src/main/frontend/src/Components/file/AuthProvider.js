@@ -4,7 +4,8 @@ export const AuthContext = createContext();
 
 function AuthProvider({ children }) {
 
-    const [auth, setAuth] = useState(localStorage.getItem("accessToken"));
+    // const [auth, setAuth] = useState(localStorage.getItem("accessToken"));
+    const [auth, setAuth] = useState(null);
 
     const value = {auth, setAuth };
 

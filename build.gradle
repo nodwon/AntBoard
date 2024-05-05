@@ -101,7 +101,7 @@ tasks.named('test') {
 def generated = 'src/main/generated'
 
 // querydsl QClass 파일 생성 위치를 지정
-tasks.withType(JavaCompile).configureEach {
+tasks.withType(JavaCompile) {
     options.getGeneratedSourceOutputDirectory().set(file(generated))
 }
 
@@ -115,7 +115,7 @@ clean {
     delete file(generated)
 }
 
-tasks.register('copyPrivate', Copy) {
+task copyPrivate(type: Copy) {
     copy {
         from './subpath'
         include "*.yml"

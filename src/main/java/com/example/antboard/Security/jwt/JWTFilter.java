@@ -1,5 +1,7 @@
 package com.example.antboard.Security.jwt;
 
+import com.example.antboard.entity.JwtToken;
+import com.example.antboard.repository.JwtTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -22,11 +25,7 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-
-
-    //    private final String HEADER_STRING = "Authorization";
-//    private final String TOKEN_PREFIX = "Bearer ";
-//    private final JwtTokenRepository jwtTokenRepository;
+    private final JwtTokenRepository jwtTokenRepository;
     private final CustomUserDetailsService customUserDetailsService;
 
     @Override
@@ -44,7 +43,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 }
             }
         }
-
         if (token == null) {
             filterChain.doFilter(request, response);
             return;
@@ -61,6 +59,12 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
         }
+//        Optional<JwtToken> tokenOptional = jwtTokenRepository.findByAccessToken(token);
+//        if (tokenOptional.isEmpty()) {
+//            log.warn("Token not found in repository");
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            return;
+//        }
 
         filterChain.doFilter(request, response);
     }

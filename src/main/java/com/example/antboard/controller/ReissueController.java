@@ -80,16 +80,18 @@ public class ReissueController {
         cookie.setPath("/");
         return cookie;
     }
-    @GetMapping("/cookies")
-    public ResponseEntity<Map<String, String>> getCookies(HttpServletRequest request) {
-        // 쿠키 배열을 맵으로 변환
-        Map<String, String> cookies = Arrays.stream(request.getCookies())
-                .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
+    @GetMapping("/check")
+    public ResponseEntity<?> checkAuthentication(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("accessToken")) {
+                    String token = cookie.getValue();
 
-        // 쿠키 정보를 로그로 출력
-        cookies.forEach((name, value) -> log.info("Cookie: " + name + " Value: " + value));
-
-        // 쿠키 정보를 응답으로 반환
-        return ResponseEntity.ok(cookies);
+                }
+            }
+        }
+        return ResponseEntity.status(401).build();
     }
+
 }

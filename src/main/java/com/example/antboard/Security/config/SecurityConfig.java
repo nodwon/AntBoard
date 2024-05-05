@@ -87,7 +87,7 @@ public class SecurityConfig {
 
         http
                 .formLogin(form -> form.loginProcessingUrl("/login"))
-                .addFilterBefore(new JWTFilter(this.jwtTokenProvider,this.customUserDetailsService), LoginFilter.class)
+                .addFilterBefore(new JWTFilter(this.jwtTokenProvider,this.jwtTokenRepository,this.customUserDetailsService), LoginFilter.class)
                 .addFilterAfter(loginFilter(), UsernamePasswordAuthenticationFilter.class);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
         return http.build();
