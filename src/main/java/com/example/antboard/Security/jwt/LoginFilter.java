@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 @Component
 @Slf4j
@@ -60,7 +59,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication){
         String email = authentication.getName();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         String role = authorities.iterator().next().getAuthority();

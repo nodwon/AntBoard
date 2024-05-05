@@ -5,7 +5,6 @@ import com.example.antboard.common.ErrorException;
 import com.example.antboard.dto.response.member.JwtResponseDTO;
 import com.example.antboard.entity.JwtToken;
 import com.example.antboard.repository.JwtTokenRepository;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
