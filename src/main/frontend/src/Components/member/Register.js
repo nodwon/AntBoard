@@ -40,8 +40,12 @@ function Register(){
     const [name, setName] = useState("");
     const [pwd, setPwd] = useState("");
     const [checkPwd, setCheckPwd] = useState("");
-
+    const [verificationNumber, setVerificationNumber] = useState('');
+    const [inputNumber, setInputNumber] = useState('');
+    const [isVerified, setIsVerified] = useState(null);
     const navigate = useNavigate();
+    const handleEmailChange = (event) => setEmail(event.target.value);
+    const handleInputNumberChange = (event) => setInputNumber(event.target.value);
 
     const changeEmail = (event) => {
         setEmail(event.target.value);
@@ -58,29 +62,79 @@ function Register(){
     const changeCheckPwd = (event) => {
         setCheckPwd(event.target.value);
     }
+    const [showInput, setShowInput] = useState(false); // 추가된 상태
+
     /* 아이디 중복 체크 */
-    const checkEmailDuplicate = async () => {
+    const checkEmailDuplicate = async (event) => {
+        event.preventDefault(); // 기본 동작 막기
 
-        await axios.get("http://localhost:8080/user/checkId", {params: {email: email}})
-            .then((resp) => {
-                console.log("[Join.js] checkEmailDuplicate() success :D");
-                console.log(resp.data);
+        try {
+            const resp = await axios.get("http://localhost:8080/user/checkId", { params: { email: email } });
+            console.log("[Register.js] checkEmailDuplicate() success :D");
+            console.log(resp.data);
 
-                if (resp.status === 200) {
-                    alert("사용 가능한 이메일입니다.");
-                }
-            })
-            .catch((err) => {
-                console.log("[Join.js] checkEmailDuplicate() error :<");
-                console.log(err);
+            if (resp.status === 200 && resp.data.available) {
+                alert("사용 가능한 이메일입니다.");
+            } else {
+                alert("이미 사용 중인 이메일입니다.");
+            }
+        } catch (err) {
+            console.log("[Register.js] checkEmailDuplicate() error :<");
+            console.log(err);
 
-                const resp = err.response;
-                if (resp.status === 400) {
-                    alert(resp.data);
-                }
+            const resp = err.response;
+            if (resp && resp.status === 400) {
+                alert(resp.data.message || "이메일 중복 확인에 실패했습니다.");
+            } else {
+                alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+            }
+        }
+    }
+    // 이메일 중복 확인 및 인증번호 전송
+    const checkEmailAndSendVerification = async (event) => {
+        event.preventDefault(); // 기본 동작 막기
+
+        try {
+            // 이메일 중복 체크
+            const emailCheckResponse = await axios.get("http://localhost:8080/user/checkId", {
+                params: { email: email }
             });
 
-    }
+            console.log("[Register.js] checkEmailAndSendVerification() email check success");
+            console.log(emailCheckResponse.data);
+
+            if (emailCheckResponse.status === 200 && emailCheckResponse.data.available) {
+                // 이메일 사용 가능할 경우 인증번호 전송
+                alert("사용 가능한 이메일입니다. 인증번호를 발송합니다.");
+
+                try {
+                    const verificationResponse = await axios.post('http://localhost:8080/mailSend', { mail: email });
+
+                    if (verificationResponse.data.success) {
+                        alert('인증번호가 이메일로 전송되었습니다.');
+                        setVerificationNumber(verificationResponse.data.number);
+                    } else {
+                        alert('이메일 전송에 실패했습니다.');
+                    }
+                } catch (sendError) {
+                    console.error('Error sending email:', sendError);
+                    alert('서버 오류가 발생했습니다.');
+                }
+            } else {
+                alert("이미 사용 중인 이메일입니다.");
+            }
+        } catch (error) {
+            console.log("[Register.js] checkEmailAndSendVerification() error");
+            console.log(error);
+
+            const resp = error.response;
+            if (resp && resp.status === 400) {
+                alert(resp.data.message || "이메일 중복 확인에 실패했습니다.");
+            } else {
+                alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+            }
+        }
+    };
 
     /* 회원가입 */
     const join = async () => {
@@ -102,6 +156,40 @@ function Register(){
             }
         }
     }
+    // 이메일로 인증번호 전송
+    // const sendVerificationNumber = async () => {
+    //     try {
+    //         const response = await axios.post('http://localhost:8080/mailSend', { mail: email });
+    //         if (response.data.success) {
+    //             alert('인증번호가 이메일로 전송되었습니다.');
+    //             setVerificationNumber(response.data.number);
+    //         } else {
+    //             alert('이메일 전송에 실패했습니다.');
+    //         }
+    //     } catch (error) {
+    //         console.error('Error sending email:', error);
+    //         alert('서버 오류가 발생했습니다.');
+    //     }
+    // };
+
+    // 인증번호 일치 여부 확인
+    const verifyNumber = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/mailCheck', {
+                params: { userNumber: inputNumber },
+            });
+            setIsVerified(response.data);
+
+            if (response.data) {
+                alert('인증번호가 일치합니다.');
+            } else {
+                alert('인증번호가 일치하지 않습니다.');
+            }
+        } catch (error) {
+            console.error('Error verifying number:', error);
+            alert('서버 오류가 발생했습니다.');
+        }
+    };
 
 
     const handleSubmit = async (event) => {
@@ -140,11 +228,61 @@ function Register(){
                                     autoComplete="email"
                                 />
                             </Grid>
+                            {/*<Grid item xs={3}>*/}
+                            {/*    <button id="checkDuplicateButton" className="btn btn-outline-danger" onClick={checkEmailAndSendVerification}>*/}
+                            {/*        <i className="fas fa-check" ></i> 이메일 확인*/}
+                            {/*    </button>*/}
+                            {/*</Grid>*/}
                             <Grid item xs={3}>
-                                <button id="checkDuplicateButton" className="btn btn-outline-danger" onClick={checkEmailDuplicate}>
-                                    <i className="fas fa-check" ></i> 이메일 중복 확인
-                                </button>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    fullWidth
+                                    onClick={checkEmailAndSendVerification}
+                                    sx={{ mt: 2 }}
+                                >
+                                    인증번호 받기
+                                </Button>
                             </Grid>
+                        </Grid>
+                            {/*<Grid item xs={3}>*/}
+                            {/*    <Button*/}
+                            {/*        variant="contained"*/}
+                            {/*        color="primary"*/}
+                            {/*        fullWidth*/}
+                            {/*        onClick={checkEmailAndSendVerification}*/}
+                            {/*        sx={{ mt: 2 }}*/}
+                            {/*    >*/}
+                            {/*        인증번호 받기*/}
+                            {/*    </Button>*/}
+                            {/*</Grid>*/}
+                        {showInput && (<Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="인증번호 입력"
+                                    value={inputNumber}
+                                    onChange={handleInputNumberChange}
+                                    required
+                                />
+                            </Grid>
+                            )}
+                        {showInput && (
+                            <Grid item xs={12}>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    fullWidth
+                                    onClick={verifyNumber}
+                                    sx={{ mt: 2 }}>
+                                    인증번호 확인
+                                </Button>
+                            </Grid>
+                        )}
+                {isVerified !== null && (
+                    <Typography sx={{ mt: 2 }} color={isVerified ? 'green' : 'red'}>
+                        {isVerified ? '인증 성공!' : '인증 실패!'}
+                    </Typography>
+                )}
                             <Grid item xs={12}>
                                 <TextField
                                     required
@@ -188,7 +326,6 @@ function Register(){
                                     label="I want to receive inspiration, marketing promotions and updates via email."
                                 />
                             </Grid>
-                        </Grid>
                         <Button
                             type="submit"
                             fullWidth
@@ -209,6 +346,6 @@ function Register(){
                 <Copyright sx={{ mt: 5 }} />
             </Container>
         </ThemeProvider>
-    );
+        );
 }
 export default Register;

@@ -2,24 +2,19 @@ package com.example.antboard.entity;
 
 import com.example.antboard.common.BaseEntity;
 import com.example.antboard.common.Role;
-import com.example.antboard.dto.response.member.MemberTokenDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class Member extends BaseEntity{
+public class Member extends BaseEntity {
     @Id
     @GeneratedValue
     @Column(name = "MEMBER_ID")
@@ -52,6 +47,7 @@ public class Member extends BaseEntity{
         this.username = username;
         this.role = role;
     }
+
     public static Member from(String email) {
         return Member.builder()
                 .email(email)

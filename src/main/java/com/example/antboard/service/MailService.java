@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MailService {
     private final JavaMailSender javaMailSender;
-    private static final String senderEmail ="";
+    private static final String senderEmail ="nodwon5024@gmail.com";
     private static int number;
     public static void createNumber(){
         number = (int) (Math.random() * (90000)) + 100000;
