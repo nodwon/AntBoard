@@ -64,32 +64,32 @@ function Register(){
     }
     const [showInput, setShowInput] = useState(false); // 추가된 상태
 
-    /* 아이디 중복 체크 */
-    const checkEmailDuplicate = async (event) => {
-        event.preventDefault(); // 기본 동작 막기
-
-        try {
-            const resp = await axios.get("http://localhost:8080/user/checkId", { params: { email: email } });
-            console.log("[Register.js] checkEmailDuplicate() success :D");
-            console.log(resp.data);
-
-            if (resp.status === 200 && resp.data.available) {
-                alert("사용 가능한 이메일입니다.");
-            } else {
-                alert("이미 사용 중인 이메일입니다.");
-            }
-        } catch (err) {
-            console.log("[Register.js] checkEmailDuplicate() error :<");
-            console.log(err);
-
-            const resp = err.response;
-            if (resp && resp.status === 400) {
-                alert(resp.data.message || "이메일 중복 확인에 실패했습니다.");
-            } else {
-                alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
-            }
-        }
-    }
+    // /* 아이디 중복 체크 */
+    // const checkEmailDuplicate = async (event) => {
+    //     event.preventDefault(); // 기본 동작 막기
+    //
+    //     try {
+    //         const resp = await axios.get("http://localhost:8080/user/checkId", { params: { email: email } });
+    //         console.log("[Register.js] checkEmailDuplicate() success :D");
+    //         console.log(resp.data);
+    //
+    //         if (resp.status === 200 && resp.data.available) {
+    //             alert("사용 가능한 이메일입니다.");
+    //         } else {
+    //             alert("이미 사용 중인 이메일입니다.");
+    //         }
+    //     } catch (err) {
+    //         console.log("[Register.js] checkEmailDuplicate() error :<");
+    //         console.log(err);
+    //
+    //         const resp = err.response;
+    //         if (resp && resp.status === 400) {
+    //             alert(resp.data.message || "이메일 중복 확인에 실패했습니다.");
+    //         } else {
+    //             alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+    //         }
+    //     }
+    // }
     // 이메일 중복 확인 및 인증번호 전송
     const checkEmailAndSendVerification = async (event) => {
         event.preventDefault(); // 기본 동작 막기
