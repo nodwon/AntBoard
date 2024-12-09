@@ -25,8 +25,6 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
 
 
-    private final String HEADER_STRING = "Authorization";
-    private final String TOKEN_PREFIX = "Bearer ";
     private final JwtTokenRepository jwtTokenRepository;
     private final CustomUserDetailsService customUserDetailsService;
 
@@ -36,8 +34,10 @@ public class JWTFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws IOException {
 
         try {
+            String HEADER_STRING = "Authorization";
             String header = request.getHeader(HEADER_STRING);
             log.info("Received header: {}", header);
+            String TOKEN_PREFIX = "Bearer ";
             if (header != null && header.startsWith(TOKEN_PREFIX)) {
                 String accessToken = header.substring(TOKEN_PREFIX.length()).trim();
                 log.info("Extracted Access Token: {}", accessToken);  // Log the token for debugging

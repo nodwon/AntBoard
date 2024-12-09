@@ -39,7 +39,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         return "/logout".equals(request.getRequestURI()) && "POST".equalsIgnoreCase(request.getMethod());
     }
 
-    private void performLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void performLogout(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {

@@ -5,8 +5,6 @@ footer {
     color: #6c757d; /* text-body-secondary color */
     background-color: #f8f9fa; /* body-tertiary color */
     border-top: 1px solid #dee2e6; /* border-top color */
-    left: 0px;
-    bottom: 0px;
     height: 80px;
     width: 100%;
 }

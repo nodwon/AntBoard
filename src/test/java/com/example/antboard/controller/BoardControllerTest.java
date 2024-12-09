@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -66,7 +67,7 @@ class BoardControllerTest {
 
             assertThat(response.getStatusCodeValue()).isEqualTo(HttpStatus.OK.value());
             assertThat(result).isNotNull();
-            assertThat(result.getTotalElements()).isEqualTo(totalItems);
+            assertThat(Objects.requireNonNull(result).getTotalElements()).isEqualTo(totalItems);
             assertThat(result.getContent().size()).isEqualTo(pageSize);
         }
         long endTime = System.nanoTime();

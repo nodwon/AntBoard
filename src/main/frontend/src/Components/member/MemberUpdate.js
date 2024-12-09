@@ -1,6 +1,6 @@
 /* 회원 정보 수정 컴포넌트 */
 import axios from "axios";
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 
 function MemberUpdate(props) {

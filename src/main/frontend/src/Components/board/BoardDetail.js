@@ -35,8 +35,6 @@ function BoardDetail() {
             const response = await axios.get(`http://localhost:8080/board/${boardId}`, {headers: headers});
             if (response.headers['content-type']?.includes('application/json')) {
                 setBoardDetails(response.data);
-            } else {
-                throw new Error('Invalid content type');
             }
         } catch (error) {
             console.error("Failed to fetch board details:", error);

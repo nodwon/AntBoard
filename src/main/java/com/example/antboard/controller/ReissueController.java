@@ -88,7 +88,7 @@ public class ReissueController {
                 .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
 
         // 쿠키 정보를 로그로 출력
-        cookies.forEach((name, value) -> log.info("Cookie: " + name + " Value: " + value));
+        cookies.forEach((name, value) -> log.info("Cookie: {} Value: {}", name, value));
 
         // 쿠키 정보를 응답으로 반환
         return ResponseEntity.ok(cookies);

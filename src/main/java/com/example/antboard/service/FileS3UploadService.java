@@ -1,6 +1,5 @@
 package com.example.antboard.service;
 
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkBaseException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;

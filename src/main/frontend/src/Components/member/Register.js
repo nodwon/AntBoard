@@ -15,7 +15,6 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
-import Login from "./Login";
 import "../../css/register.css";
 
 function Copyright(props) {
