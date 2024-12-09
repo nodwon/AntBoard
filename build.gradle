@@ -58,7 +58,9 @@ sourceSets {
         }
     }
 }
-
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-parameters']
+}
 processResources { dependsOn "copyReactBuildFiles" }
 
 tasks.register('installReact', Exec) {

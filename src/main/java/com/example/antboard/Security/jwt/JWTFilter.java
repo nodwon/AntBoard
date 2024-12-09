@@ -4,6 +4,7 @@ import com.example.antboard.repository.JwtTokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,14 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws IOException {
+                                    FilterChain filterChain) throws IOException, ServletException {
+        String path = request.getRequestURI();
+
+        // 한투 API 요청은 JWT 인증 제외
+        if (path.startsWith("/api/balance")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         try {
             String HEADER_STRING = "Authorization";

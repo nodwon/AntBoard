@@ -75,7 +75,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations())).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/**"), new AntPathRequestMatcher("/user/login", "/user/register")).permitAll().anyRequest().authenticated())
+                        .requestMatchers(new AntPathRequestMatcher("/**"), new AntPathRequestMatcher("/user/login", "/user/register"),new AntPathRequestMatcher("/api/balance")).permitAll().anyRequest().authenticated())
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
