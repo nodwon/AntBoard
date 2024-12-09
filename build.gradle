@@ -32,7 +32,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.kafka:spring-kafka'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign' // Feign Client(Optional)
     implementation 'org.apache.httpcomponents:httpclient'
 
 

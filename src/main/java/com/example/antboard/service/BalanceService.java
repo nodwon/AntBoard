@@ -14,22 +14,20 @@ public class BalanceService {
     private final String appSecret;
     private final String authToken;
     private final String trId;
-    private final String cano;
+
 
     public BalanceService(RestTemplate restTemplate,
                           @Value("${api.baseurl}") String baseUrl,
                           @Value("${api.appkey}") String appKey,
                           @Value("${api.appsecret}") String appSecret,
-                          @Value("${api.auth.token}") String authToken,
-                          @Value("${api.tr.id}") String trId,
-                            @Value("${api.cano}") String cano){
+                          @Value("${api.authtoken}") String authToken,
+                          @Value("${api.tr.id}") String trId){
         this.restTemplate = restTemplate;
         this.baseUrl = baseUrl;
         this.appKey = appKey;
         this.appSecret = appSecret;
         this.authToken = authToken;
         this.trId = trId;
-        this.cano = cano;
     }
 
     public BalanceResponse getBalance(String cano, String acntPrdtCd) {

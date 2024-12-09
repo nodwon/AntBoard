@@ -2,8 +2,9 @@ package com.example.antboard.Security.jwt;
 
 import com.example.antboard.common.ErrorException;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -50,8 +51,12 @@ public class JwtTokenProvider {
             return true;
         } catch (ExpiredJwtException e) {
             throw new ErrorException("만료된 Access 토큰입니다. Refresh 토큰을 이용해서 새로운 Access 토큰을 발급 받으세요.");
-        } catch (JwtException e) {
-            throw new ErrorException("false, 2003, 지원되지 않거나 잘못된 토큰 입니다.");
+        } catch (UnsupportedJwtException e) {
+            throw new ErrorException("false 2002지원되지 않는 토큰입니다.");
+        } catch (MalformedJwtException e) {
+            throw new ErrorException("false2003,잘못된 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            throw new ErrorException("false 2005토큰이 비어있습니다.");
         }
     }
 
