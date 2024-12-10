@@ -21,7 +21,7 @@ public class BalanceService {
                           @Value("${api.appkey}") String appKey,
                           @Value("${api.appsecret}") String appSecret,
                           @Value("${api.apiBearerToken}") String apiBearerToken,
-                          @Value("${api.tr.id}") String trId){
+                          @Value("${api.trid}") String trId){
         this.restTemplate = restTemplate;
         this.baseUrl = baseUrl;
         this.appKey = appKey;
