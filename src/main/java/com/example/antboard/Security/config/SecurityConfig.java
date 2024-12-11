@@ -75,20 +75,26 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations())).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/user/login", "/user/register"),new AntPathRequestMatcher("/kis/**")).permitAll().anyRequest().authenticated())
-                .headers((headers) -> headers
-                        .addHeaderWriter(new XFrameOptionsHeaderWriter(
-                                XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
+                        .requestMatchers(new AntPathRequestMatcher("/user/login"),
+                                new AntPathRequestMatcher("/user/register"),
+                                new AntPathRequestMatcher("/kis/**")).permitAll() // 한투 API 요청은 인증 제외
+                        .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 );
+
+        // X-Frame-Options 설정
+        http.headers(headers -> headers
+                .addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
+        );
 
         //세션 설정
         http
-                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(except -> except.authenticationEntryPoint(jwtAuthenticationEntryPoint));
 
-        http
-                .formLogin(form -> form.loginProcessingUrl("/login"))
-                .addFilterBefore(new JWTFilter(this.jwtTokenProvider, this.jwtTokenRepository, this.customUserDetailsService), LoginFilter.class)
+        http.addFilterBefore(new JWTFilter(jwtTokenProvider, jwtTokenRepository, customUserDetailsService),
+                        UsernamePasswordAuthenticationFilter.class)
+              //  .formLogin(form -> form.loginProcessingUrl("/login"))
+              //  .addFilterBefore(new JWTFilter(this.jwtTokenProvider, this.jwtTokenRepository, this.customUserDetailsService), LoginFilter.class)
                 .addFilterAfter(loginFilter(), UsernamePasswordAuthenticationFilter.class);
 
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);

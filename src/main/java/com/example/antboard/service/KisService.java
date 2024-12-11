@@ -38,19 +38,15 @@ public class KisService {
         return now.format(formatter);
     }
 
-    public Mono<String> getMajorIndex(String iscd, String fid_cond_mrkt_div_code) {
-        String path = "U".equals(fid_cond_mrkt_div_code)
-                ? "/v1/indices/major"
-                : "/v1/indices/other";
+    public Mono<String> getMajorIndex(String iscd, String fidCondMrktDivCode) {
+        String path = fidCondMrktDivCode.equals("U") ? KisConfig.FHKUP03500100_PATH : KisConfig.FHKST03030100_PATH;
+        String trId = fidCondMrktDivCode.equals("U") ? "FHKUP03500100" : "FHKST03030100";
 
-        String tr_id = "U".equals(fid_cond_mrkt_div_code)
-                ? "FHKUP03500100"
-                : "FHKST03030100";
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(path)
-                        .queryParam("fid_cond_mrkt_div_code", fid_cond_mrkt_div_code)
+                        .queryParam("fid_cond_mrkt_div_code", fidCondMrktDivCode)
                         .queryParam("fid_input_iscd", iscd)
                         .queryParam("fid_input_date_1", getStringToday())
                         .queryParam("fid_input_date_2", getStringToday())
@@ -61,9 +57,15 @@ public class KisService {
                 .header("authorization", "Bearer " + kisConfig.getApiBearerToken())
                 .header("appkey", kisConfig.getAppKey())
                 .header("appsecret", kisConfig.getAppSecret())
-                .header("tr_id", kisConfig.getTrid())
+                .header("tr_id", trId)
                 .retrieve()
-                .bodyToMono(String.class);
+                .onStatus(status -> !status.is2xxSuccessful(), clientResponse -> {
+                    // 에러 응답 로깅
+                    return clientResponse.bodyToMono(String.class)
+                            .flatMap(errorBody -> Mono.error(new RuntimeException("API Error: " + errorBody)));
+                })
+                .bodyToMono(String.class)
+                .doOnError(e -> log.error("Failed to fetch major index data: {}", e.getMessage()));
     }
 
     public Mono<KisBody> getCurrentPrice(String id) {

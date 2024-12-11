@@ -36,7 +36,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // 한투 API 요청은 JWT 인증 제외
-        if (path.startsWith("/api/balance")) {
+        if (path.startsWith("/kis/")) {
             filterChain.doFilter(request, response);
             return;
         }
