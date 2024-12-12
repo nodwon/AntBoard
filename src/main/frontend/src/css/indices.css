@@ -1,0 +1,11 @@
+/* indices.css */
+.indices-container {
+    margin: 20px auto;
+}
+.indices-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+

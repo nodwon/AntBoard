@@ -1,0 +1,11 @@
+/* equities.css */
+.equities-container {
+    margin: 20px auto;
+}
+.equity-details {
+    margin-top: 20px;
+}
+.equity-price {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}

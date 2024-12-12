@@ -27,11 +27,6 @@ public class KisController {
     private static final Logger log = LoggerFactory.getLogger(KisController.class);
     private final KisService kisService;
 
-    @GetMapping("/")
-    public String index(Model model) {
-        return "index";
-    }
-
 
     @GetMapping("/indices")
     public Mono<String> majorIndices(Model model) {
@@ -43,23 +38,14 @@ public class KisController {
 
         return Flux.fromIterable(indicesParams)
                 .concatMap(tuple -> kisService.getMajorIndex(tuple.getT1(), tuple.getT2()))
-                .map(jsonData -> {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    try {
-                        return objectMapper.readValue(jsonData, KisIndexData.class);
-                    } catch (JsonProcessingException e) {
-                        log.error("Failed to parse JSON data: {}", e.getMessage());
-                        throw new RuntimeException("JSON parsing error", e);
-                    }
-                })
+                .map(jsonData -> parseJsonToKisIndexData(jsonData))
                 .collectList()
                 .doOnNext(indicesList -> {
                     model.addAttribute("indicesKor", indicesList);
                     model.addAttribute("jobDate", kisService.getJobDateTime());
                 })
-                .thenReturn("indices")
+                .thenReturn("indices") // 명확한 뷰 이름 설정
                 .doOnError(e -> log.error("Error processing majorIndices: {}", e.getMessage()));
-
     }
 
     @GetMapping("/equities/{id}")
@@ -69,10 +55,21 @@ public class KisController {
                     model.addAttribute("equity", body.getOutput());
                     model.addAttribute("jobDate", kisService.getJobDateTime());
                 })
-                .doOnError(e -> {
-                    log.error("Error fetching equity details for ID {}: {}", id, e.getMessage());
-                })
-                .map(success -> "equities") // 반환할 뷰 이름 명시
+                .doOnError(e -> log.error("Error fetching equity details for ID {}: {}", id, e.getMessage()))
+                .map(success -> "equities") // 명확한 뷰 이름 명시
                 .onErrorReturn("error");   // 에러 발생 시 표시할 뷰
+    }
+
+    /**
+     * JSON 데이터를 KisIndexData 객체로 변환하는 유틸리티 메서드
+     */
+    private KisIndexData parseJsonToKisIndexData(String jsonData) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(jsonData, KisIndexData.class);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse JSON: {}", e.getMessage());
+            throw new RuntimeException("JSON parsing error", e);
+        }
     }
 }
